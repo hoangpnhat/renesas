@@ -1,0 +1,5 @@
+[flake8]
+max-line-length = 88
+exclude = .git, __pycache__, build, dist, packages/, _pb2.py, venv/, test
+ignore = E131, E203, E266, E501, W503, F403, F401, E127, E241, E128, E265, W291
+max-complexity = 10

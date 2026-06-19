@@ -1,0 +1,29 @@
+#!/usr/bin/env sh
+#
+# Copyright © 2025 Renesas Electronics Corporation. All Rights Reserved.
+#
+
+#
+# commit-msg hook: validate commit message theo Conventional Commit + ticket
+#
+
+COMMIT_MSG_FILE=$1
+COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
+
+CONVENTIONAL_REGEX='^(feat|improve|fix|docs|chore|test|refactor|style|perf|improve)(\((ADAIT-[0-9]+)\))?: .+'
+
+if ! echo "$COMMIT_MSG" | grep -qE "$CONVENTIONAL_REGEX"; then
+  echo "❌ Invalid commit message!"
+  echo "   Current message: \"$COMMIT_MSG\""
+  echo ""
+  echo "✅ Commit message must follow the format:"
+  echo "   <type>(ADAIT-123): short description"
+  echo ""
+  echo "   Where:"
+  echo "   - <type>: feat | fix | docs | chore | test | refactor | style | perf | improve"
+  echo "   - (ADAIT-123): optional, ticket number from branch (ADAIT-xxx)"
+  echo "   - short description: required, cannot be empty"
+  echo ""
+  exit 1
+fi
+

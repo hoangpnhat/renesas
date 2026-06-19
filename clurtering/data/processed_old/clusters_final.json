@@ -1,0 +1,466 @@
+{
+  "total_candidates": 158,
+  "total_clusters": 7,
+  "clustering_method": "Ensemble (HDBSCAN + GMM) - Improved labeling",
+  "embedding_dims": 25,
+  "improvements": [
+    "Focus on specific technical skills (languages, frameworks)",
+    "Exclude generic skills from labels",
+    "Relaxed weakness detection (< 65 score, >= 20% frequency)",
+    "Better label generation"
+  ],
+  "clusters": [
+    {
+      "cluster_id": "cluster_0",
+      "cluster_label": "StrongKafka_WeakDatamodelevolution_WeakGeospatialqueries",
+      "cluster_description": "Strong in kafka; weak in data model evolution, geospatial queries",
+      "size": 5,
+      "profile": {
+        "strengths": [
+          {
+            "skill": "kafka",
+            "avg_score": 78.33,
+            "frequency_pct": 40.0
+          }
+        ],
+        "weaknesses": [
+          {
+            "skill": "data model evolution",
+            "avg_score": 56.83,
+            "frequency_pct": 20.0
+          },
+          {
+            "skill": "geospatial queries",
+            "avg_score": 58.69,
+            "frequency_pct": 20.0
+          },
+          {
+            "skill": "maintainability",
+            "avg_score": 59.17,
+            "frequency_pct": 20.0
+          },
+          {
+            "skill": "indexing",
+            "avg_score": 60.42,
+            "frequency_pct": 40.0
+          },
+          {
+            "skill": "extensibility",
+            "avg_score": 60.83,
+            "frequency_pct": 20.0
+          }
+        ],
+        "domain_scores": {
+          "Cloud": 89.17,
+          "Database": 70.0
+        },
+        "profile_type": "Specialist",
+        "breadth": 2,
+        "specialization_score": 9.58
+      },
+      "members": [
+        "0b80a9e3-638a-41b5-96fd-4da84727a1d0",
+        "37f9b4fb-21e2-484c-92fa-59306eeb6633",
+        "a0fca09d-4711-41fc-8eda-1c534ad02d9e",
+        "b016018f-1406-418a-97b5-82c4f319f858",
+        "c89167f9-bf28-47a1-bea8-11f67ee665e8"
+      ]
+    },
+    {
+      "cluster_id": "cluster_1",
+      "cluster_label": "StrongAws_StrongSpringboot",
+      "cluster_description": "Strong in aws, spring boot",
+      "size": 85,
+      "profile": {
+        "strengths": [
+          {
+            "skill": "aws",
+            "avg_score": 74.42,
+            "frequency_pct": 57.6
+          },
+          {
+            "skill": "spring boot",
+            "avg_score": 81.87,
+            "frequency_pct": 25.9
+          }
+        ],
+        "weaknesses": [],
+        "domain_scores": {
+          "Backend": 80.53,
+          "Frontend": 72.29,
+          "Cloud": 74.3,
+          "Database": 72.04,
+          "DevOps": 77.57
+        },
+        "profile_type": "Generalist",
+        "breadth": 5,
+        "specialization_score": 5.18
+      },
+      "members": [
+        "001e7efe-a36a-4b4c-a459-ada3f9268ac9",
+        "0045a9bb-beab-42c2-97b5-7d5d341dde7d",
+        "0092fb93-eecb-4304-91f7-2d063006269f",
+        "0262224e-1253-4624-830e-8448d9a7db2a",
+        "04b57e5f-adad-4a82-bbf0-efba044bff48",
+        "05107fca-fc13-4336-bf7f-e690721bb744",
+        "053df53c-1069-4fc2-8cc3-88272c9558ae",
+        "059ca914-da30-4ad3-8987-c0e7014a4f05",
+        "085cafbc-bf39-4b43-bb91-37cc6d3f6b5d",
+        "08e30e36-7f4f-4daa-b9bf-87a9a09b3d60",
+        "0a784b91-d0d7-4971-8edc-cba1a5eb40cd",
+        "0b5576c0-7344-4bb9-a360-7145298d0cbe",
+        "10a6376c-5308-42f7-ae2e-3839c0689b0a",
+        "148c71f6-9489-4b40-b2de-61c52d4c836d",
+        "15e0811a-c67a-40f5-89fa-7a735e123c22",
+        "168e3595-f4bf-4c0a-a740-48036e13f003",
+        "16a7336c-b625-46ad-a50c-0008970afdf1",
+        "17fa0a65-4f77-4903-b89e-d4c1d525d92a",
+        "18fef903-d786-4498-ac8a-157c017dd051",
+        "1907303d-9435-4966-88cf-eb04e3464f66",
+        "21085cd8-0dbd-4155-864c-9b4140e7b1ac",
+        "221088ed-4ef6-4b86-8031-3abfafe78222",
+        "235b0fa3-c908-42cf-ad41-c97ec7415561",
+        "263ba5ec-f2fb-44ae-8543-061a7c2da381",
+        "28e9f4af-3e26-4b03-9a12-d8b577ee8d69",
+        "2bcaeb34-786e-4e5d-9470-c0e9df302840",
+        "2d4e118d-6571-45f6-8dc2-a34dd1fa2842",
+        "332b6494-c46e-4bac-93ef-daa09f82c96e",
+        "35872b2d-9a11-40fb-b820-2b4e9d8e8aad",
+        "3da0e7e9-bba6-49c9-8f28-78afcbcaf358",
+        "40307515-361c-4a88-adf8-c8da04fd4ab3",
+        "447fc121-7b64-4988-89bc-2b013bce756a",
+        "44b140a8-8346-4536-9ca7-bcea50f27598",
+        "476f2943-9b4a-4565-9019-7e02685e8b3a",
+        "4ac8afe0-3cc6-400f-932d-d6bc4753109c",
+        "4de466d6-e46e-4699-8021-21fc869c7f39",
+        "4eb40d50-87a3-427e-9d9d-fdae9c9c4dc5",
+        "4f58ccb6-2c61-4133-a4e8-6c0301159aa3",
+        "51f16200-53a8-455c-a772-5f5be1b51dbb",
+        "55c43879-304a-4cb1-923b-2f6ea46c46dc",
+        "55f08fba-8371-445f-b460-1250d2262c31",
+        "5a9958af-ea4e-4c11-a5f2-9f9ae5a59371",
+        "5bd89291-619f-4931-945d-dd99539ec51c",
+        "5d9d6199-16f9-473f-bd16-d647cbdf2e4a",
+        "65e29742-c14b-48c5-9e56-2ad1087ffd87",
+        "6a714b5d-242c-45fc-a88d-a328899fa496",
+        "6b99bbe7-5490-4767-b3e0-cca17820248d",
+        "6c9583ac-a7a3-4618-981a-32a4688fa8a5",
+        "6ebebd49-ebb1-4506-a122-151bbe109f64",
+        "750b148f-f24a-4f85-b3b5-143737916693",
+        "88daa878-6265-449f-ae45-133bafe17472",
+        "88f9747d-b1ef-4752-9d24-ed3991116d45",
+        "8c8949dd-788e-47f1-995e-5de3f83707ea",
+        "8c8ce408-9e88-45f3-9ae3-a6c5375fab90",
+        "8cdc1a61-e752-431d-95dc-e2dd354985f8",
+        "93774994-9ee0-4818-833a-1fedcdb7ba7d",
+        "95852bec-6839-4a9f-8ab4-87b2c5405ae2",
+        "9f2438db-4cb6-490a-be54-64c1b8ce4984",
+        "a1d8573e-eb85-413a-a946-a2b7fad96f68",
+        "a1e95afa-e4b2-4f6b-8c55-f9fdd8559b6b",
+        "a5865f65-89a3-4939-9879-d95f212afcbd",
+        "a5a7a988-c963-4035-b491-2f76809f15e8",
+        "a5c2aec5-fd86-4e75-810e-3bb744a0a8e1",
+        "a9e5e971-cec2-4daa-849c-19aa48e33693",
+        "ace627bc-46f3-4688-b82e-df06347ba62a",
+        "b0b2cee7-7386-4f44-916d-46fcdafcc7a9",
+        "b8dfcd44-9e55-44ca-8ec8-d322385248fa",
+        "babfe54a-ce7f-49c6-b032-93d551e736e0",
+        "bb8735f2-acc7-424e-b051-9dc19f60fc2b",
+        "c52751b6-d157-4968-8a12-3629de314ffb",
+        "c8ead33f-ed8b-4729-8ed0-70ef695012ab",
+        "cc902bbc-cd64-453a-ba55-51ecadb7bd5b",
+        "ce646a7a-00a3-43c7-b685-f9368703c603",
+        "cea7c308-6262-410b-835c-72ac7979e7e0",
+        "d7196a88-6557-47d0-8ffe-f2e5fea81c59",
+        "d79ddbe5-6517-47b5-a71c-919e1a32adcb",
+        "d91b190e-e6cd-40d7-a9fd-5bbb422377ac",
+        "de7e3942-a457-4317-80c8-1c5fb6cbba36",
+        "dfa32b66-7d77-4f23-b148-7f1d1c68e154",
+        "e2980fd4-1ca0-4983-9bb3-1ac61bf3f5df",
+        "e52180ea-a171-4452-9f36-d65e26d73ce0",
+        "f017098f-3781-4d5d-b428-2be8ecee20c5",
+        "f26842a0-007c-4210-833c-6a027c8aed82",
+        "f3364ba9-13c7-4b86-ba12-b591cc04190c",
+        "f7a92f8f-2594-41f2-ad67-1a6827ba171d"
+      ]
+    },
+    {
+      "cluster_id": "cluster_2",
+      "cluster_label": "StrongReact_WeakCaching_WeakAlgorithms",
+      "cluster_description": "Strong in react; weak in caching, algorithms",
+      "size": 13,
+      "profile": {
+        "strengths": [
+          {
+            "skill": "react",
+            "avg_score": 76.48,
+            "frequency_pct": 30.8
+          }
+        ],
+        "weaknesses": [
+          {
+            "skill": "caching",
+            "avg_score": 63.06,
+            "frequency_pct": 23.1
+          },
+          {
+            "skill": "algorithms",
+            "avg_score": 63.75,
+            "frequency_pct": 23.1
+          }
+        ],
+        "domain_scores": {
+          "DevOps": 83.26,
+          "Frontend": 76.99,
+          "Cloud": 80.28,
+          "Backend": 75.83,
+          "Database": 73.33
+        },
+        "profile_type": "Generalist",
+        "breadth": 5,
+        "specialization_score": 5.32
+      },
+      "members": [
+        "03d1a9e9-7d6d-4999-ad21-e60bb05be071",
+        "1e41f055-7d8a-49ff-aa74-0607167a4048",
+        "27dc093e-c8b0-4508-adfe-4dbea1d97e1f",
+        "55c13123-8683-42e1-bec6-086504cc15c5",
+        "5d1b3ba1-6493-4d15-b387-a7a5cf43ced7",
+        "9b46eefb-287b-4c3e-9f0c-d4d91048d024",
+        "b5bfcd2a-0ec0-4c15-9abd-3b0e4e6471b7",
+        "be976888-2c8b-469d-9431-1b036b32f66a",
+        "bea6cfae-7ba5-4a5d-99d0-e0d8465db05c",
+        "c4773009-fb7f-45d2-81e5-af455c44fc81",
+        "d25b536b-4c34-43a5-9b1c-9e59ea7cbc39",
+        "e3460a23-9973-4efb-b9db-9d32d63d6051",
+        "f956fee1-791e-478b-a28a-bcdcd3a5b1c9"
+      ]
+    },
+    {
+      "cluster_id": "cluster_3",
+      "cluster_label": "StrongC++_WeakApidesign_WeakEvaluationmetrics",
+      "cluster_description": "Strong in c++; weak in api design, evaluation metrics",
+      "size": 17,
+      "profile": {
+        "strengths": [
+          {
+            "skill": "c++",
+            "avg_score": 81.14,
+            "frequency_pct": 29.4
+          }
+        ],
+        "weaknesses": [
+          {
+            "skill": "api design",
+            "avg_score": 51.55,
+            "frequency_pct": 23.5
+          },
+          {
+            "skill": "evaluation metrics",
+            "avg_score": 55.54,
+            "frequency_pct": 23.5
+          },
+          {
+            "skill": "monitoring",
+            "avg_score": 60.33,
+            "frequency_pct": 29.4
+          },
+          {
+            "skill": "data integrity",
+            "avg_score": 62.22,
+            "frequency_pct": 35.3
+          },
+          {
+            "skill": "error logging",
+            "avg_score": 62.98,
+            "frequency_pct": 29.4
+          }
+        ],
+        "domain_scores": {
+          "Backend": 71.64,
+          "Cloud": 77.56,
+          "Frontend": 62.12,
+          "Database": 81.67
+        },
+        "profile_type": "Generalist",
+        "breadth": 4,
+        "specialization_score": 8.42
+      },
+      "members": [
+        "200f01f1-1c2c-4c2d-b94a-16d158a60164",
+        "368f8566-9028-4df0-8a34-be3a60589db3",
+        "37ee2c6c-3d87-4b9e-a068-35abf35189a3",
+        "42fa7648-97f0-49f5-a19d-7223f780abfd",
+        "4ef95467-863b-405f-8077-36691c895442",
+        "4fcb292e-dc99-4434-9e83-9a59d5cc3bf5",
+        "69d64324-a933-41bb-bbe1-13c520e746c4",
+        "6b9859a6-7f8c-4fdc-8395-1be9958e0708",
+        "6be8fe2c-0357-4c71-bf91-77787bdf99bc",
+        "81f3207d-1b34-445c-a5b1-8a47ca992099",
+        "83204d7a-5a28-41be-99a4-9696929f9156",
+        "884510c2-eed9-400b-be08-10dd8315df81",
+        "9f717817-6d2b-4dd0-b9ee-a5e4da3aabe2",
+        "b0b92b47-2cc0-4c68-af8a-92d52fa73654",
+        "b8bf1f76-5640-4f85-8808-3c76ffca1dfa",
+        "c85ccdd3-d17a-40cc-8e9c-7e5c64884ae9",
+        "c9053886-c774-4bd6-8d85-ceba84b89e37"
+      ]
+    },
+    {
+      "cluster_id": "cluster_4",
+      "cluster_label": "StrongSpringboot_StrongAws_StrongJava",
+      "cluster_description": "Strong in spring boot, aws, java",
+      "size": 10,
+      "profile": {
+        "strengths": [
+          {
+            "skill": "spring boot",
+            "avg_score": 86.81,
+            "frequency_pct": 60.0
+          },
+          {
+            "skill": "aws",
+            "avg_score": 84.13,
+            "frequency_pct": 50.0
+          },
+          {
+            "skill": "java",
+            "avg_score": 88.54,
+            "frequency_pct": 40.0
+          }
+        ],
+        "weaknesses": [],
+        "domain_scores": {
+          "Database": 85.83,
+          "Cloud": 84.13,
+          "Backend": 91.77,
+          "DevOps": 66.67,
+          "Frontend": 73.33
+        },
+        "profile_type": "Generalist",
+        "breadth": 5,
+        "specialization_score": 11.42
+      },
+      "members": [
+        "380c89f5-8a2e-41a7-9640-dda5e5d74714",
+        "5fa7e24f-f44f-4be6-ba2d-255207769e5d",
+        "97375bcb-4a6d-4395-81fc-00dcbfe695bd",
+        "9dad83d8-5058-4a7a-ab7f-81bab76c89f2",
+        "c2365057-12ee-4022-962c-7e35f22f60e4",
+        "cd816649-0ef9-484c-8211-5818fc4a762f",
+        "ce6f6581-f6a4-43cc-9ba5-fed713664c99",
+        "cf8ac49f-095d-4c05-8aa6-d869301ea868",
+        "d0f67b93-4b71-4b26-bb9f-d6d4970e8609",
+        "ebb2fc04-0f98-4499-a438-be40d666a0d9"
+      ]
+    },
+    {
+      "cluster_id": "cluster_5",
+      "cluster_label": "StrongAws_StrongRestapi_StrongJava",
+      "cluster_description": "Strong in aws, rest api, java",
+      "size": 11,
+      "profile": {
+        "strengths": [
+          {
+            "skill": "aws",
+            "avg_score": 71.85,
+            "frequency_pct": 45.5
+          },
+          {
+            "skill": "rest api",
+            "avg_score": 70.33,
+            "frequency_pct": 45.5
+          },
+          {
+            "skill": "java",
+            "avg_score": 76.69,
+            "frequency_pct": 36.4
+          },
+          {
+            "skill": "python",
+            "avg_score": 83.31,
+            "frequency_pct": 27.3
+          },
+          {
+            "skill": "spring boot",
+            "avg_score": 82.22,
+            "frequency_pct": 27.3
+          }
+        ],
+        "weaknesses": [],
+        "domain_scores": {
+          "Cloud": 71.85,
+          "DevOps": 75.62,
+          "Backend": 80.0,
+          "Frontend": 73.81
+        },
+        "profile_type": "Generalist",
+        "breadth": 4,
+        "specialization_score": 4.68
+      },
+      "members": [
+        "3c24c04b-d901-4128-9d13-d098d95ff1ce",
+        "622fbbf2-c998-41ab-be43-66bc29651e21",
+        "6281b972-fab5-4cb5-a0cd-b1aa74959bef",
+        "82f1cefd-da57-49dd-8cc8-1b5c1be9555c",
+        "867b6e68-97f9-4fdc-b5d5-ef32f1e1a291",
+        "a6fda8c3-befb-415c-920f-4a56750b12da",
+        "a8782043-d40f-48fe-a881-50e99c446348",
+        "b5882536-7f70-4a7d-9d12-5e331ad9044b",
+        "dc6a96de-437c-4687-854d-9f00bc0ceb54",
+        "ea2183ec-cb4b-44fb-808b-88e5c9cb06c4",
+        "ec86a7f1-faf9-4eb8-9fce-a7edadd4b556"
+      ]
+    },
+    {
+      "cluster_id": "cluster_6",
+      "cluster_label": "StrongAws_WeakCaching",
+      "cluster_description": "Strong in aws; weak in caching",
+      "size": 17,
+      "profile": {
+        "strengths": [
+          {
+            "skill": "aws",
+            "avg_score": 77.8,
+            "frequency_pct": 64.7
+          }
+        ],
+        "weaknesses": [
+          {
+            "skill": "caching",
+            "avg_score": 63.45,
+            "frequency_pct": 41.2
+          }
+        ],
+        "domain_scores": {
+          "Cloud": 77.8,
+          "DevOps": 72.78,
+          "Frontend": 77.8,
+          "Backend": 81.53
+        },
+        "profile_type": "Generalist",
+        "breadth": 4,
+        "specialization_score": 4.05
+      },
+      "members": [
+        "298f58fc-3462-426a-9773-387ee807b8ee",
+        "2dffcb28-825d-4430-ab3a-a8ea5d58b563",
+        "39a94cf5-0bb3-44b2-b491-301e669736a1",
+        "3f0e2eea-d794-44a7-9030-8c882204c459",
+        "4bb99332-b7a7-4f63-a76f-ade29bb67ade",
+        "632bd6f1-c228-4372-8914-1e8c63acd06f",
+        "68a94584-c571-4d47-9954-38ce7b11ea4c",
+        "738bfd2b-06ce-49a3-9adb-c3c0269b01ba",
+        "86435608-abb9-4661-b044-49645c5a8b01",
+        "87b54038-9ed9-403f-a2d0-7200602cb8bb",
+        "b4ec6c93-b583-4216-8bd5-e2c80f3e9cc7",
+        "bc93bcf8-8f98-4bbf-87f2-e84faa94f028",
+        "bca60970-8371-4b87-b921-74bf2fdfe9d2",
+        "c1b35686-0c5a-4e57-9d25-b7952bf07a8c",
+        "cfdf8fd8-0094-4dc9-bdad-e6db3b5aa976",
+        "de4a28e3-32c6-4e3c-a71a-13a40184189e",
+        "e98f4247-6538-43b9-a3ea-52c94b985116"
+      ]
+    }
+  ]
+}

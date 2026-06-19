@@ -1,0 +1,48 @@
+#!/usr/bin/env sh
+#
+# Copyright © 2025 Renesas Electronics Corporation. All Rights Reserved.
+#
+
+#set -e
+# Function to run build analysis
+run_build_analysis() {
+    # Option 1: Always run (uncomment next line and comment the conditional)
+    # echo "\n📊 Running build analysis..."
+
+    # Option 2: Run only when ANALYZE_BUILD=true (current behavior)
+    if [ "${ANALYZE_BUILD:-false}" = "true" ]; then
+        echo "\n📊 Running build analysis..."
+    # Option 3: Skip on CI but run locally
+    elif [ -z "${CI}" ]; then
+        echo "\n📊 Running build analysis (local development)..."
+    else
+        echo "\n⏭️  Skipping build analysis (set ANALYZE_BUILD=true to run)"
+        return 0
+    fi
+
+    if ! yarn build:analyze; then
+        echo "⚠️  Build analysis completed with warnings"
+        # Uncomment next line to fail commit on build analysis errors
+        # return 1
+    else
+        echo "✅ Build analysis completed!"
+    fi
+}
+
+main() {
+    echo "Starting pre-push validation..."
+    # Security audit
+    echo "🔒 Running security audit..."
+    yarn audit --level high || true
+    # Check if we're in a git repository
+    if ! git rev-parse --git-dir > /dev/null 2>&1; then
+        echo "❌ Not in a git repository!"
+        exit 1
+    fi
+
+    # Run build analysis
+    run_build_analysis || exit 1
+
+    echo "\n🎉 All pre-push checks passed!"
+}
+main "$@"

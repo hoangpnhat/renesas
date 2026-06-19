@@ -1,0 +1,795 @@
+{
+  "name": "rica",
+  "icon": "media/icon-rica.png",
+  "author": "Continue Dev, Inc",
+  "version": "1.2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.global.renesas.com/ids_ai/rica-oss"
+  },
+  "extensionKind": [
+    "ui",
+    "workspace"
+  ],
+  "bugs": {
+    "url": "https://gitlab.global.renesas.com/ids_ai/rica-oss/-/issues",
+    "email": "nate@continue.dev"
+  },
+  "homepage": "https://rica.global.renesas.com",
+  "qna": "https://github.com/continuedev/continue/issues/new/choose",
+  "license": "Apache-2.0",
+  "displayName": "RICA",
+  "pricing": "Free",
+  "description": "The in-house AI coding assistant of Renesas",
+  "publisher": "Rica",
+  "engines": {
+    "vscode": "^1.70.0",
+    "node": ">=20.20.1"
+  },
+  "engine-strict": true,
+  "galleryBanner": {
+    "color": "#1E1E1E",
+    "theme": "dark"
+  },
+  "categories": [
+    "AI",
+    "Chat",
+    "Programming Languages",
+    "Education",
+    "Machine Learning",
+    "Snippets"
+  ],
+  "keywords": [
+    "chatgpt",
+    "cline",
+    "roo",
+    "github",
+    "copilot",
+    "claude",
+    "mistral",
+    "codestral",
+    "ai"
+  ],
+  "activationEvents": [
+    "onUri",
+    "onStartupFinished",
+    "onView:rica.ricaGUIView"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "filenames": [
+          "config.json",
+          ".continuerc.json"
+        ],
+        "id": "jsonc"
+      },
+      {
+        "id": "promptLanguage",
+        "extensions": [
+          ".prompt"
+        ],
+        "aliases": [
+          "Prompt Language"
+        ],
+        "configuration": "./prompt-file-language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "promptLanguage",
+        "scopeName": "source.prompt",
+        "path": "./media/prompt.tmLanguage.json"
+      }
+    ],
+    "configuration": {
+      "title": "RICA",
+      "properties": {
+        "rica.telemetryEnabled": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Continue collects anonymous usage data, cleaned of PII, to help us improve the product for our users. Read more  at [continue.dev › Telemetry](https://docs.continue.dev/telemetry).",
+          "markdownDeprecationMessage": "This setting is deprecated and will be removed in a later version. Please use the _Telemetry > Allow Anonymous Telemetry_ setting in the extension's User Settings page.",
+          "deprecationMessage": "Please use the _Telemetry > Allow Anonymous Telemetry_ setting in the extension's User Settings page.",
+          "description": "Enable anonymous telemetry for RICA"
+        },
+        "rica.showInlineTip": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show inline suggestion to use the Continue keyboard shortcuts (e.g. \"Cmd/Ctrl L to select code, Cmd/Ctrl I to edit\")."
+        },
+        "rica.disableQuickFix": {
+          "type": "boolean",
+          "default": false,
+          "description": "Disable the quick fix feature."
+        },
+        "rica.enableQuickActions": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Enable the experimental Quick Actions feature. Read our walkthrough to learn about configuration and how to share feedback: [continue.dev › Walkthrough: Quick Actions (experimental)](https://docs.continue.dev/customize/deep-dives/vscode-actions#quick-actions)"
+        },
+        "rica.enableTabAutocomplete": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Enable tab autocomplete in RICA"
+        },
+        "rica.enableNextEdit": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Enable Continue's next edit feature. Read our docs to learn about configuration and how to share feedback: [continue.dev › Features › Autocomplete › Next Edit (experimental)](https://docs.continue.dev/features/autocomplete/next-edit)"
+        },
+        "rica.pauseTabAutocompleteOnBattery": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Pause Continue's tab autocomplete feature when your battery is low."
+        },
+        "rica.pauseCodebaseIndexOnStart": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Pause Continue's codebase index on start."
+        },
+        "rica.enableConsole": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Enable a console to log and explore model inputs and outputs. It can be found in the bottom panel."
+        },
+        "rica.remoteConfigServerUrl": {
+          "type": "string",
+          "default": null,
+          "markdownDescription": "If your team is set up to use shared configuration, enter the server URL here and your user token below to enable automatic syncing."
+        },
+        "rica.userToken": {
+          "type": "string",
+          "default": null,
+          "markdownDescription": "If your team is set up to use shared configuration, enter your user token here and your server URL above to enable automatic syncing."
+        },
+        "rica.remoteConfigSyncPeriod": {
+          "type": "number",
+          "default": 60,
+          "description": "The period of time in minutes between automatic syncs."
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "rica.applyCodeFromChat",
+        "category": "RICA",
+        "title": "Apply code from chat",
+        "group": "RICA"
+      },
+      {
+        "command": "rica.acceptDiff",
+        "category": "RICA",
+        "title": "Accept Diff",
+        "group": "RICA"
+      },
+      {
+        "command": "rica.rejectDiff",
+        "category": "RICA",
+        "title": "Reject Diff",
+        "group": "RICA",
+        "icon": "$(stop)"
+      },
+      {
+        "command": "rica.acceptVerticalDiffBlock",
+        "category": "RICA",
+        "title": "Accept Vertical Diff Block",
+        "group": "RICA"
+      },
+      {
+        "command": "rica.rejectVerticalDiffBlock",
+        "category": "RICA",
+        "title": "Reject Vertical Diff Block",
+        "group": "RICA"
+      },
+      {
+        "command": "rica.focusEdit",
+        "category": "RICA",
+        "title": "Add to Edit",
+        "group": "RICA"
+      },
+      {
+        "command": "rica.focusContinueInput",
+        "category": "RICA",
+        "title": "Add Highlighted Code to Context and Clear Chat",
+        "group": "RICA"
+      },
+      {
+        "command": "rica.focusContinueInputWithoutClear",
+        "category": "RICA",
+        "title": "Add to Chat",
+        "group": "RICA"
+      },
+      {
+        "command": "rica.debugTerminal",
+        "category": "RICA",
+        "title": "Debug Terminal",
+        "group": "RICA"
+      },
+      {
+        "command": "rica.exitEditMode",
+        "category": "RICA",
+        "title": "Exit Edit Mode",
+        "group": "RICA"
+      },
+      {
+        "command": "rica.openConfigPage",
+        "category": "RICA",
+        "title": "Open Settings",
+        "icon": "$(gear)",
+        "group": "RICA"
+      },
+      {
+        "command": "rica.toggleTabAutocompleteEnabled",
+        "category": "RICA",
+        "title": "Toggle Autocomplete Enabled",
+        "group": "RICA"
+      },
+      {
+        "command": "rica.forceAutocomplete",
+        "title": "Continue: Force Autocomplete",
+        "category": "RICA"
+      },
+      {
+        "command": "rica.selectFilesAsContext",
+        "category": "RICA",
+        "title": "Select Files as Context",
+        "group": "RICA"
+      },
+      {
+        "command": "rica.newSession",
+        "category": "RICA",
+        "title": "New Session",
+        "icon": "$(add)",
+        "group": "RICA"
+      },
+      {
+        "command": "rica.shareSession",
+        "category": "RICA",
+        "title": "Share Current Chat Session as Markdown",
+        "group": "RICA"
+      },
+      {
+        "command": "rica.viewHistory",
+        "category": "RICA",
+        "title": "View History",
+        "icon": "$(history)",
+        "group": "RICA"
+      },
+      {
+        "command": "rica.viewLogs",
+        "category": "RICA",
+        "title": "View Logs",
+        "group": "RICA"
+      },
+      {
+        "command": "rica.clearConsole",
+        "category": "RICA",
+        "title": "Clear Console",
+        "icon": "$(clear-all)",
+        "group": "RICA"
+      },
+      {
+        "command": "rica.navigateTo",
+        "category": "RICA",
+        "title": "Navigate to a path",
+        "group": "RICA"
+      },
+      {
+        "command": "rica.writeCommentsForCode",
+        "category": "RICA",
+        "title": "Write Comments for this Code",
+        "group": "RICA"
+      },
+      {
+        "command": "rica.writeDocstringForCode",
+        "category": "RICA",
+        "title": "Write a Docstring for this Code",
+        "group": "RICA"
+      },
+      {
+        "command": "rica.fixCode",
+        "category": "RICA",
+        "title": "Fix this Code",
+        "group": "RICA"
+      },
+      {
+        "command": "rica.optimizeCode",
+        "category": "RICA",
+        "title": "Optimize this Code",
+        "group": "RICA"
+      },
+      {
+        "command": "rica.fixGrammar",
+        "category": "RICA",
+        "title": "Fix Grammar / Spelling",
+        "group": "RICA"
+      },
+      {
+        "command": "rica.codebaseForceReIndex",
+        "category": "RICA",
+        "title": "Codebase Force Re-Index",
+        "group": "RICA"
+      },
+      {
+        "command": "rica.rebuildCodebaseIndex",
+        "category": "RICA",
+        "title": "Rebuild codebase index",
+        "group": "RICA"
+      },
+      {
+        "command": "rica.docsIndex",
+        "category": "RICA",
+        "title": "Docs Index",
+        "group": "RICA"
+      },
+      {
+        "command": "rica.docsReIndex",
+        "category": "RICA",
+        "title": "Docs Force Re-Index",
+        "group": "RICA"
+      },
+      {
+        "command": "rica.focusContinueInput",
+        "category": "RICA",
+        "title": "Focus Continue Chat",
+        "group": "RICA"
+      },
+      {
+        "command": "rica.enterEnterpriseLicenseKey",
+        "category": "RICA",
+        "title": "Enter Enterprise License Key",
+        "group": "RICA"
+      },
+      {
+        "command": "rica.toggleNextEditEnabled",
+        "title": "Continue: Toggle Next Edit"
+      },
+      {
+        "command": "rica.nextEditWindow.hideNextEditSuggestion",
+        "category": "RICA",
+        "title": "Hide Next Edit Suggestion"
+      },
+      {
+        "command": "rica.nextEditWindow.acceptNextEditSuggestion",
+        "category": "RICA",
+        "title": "Accept Next Edit Suggestion"
+      },
+      {
+        "command": "rica.forceNextEdit",
+        "category": "RICA",
+        "title": "Continue: Force Next Edit"
+      },
+      {
+        "command": "rica.acceptJump",
+        "category": "RICA",
+        "title": "Continue: Accept Jump Suggestion"
+      },
+      {
+        "command": "rica.rejectJump",
+        "category": "RICA",
+        "title": "Continue: Reject Jump Suggestion"
+      },
+      {
+        "command": "rica.generateRule",
+        "category": "RICA",
+        "title": "Generate Rule",
+        "group": "RICA"
+      },
+      {
+        "command": "rica.openInNewWindow",
+        "category": "RICA",
+        "title": "Open in new window",
+        "group": "RICA"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "rica.focusContinueInput",
+        "mac": "cmd+l",
+        "key": "ctrl+l"
+      },
+      {
+        "command": "rica.focusContinueInputWithoutClear",
+        "mac": "cmd+shift+l",
+        "key": "ctrl+shift+l"
+      },
+      {
+        "command": "rica.acceptDiff",
+        "mac": "shift+cmd+enter",
+        "key": "shift+ctrl+enter",
+        "when": "continue.diffVisible"
+      },
+      {
+        "command": "rica.rejectDiff",
+        "mac": "shift+cmd+backspace",
+        "key": "shift+ctrl+backspace",
+        "when": "continue.diffVisible"
+      },
+      {
+        "command": "rica.rejectDiff",
+        "mac": "cmd+z",
+        "key": "ctrl+z",
+        "when": "continue.diffVisible"
+      },
+      {
+        "command": "rica.quickEditHistoryUp",
+        "mac": "up",
+        "key": "up",
+        "when": "false && continue.quickEditHistoryFocused"
+      },
+      {
+        "command": "rica.quickEditHistoryDown",
+        "mac": "down",
+        "key": "down",
+        "when": "false && continue.quickEditHistoryFocused"
+      },
+      {
+        "command": "rica.acceptVerticalDiffBlock",
+        "mac": "alt+cmd+y",
+        "key": "alt+ctrl+y"
+      },
+      {
+        "command": "rica.rejectVerticalDiffBlock",
+        "mac": "alt+cmd+n",
+        "key": "alt+ctrl+n"
+      },
+      {
+        "command": "rica.focusEdit",
+        "title": "Edit code with natural language",
+        "mac": "cmd+i",
+        "key": "ctrl+i"
+      },
+      {
+        "command": "rica.exitEditMode",
+        "mac": "escape",
+        "key": "escape",
+        "when": "continue.inEditMode && editorFocus"
+      },
+      {
+        "command": "rica.debugTerminal",
+        "mac": "cmd+shift+r",
+        "key": "ctrl+shift+r"
+      },
+      {
+        "command": "rica.openInNewWindow",
+        "mac": "cmd+k cmd+m",
+        "key": "ctrl+k ctrl+m",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "rica.toggleTabAutocompleteEnabled",
+        "mac": "cmd+k cmd+a",
+        "key": "ctrl+k ctrl+a",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "rica.forceAutocomplete",
+        "key": "ctrl+alt+space",
+        "mac": "cmd+alt+space",
+        "when": "editorTextFocus && !editorHasSelection && !editorReadOnly && !inSnippetMode"
+      },
+      {
+        "command": "rica.applyCodeFromChat",
+        "mac": "alt+a",
+        "key": "alt+a"
+      },
+      {
+        "command": "rica.toggleNextEditEnabled",
+        "key": "ctrl+k ctrl+n",
+        "mac": "cmd+k cmd+n",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "rica.nextEditWindow.hideNextEditSuggestion",
+        "key": "escape",
+        "when": "editorTextFocus && nextEditWindowActive && !continue.jumpDecorationVisible"
+      },
+      {
+        "command": "rica.nextEditWindow.acceptNextEditSuggestion",
+        "key": "tab",
+        "when": "editorTextFocus && nextEditWindowActive && !continue.jumpDecorationVisible"
+      },
+      {
+        "command": "rica.acceptJump",
+        "key": "tab",
+        "when": "editorTextFocus && continue.jumpDecorationVisible"
+      },
+      {
+        "command": "rica.rejectJump",
+        "key": "escape",
+        "when": "editorTextFocus && continue.jumpDecorationVisible"
+      }
+    ],
+    "submenus": [
+      {
+        "id": "continue.continueSubMenu",
+        "label": "RICA"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "rica.focusContinueInput"
+        },
+        {
+          "command": "rica.focusContinueInputWithoutClear"
+        },
+        {
+          "command": "rica.debugTerminal"
+        },
+        {
+          "command": "rica.newSession"
+        },
+        {
+          "command": "rica.enterEnterpriseLicenseKey"
+        },
+        {
+          "command": "rica.generateRule"
+        },
+        {
+          "command": "rica.openInNewWindow"
+        }
+      ],
+      "editor/context": [
+        {
+          "submenu": "continue.continueSubMenu",
+          "group": "0_acontinue"
+        }
+      ],
+      "editor/title/run": [
+        {
+          "command": "rica.rejectDiff",
+          "group": "RICA",
+          "when": "rica.streamingDiff"
+        }
+      ],
+      "continue.continueSubMenu": [
+        {
+          "command": "rica.focusContinueInputWithoutClear",
+          "group": "RICA"
+        },
+        {
+          "command": "rica.focusEdit",
+          "group": "RICA",
+          "when": "!editorReadonly"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "rica.selectFilesAsContext",
+          "group": "1_debug@1"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "rica.newSession",
+          "group": "navigation@1",
+          "when": "view == rica.ricaGUIView"
+        },
+        {
+          "command": "rica.viewHistory",
+          "group": "navigation@2",
+          "when": "view == rica.ricaGUIView"
+        },
+        {
+          "command": "rica.openConfigPage",
+          "group": "navigation@4",
+          "when": "view == rica.ricaGUIView"
+        },
+        {
+          "command": "rica.clearConsole",
+          "group": "navigation@1",
+          "when": "view == rica.ricaConsoleView"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "rica.newSession",
+          "group": "navigation@1",
+          "when": "activeWebviewPanelId == rica.ricaGUIView"
+        },
+        {
+          "command": "rica.viewHistory",
+          "group": "navigation@2",
+          "when": "activeWebviewPanelId == rica.ricaGUIView"
+        }
+      ],
+      "terminal/context": [
+        {
+          "command": "rica.debugTerminal",
+          "group": "navigation@top"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "rica",
+          "title": "RICA",
+          "icon": "media/text-sidebar-icon.png"
+        }
+      ],
+      "panel": [
+        {
+          "id": "ricaConsole",
+          "title": "RICA Console",
+          "icon": "$(window)"
+        }
+      ]
+    },
+    "views": {
+      "rica": [
+        {
+          "type": "webview",
+          "id": "rica.ricaGUIView",
+          "name": "RICA"
+        }
+      ],
+      "ricaConsole": [
+        {
+          "type": "webview",
+          "id": "rica.ricaConsoleView",
+          "name": "RICA Console",
+          "icon": "$(window)",
+          "visibility": "visible",
+          "when": "config.rica.enableConsole"
+        }
+      ]
+    },
+    "jsonValidation": [
+      {
+        "fileMatch": "**/.continue*/config.json",
+        "url": "./config_schema.json"
+      },
+      {
+        "fileMatch": ".continuerc.json",
+        "url": "./continue_rc_schema.json"
+      },
+      {
+        "fileMatch": "**/config.yaml",
+        "url": "./config-yaml-schema.json"
+      }
+    ]
+  },
+  "scripts": {
+    "esbuild-base": "node scripts/esbuild.js",
+    "vscode:prepublish": "npm run esbuild-base -- --minify",
+    "esbuild": "npm run esbuild-base -- --sourcemap",
+    "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
+    "esbuild-notify": "npm run esbuild-base -- --sourcemap --notify",
+    "esbuild:visualize": "esbuild-visualizer --metadata ./build/meta.json --filename ./build/stats.html --open",
+    "tsc": "tsc -p ./",
+    "tsc:check": "tsc -p ./ --noEmit",
+    "tsc-watch": "tsc -watch -p ./",
+    "rebuild": "electron-rebuild -v 19.1.8 node-pty",
+    "lint": "eslint src --ext ts",
+    "lint:fix": "eslint . --ext ts --fix",
+    "test": "vitest run",
+    "vitest": "vitest run",
+    "write-build-timestamp": "node scripts/write-build-timestamp.js",
+    "prepackage": "node scripts/prepackage.js",
+    "package": "node scripts/package.js",
+    "package-all": "node scripts/package-all.js",
+    "package:pre-release": "node scripts/package.js --pre-release",
+    "build:rust": "cargo-cp-artifact -ac sync sync.node -- cargo build --manifest-path ../../sync/Cargo.toml --message-format=json-render-diagnostics",
+    "build-debug:rust": "npm run build:rust --",
+    "build-release:rust": "npm run build:rust -- --release",
+    "e2e:compile": "tsc -p ./tsconfig.e2e.json",
+    "e2e:build": "npm --prefix ../../gui run build && npm run package",
+    "e2e:create-storage": "mkdir -p ./e2e/storage",
+    "e2e:get-chromedriver": "extest get-chromedriver --storage ./e2e/storage --code_version 1.95.0",
+    "e2e:get-vscode": "extest get-vscode --storage ./e2e/storage --code_version 1.95.0",
+    "e2e:sign-vscode": "codesign --entitlements entitlements.plist --deep --force -s - './e2e/storage/Visual Studio Code.app'",
+    "e2e:copy-vsix": "chmod +x ./e2e/get-latest-vsix.sh && bash ./e2e/get-latest-vsix.sh",
+    "e2e:install-vsix": "extest install-vsix -f ./e2e/vsix/continue.vsix --extensions_dir ./e2e/.test-extensions --storage ./e2e/storage",
+    "e2e:install-extensions": "extest install-from-marketplace ms-vscode-remote.remote-ssh --extensions_dir ./e2e/.test-extensions --storage ./e2e/storage && extest install-from-marketplace ms-vscode-remote.remote-containers --extensions_dir ./e2e/.test-extensions --storage ./e2e/storage && extest install-from-marketplace ms-vscode-remote.remote-wsl --extensions_dir ./e2e/.test-extensions --storage ./e2e/storage",
+    "e2e:test": "NODE_ENV=e2e extest run-tests ${TEST_FILE:-'./e2e/_output/tests/*.test.js'} --code_settings settings.json --extensions_dir ./e2e/.test-extensions --storage ./e2e/storage",
+    "e2e:clean": "rm -rf ./e2e/_output ./e2e/storage",
+    "e2e:all": "npm run e2e:build && npm run e2e:compile && npm run e2e:create-storage && npm run e2e:get-chromedriver && npm run e2e:get-vscode && npm run e2e:sign-vscode && npm run e2e:copy-vsix && npm run e2e:install-vsix && npm run e2e:install-extensions && CONTINUE_GLOBAL_DIR=e2e/test-continue npm run e2e:test && npm run e2e:clean",
+    "e2e:all-non-mac": "npm run e2e:build && npm run e2e:compile && npm run e2e:create-storage && npm run e2e:get-chromedriver && npm run e2e:get-vscode && npm run e2e:copy-vsix && npm run e2e:install-vsix && npm run e2e:install-extensions && CONTINUE_GLOBAL_DIR=e2e/test-continue npm run e2e:test && npm run e2e:clean",
+    "e2e:recompile-extension": "npm run package && npm run e2e:compile && npm run e2e:copy-vsix && npm run e2e:install-vsix && npm run e2e:install-extensions && CONTINUE_GLOBAL_DIR=e2e/test-continue npm run e2e:test && npm run e2e:clean",
+    "e2e:rebuild-gui": "rm -rf gui && cp -r ../../gui/dist gui && npm run package && npm run e2e:copy-vsix && npm run e2e:install-vsix && npm run e2e:install-extensions && CONTINUE_GLOBAL_DIR=e2e/test-continue npm run e2e:test && npm run e2e:clean",
+    "e2e:quick": "npm run e2e:compile && CONTINUE_GLOBAL_DIR=e2e/test-continue npm run e2e:test && npm run e2e:clean",
+    "e2e:ci:download": "npm run e2e:create-storage && npm run e2e:get-chromedriver && npm run e2e:get-vscode",
+    "e2e:ci:run": "npm run e2e:compile && npm run e2e:copy-vsix && npm run e2e:install-vsix && npm run e2e:install-extensions && CONTINUE_GLOBAL_DIR=e2e/test-continue npm run e2e:test",
+    "e2e:ci:run-yaml": "npm run e2e:compile && npm run e2e:copy-vsix && npm run e2e:install-vsix && npm run e2e:install-extensions && CONTINUE_GLOBAL_DIR=e2e/test-continue-yaml npm run e2e:test"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.6.4",
+    "@nestjs/common": "^11.0.16",
+    "@openapitools/openapi-generator-cli": "^2.23.1",
+    "@types/chai": "^5.0.1",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/follow-redirects": "^1.14.4",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "16.x",
+    "@types/node-fetch": "^2.6.12",
+    "@types/react-dom": "^18.2.4",
+    "@types/request": "^2.48.8",
+    "@types/uuid": "^10.0.0",
+    "@types/vscode": "1.70",
+    "@types/ws": "^8.5.4",
+    "@typescript-eslint/eslint-plugin": "^5.45.0",
+    "@vscode/vsce": "^2.22.0",
+    "cargo-cp-artifact": "^0.1",
+    "chai": "^4.5.0",
+    "esbuild": "^0.25.0",
+    "esbuild-visualizer": "^0.6.0",
+    "eslint": "^8.28.0",
+    "json-schema-to-typescript": "^12.0.0",
+    "ovsx": "^0.8.3",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.6.3",
+    "vite": "^4.5.14",
+    "vscode-extension-tester": "^8.14.1"
+  },
+  "dependencies": {
+    "@continuedev/config-types": "file:../../packages/config-types",
+    "@continuedev/fetch": "file:../../packages/fetch",
+    "@electron/rebuild": "^4.0.3",
+    "@reduxjs/toolkit": "^1.9.3",
+    "@vscode/ripgrep": "^1.15.9",
+    "axios": "^1.13.1",
+    "core": "file:../../core",
+    "cors": "^2.8.5",
+    "dbinfoz": "^0.14.0",
+    "diff": "^8.0.4",
+    "downshift": "^7.6.0",
+    "express": "^4.18.2",
+    "fkill": "^8.1.0",
+    "follow-redirects": "^1.15.4",
+    "handlebars": "^4.7.8",
+    "highlight.js": "^11.7.0",
+    "highlightable": "^1.3.0-beta.0",
+    "http-proxy": "^1.18.1",
+    "http-proxy-agent": "^7.0.0",
+    "http-proxy-middleware": "^2.0.9",
+    "https-proxy-agent": "^7.0.2",
+    "ignore": "^5.3.0",
+    "jsdom": "^24.0.0",
+    "lru-cache": "^11.2.4",
+    "minisearch": "^7.0.0",
+    "mocha": "^11.7.5",
+    "monaco-editor": "^0.53.0",
+    "monaco-vscode-textmate-theme-converter": "^0.1.7",
+    "ncp": "^2.0.0",
+    "node-fetch": "^3.3.2",
+    "node-machine-id": "^1.1.12",
+    "posthog-node": "^3.6.3",
+    "react-markdown": "^8.0.7",
+    "react-redux": "^8.0.5",
+    "read-last-lines": "^1.8.0",
+    "socket.io-client": "^4.7.2",
+    "strip-ansi": "^7.1.0",
+    "svg-builder": "^2.0.0",
+    "systeminformation": "^5.30.8",
+    "tailwindcss": "^3.3.2",
+    "undici": "^6.24.0",
+    "uuid": "^9.0.1",
+    "uuidv4": "^6.2.13",
+    "vectordb": "0.4.20",
+    "vitest": "^3.1.4",
+    "vscode-languageclient": "^8.0.2",
+    "ws": "^8.19.0",
+    "yarn": "^1.22.21"
+  },
+  "overrides": {
+    "vitest": {
+      "@types/node": "^16.18.119"
+    },
+    "mocha": {
+      "serialize-javascript": "^7.0.5"
+    },
+    "diff": "$diff",
+    "picomatch": "^4.0.2",
+    "rollup": "^4.34.9",
+    "vite": {
+      "esbuild": "^0.25.0"
+    },
+    "tar": "^7.5.13",
+    "undici-types@~7.18.0": "7.18.1"
+  }
+}

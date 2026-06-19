@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Ký Học Sinh - Thùng Rác Thông Minh</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        .video-container {
+            position: relative;
+            width: 100%;
+            max-width: 640px;
+            margin: 1rem auto;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            background: #000;
+        }
+
+        #video {
+            width: 100%;
+            height: auto;
+            display: block;
+            transform: scaleX(-1); /* Mirror camera for natural viewing */
+        }
+
+        #preview {
+            width: 100%;
+            max-width: 640px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transform: scaleX(-1); /* Mirror preview for natural viewing */
+        }
+
+        #preview-container {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>📝 Đăng Ký Học Sinh</h1>
+        <p>Đăng ký khuôn mặt để sử dụng hệ thống thùng rác thông minh</p>
+    </header>
+
+    <nav class="nav">
+        <ul>
+            <li><a href="/">Check-in</a></li>
+            <li><a href="register.html">Đăng Ký</a></li>
+            <li><a href="statistics.html">Thống Kê</a></li>
+            <li><a href="guide.html">Hướng Dẫn</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h2>Thông Tin Học Sinh</h2>
+
+            <div id="message-container"></div>
+
+            <form id="registration-form">
+                <div class="form-group">
+                    <label for="name">Họ và Tên *</label>
+                    <input type="text" id="name" name="name" required placeholder="Nguyễn Văn A">
+                </div>
+
+                <div class="form-group">
+                    <label for="class">Lớp *</label>
+                    <select id="class" name="class" required>
+                        <option value="">-- Chọn lớp --</option>
+                        <option value="10A">10A</option>
+                        <option value="10B">10B</option>
+                        <option value="10C">10C</option>
+                        <option value="11A">11A</option>
+                        <option value="11B">11B</option>
+                        <option value="11C">11C</option>
+                        <option value="12A">12A</option>
+                        <option value="12B">12B</option>
+                        <option value="12C">12C</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Chụp Ảnh Khuôn Mặt *</label>
+
+                    <div id="camera-controls">
+                        <button type="button" class="btn btn-primary" id="start-camera">
+                            📷 Bật Camera
+                        </button>
+                    </div>
+
+                    <div class="video-container" id="video-container" style="display: none;">
+                        <video id="video" autoplay playsinline></video>
+                    </div>
+
+                    <div id="camera-actions" style="display: none; margin-top: 1rem;">
+                        <button type="button" class="btn btn-secondary" id="capture-btn">
+                            📸 Chụp Ảnh
+                        </button>
+                        <button type="button" class="btn btn-danger" id="retake-btn" style="display: none;">
+                            🔄 Chụp Lại
+                        </button>
+                    </div>
+
+                    <canvas id="canvas" style="display: none;"></canvas>
+
+                    <div id="preview-container" style="display: none; margin-top: 1rem;">
+                        <img id="preview" alt="Preview">
+                        <p style="color: var(--success-color); margin-top: 0.5rem;">
+                            ✓ Ảnh đã được chụp
+                        </p>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="submit-btn" disabled>
+                    Đăng Ký
+                </button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Lưu Ý Khi Chụp Ảnh</h2>
+            <ul style="line-height: 2;">
+                <li>Đảm bảo khuôn mặt đối diện thẳng với camera</li>
+                <li>Ánh sáng đủ sáng, tránh ngược sáng</li>
+                <li>Không đeo kính đen hoặc khẩu trang</li>
+                <li>Chỉ có một khuôn mặt trong khung hình</li>
+                <li>Khuôn mặt chiếm khoảng 60-70% khung hình</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="/js/common.js"></script>
+    <script src="/js/register.js"></script>
+</body>
+</html>

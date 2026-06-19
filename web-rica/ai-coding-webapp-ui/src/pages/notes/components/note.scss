@@ -1,0 +1,20 @@
+@mixin pseudo ($content: attr(data-content)) {
+  position: absolute;
+  content: $content;
+}
+.style-text {
+  .preview {
+    font-family: Times New Roman, serif;
+    font-weight: 400;
+    color: transparent;
+    background: linear-gradient(#999cfc, #1b999c);
+    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    &::before {
+      @include pseudo;
+      z-index: -1;
+      text-shadow: 0.031em 0.031em #cdcdcd;
+    }
+  }
+}

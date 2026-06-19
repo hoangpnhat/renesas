@@ -1,0 +1,125 @@
+/* Base styles for the unordered list */
+ul {
+    list-style-type: none; /* Remove default bullets */
+    padding-left: 20px; /* Space between bullets and text */
+    font-family: Arial, sans-serif; /* Set the font for the list */
+    color: #34495e; /* Base text color */
+    margin: 0; /* Remove default margins */
+}
+
+/* Style for list items */
+ul li {
+    position: relative; /* For positioning custom bullets */
+    padding-left: 30px; /* Custom indentation */
+    margin-bottom: 10px; /* Space between list items */
+    font-size: 1.1em; /* Increase font size */
+    transition: background-color 0.3s ease; /* Smooth hover effect */
+}
+
+/* Custom bullet using a pseudo-element */
+ul li::before {
+    content: "•"; /* Custom bullet character */
+    position: absolute; /* Positioning relative to li */
+    left: 0; /* Align bullet with left edge */
+    color: #2c3e50; /* Bullet color */
+    font-size: 1.5em; /* Bullet size */
+}
+
+/* Hover effect for list items */
+ul li:hover {
+    background-color: #ecf0f1; /* Light gray background on hover */
+    border-radius: 5px; /* Rounded corners on hover */
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    ul {
+        padding-left: 10px; /* Less padding on small screens */
+    }
+
+    ul li {
+        padding-left: 20px; /* Adjust indentation */
+        margin-bottom: 8px; /* Adjust space between items */
+        font-size: 1em; /* Adjust font size */
+    }
+
+    ul li::before {
+        font-size: 1.2em; /* Adjust bullet size */
+    }
+}
+
+/* Horizontal list (if needed) */
+.horizontal-list {
+    display: flex; /* Make list horizontal */
+    gap: 15px; /* Space between items */
+    padding-left: 0; /* Remove padding for horizontal list */
+}
+
+.horizontal-list li {
+    display: inline-block; /* Display list items in a row */
+    padding-left: 0; /* No indentation for horizontal list */
+}
+
+/* Base styles for the ordered list */
+ol {
+    list-style-type: decimal; /* Default numeric style */
+    padding-left: 20px; /* Space between numbers and text */
+    font-family: Arial, sans-serif; /* Set the font for the list */
+    color: #34495e; /* Base text color */
+    margin: 0; /* Remove default margins */
+}
+
+/* Style for list items */
+ol li {
+    position: relative; /* For positioning custom numbers */
+    padding-left: 30px; /* Custom indentation */
+    margin-bottom: 10px; /* Space between list items */
+    font-size: 1.1em; /* Increase font size */
+    transition: background-color 0.3s ease; /* Smooth hover effect */
+}
+
+/* Custom number style using a pseudo-element */
+ol li::before {
+    content: counter(item) ". "; /* Custom numbering format */
+    counter-increment: item; /* Increment counter */
+    position: absolute; /* Positioning relative to li */
+    left: 0; /* Align number with left edge */
+    color: #2c3e50; /* Number color */
+    font-size: 1.5em; /* Number size */
+}
+
+/* Hover effect for list items */
+ol li:hover {
+    background-color: #ecf0f1; /* Light gray background on hover */
+    border-radius: 5px; /* Rounded corners on hover */
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    ol {
+        padding-left: 10px; /* Less padding on small screens */
+    }
+
+    ol li {
+        padding-left: 20px; /* Adjust indentation */
+        margin-bottom: 8px; /* Adjust space between items */
+        font-size: 1em; /* Adjust font size */
+    }
+
+    ol li::before {
+        font-size: 1.2em; /* Adjust number size */
+    }
+}
+
+/* Horizontal list (if needed) */
+.horizontal-list {
+    display: flex; /* Make list horizontal */
+    gap: 15px; /* Space between items */
+    padding-left: 0; /* Remove padding for horizontal list */
+}
+
+.horizontal-list li {
+    display: inline-block; /* Display list items in a row */
+    padding-left: 0; /* No indentation for horizontal list */
+    counter-reset: none; /* Disable counter increment in horizontal */
+}

@@ -1,0 +1,253 @@
+{
+  "You added this file before": "このファイルは既に追加されています",
+  "Failed": "失敗しました",
+  "Update Model": "モデルを更新",
+  "Edit": "編集",
+  "Delete Model": "モデルを削除",
+  "Knowledge Base": "ナレッジベース",
+  "Files Management": "ファイル管理",
+  "Groups": "グループ",
+  "about": "会社概要",
+  "Group Name": "グループ名",
+  "No more groups to load": "これ以上読み込むグループはありません",
+  "Type to search users...": "ユーザーを検索するには入力してください",
+  "Loading...": "読み込み中...",
+  "No users found": "ユーザーが見つかりません",
+  "Description": "説明",
+  "Visibility": "可視性",
+  "Create New Group": "新しいグループを作成",
+  "Cancel": "キャンセル",
+  "Create": "作成",
+  "Delete": "削除",
+  "Share Knowledge Base": "ナレッジベースを共有する",
+  "You can not {{action}} this resource due to permission.": "権限がないため、このリソースを{{action}}できません。",
+  "share": "共有",
+  "edit": "編集",
+  "delete": "削除",
+  "Search Users to Invite": "招待するユーザーを検索",
+  "Create Group": "グループを作成",
+  "Private": "非公開",
+  "Public": "公開",
+  "Role": "役割",
+  "Viewer": "閲覧者",
+  "owner": "所有者",
+  "user": "ユーザー",
+  "group": "グループ",
+  "viewer": "閲覧者",
+  "Developer": "開発者",
+  "Owner": "所有者",
+  "Add to Share List": "共有リストに追加",
+  "Save Shares": "共有を保存",
+  "Saving...": "保存中...",
+  "Current Shares": "現在の共有",
+  "Add New Share": "新しい共有を追加",
+  "Share to Member": "メンバーと共有",
+  "Share to Group": "グループと共有",
+  "contact": "お問い合わせ",
+  "dayTime": {
+    "afternoon": "こんにちは",
+    "evening": "こんばんは",
+    "morning": "おはようございます"
+  },
+  "description": "これは多言語対応のウェブサイトです",
+  "inputPlaceholder": "ここに質問を入力してください",
+  "searchText": "検索",
+  "labelButton": {
+    "cancel": "キャンセル",
+    "confirm": "確認",
+    "selectMultiple": "複数選択"
+  },
+  "sideBarItem": {
+    "fileManagement": "ファイル",
+    "knowledgeBaseManagement": "ナレッジベース",
+    "management": "管理"
+  },
+  "menuItem": {
+    "delete": "削除",
+    "rename": "名前を変更"
+  },
+  "newChat": "新しいチャット",
+  "recentChat": "最近のチャット",
+  "ringiLabel": "稟議",
+  "switchLanguage": "言語を変更するにはクリックしてください",
+  "permission": {
+    "delete": "権限がないため、このレコードを削除できません"
+  },
+  "warning": {
+    "processingFile": "このファイルは処理中のため、削除できません"
+  },
+  "text": {
+    "model": {
+      "modelPath": "モデルエンドポイント",
+      "createdAt": "作成日",
+      "roles": "ロール",
+      "label": {
+        "name": "モデル名",
+        "model_path": "モデルエンドポイント",
+        "roles": "ロール",
+        "max_tokens": "最大トークン数",
+        "threshold": "トークン上限閾値",
+        "consumption_range_hours": "消費範囲（時間）",
+        "tokenConfig": "トークン設定"
+      },
+      "placeholder": {
+        "model_path": "例: http://localhost:8000/v1/chat/completions",
+        "name": "例: local-model",
+        "max_tokens": "例: 2048",
+        "roles": "例: system, user, assistant",
+        "threshold": "例: 100000",
+        "consumption_range_hours": "例: 24"
+      }
+    },
+    "knowledgeBase": {
+      "label": {
+        "name": "名前",
+        "description": "説明"
+      },
+      "placeholder": {
+        "name": "ナレッジベース名を入力してください。",
+        "description": "ここに入力してください。"
+      },
+      "confirmDeleteKB": "このナレッジベースを削除してもよろしいですか？"
+    },
+    "button": {
+      "loadMore": "もっと読み込む"
+    },
+    "label": {
+      "card": {
+        "addItem": "アイテムを追加"
+      }
+    },
+    "confirmDeleteDialog": "このダイアログを削除してもよろしいですか？",
+    "explain": "説明する",
+    "explainMoreAbout": "についてもっと説明してください",
+    "lastModified": "最終更新",
+    "warningAboutChatBot": "AIはミスをする可能性があるため、結果を確認してください。このバージョンはC言語およびVersaテスターに特化しており、他の言語や分野には対応していません。",
+    "welcomeTo": "\"{{projectName}}\" へようこそ",
+    "copy": "Copy",
+    "preview": {
+      "pages": "ページ",
+      "page": "ページ",
+      "processing": "ファイルはまだ処理中です。しばらくしてからもう一度お試しください。",
+      "notFound": "このファイルのプレビューは利用できません。",
+      "error": "プレビューの読み込みに失敗しました。",
+      "pageError": "このページの読み込みに失敗しました。"
+    },
+    "download": {
+      "error": "ファイルのダウンロードに失敗しました。もう一度お試しください。"
+    }
+  },
+  "customize": {
+    "type": "タイプ",
+    "typeRule": "ルール",
+    "typePrompt": "プロンプト",
+    "titleLabel": "タイトル",
+    "titlePlaceholder": "タイトルを入力してください...",
+    "titleRequired": "タイトルは必須です。",
+    "descriptionLabel": "説明",
+    "descriptionPlaceholder": "これが何をするのか説明してください...",
+    "descriptionRequired": "説明は必須です。",
+    "fileLabel": "アーティファクトファイル",
+    "fileRequired": "YAMLまたはMarkdownファイルをアップロードしてください。",
+    "invalidFileType": ".yaml、.yml、.md形式のファイルのみアップロードできます。",
+    "fileReadError": "ファイルの内容を読み取れませんでした。",
+    "dropFileHere": "ここにファイルをドラッグ＆ドロップするか、クリックして選択してください。",
+    "acceptedFormats": ".yaml、.yml、.md形式に対応しています。",
+    "artifactPreview": "アーティファクトプレビュー",
+    "codeView": "コードビュー",
+    "previewView": "レンダリングプレビュー",
+    "createRule": "新しいルール",
+    "createPrompt": "新しいプロンプト",
+    "editTitle": "カスタマイズを編集",
+    "deleteTitle": "削除",
+    "download": "ダウンロード",
+    "confirmDelete": "この項目を削除してもよろしいですか？",
+    "shareTitle": "共有",
+    "noShares": "まだ共有されていません。以下でユーザーまたはグループを追加してください。",
+    "selected": "選択済み",
+    "update": "更新",
+    "create": "作成",
+    "searchLabel": "カスタマイズを検索...",
+    "previewArtifact": "アーティファクトを表示",
+    "noArtifact": "アーティファクトファイルが添付されていません。",
+    "noResults": "検索条件に一致する項目がありません。",
+    "emptyList": "まだ項目がありません。「＋」をクリックして作成してください。",
+    "selectToView": "詳細を表示するには項目を選択してください。",
+    "changeFile": "変更",
+    "frontmatterNote": "YAMLフロントマター（name／description）を含めると、フィールドが自動入力されます。",
+    "frontmatterExtracted": "タイトルと説明はファイルのフロントマターから自動入力されます。",
+    "table": {
+      "title": "タイトル",
+      "description": "説明",
+      "artifact": "アーティファクト"
+    }
+  },
+  "title": {
+    "badResponse": "良くない返答",
+    "uploadFile": "ファイルをアップロード",
+    "createKnowledgeBase": "ナレッジベースを作成",
+    "confirmDuplicatedFile": "重複ファイルのアップロード確認",
+    "searchFileName": "ファイル名を検索",
+    "searchKnowledgeBase": "ナレッジベース名を検索",
+    "categories": "カテゴリ",
+    "copyThisResponse": "この返信をコピーする",
+    "deleteDialog": "ダイアログを削除する",
+    "goodResponse": "良い返答",
+    "references": "資料",
+    "renameDialog": "このダイアログの名前を変更する",
+    "rules": "規則",
+    "userOptions": "ユーザー設定",
+    "answers": "回答",
+    "model": {
+      "modelManagement": "モデル管理",
+      "createModel": "モデルを作成",
+      "updateModel": "モデルを更新"
+    },
+    "KB": {
+      "editKnowledgeBase": "ナレッジベースを編集",
+      "viewKnowledgeBase": "ナレッジベースを表示",
+      "deleteKB": "ナレッジベースを削除",
+      "permissionDelete": "権限がないため、このレコードを削除できません"
+    },
+    "layout": {
+      "admin": "管理者",
+      "newChat": "新しいチャット",
+      "modelManagement": "モデル管理",
+      "file": "ファイル管理",
+      "customize": "カスタマイズ",
+      "knowledgeBase": "ナレッジベース管理",
+      "groups": "グループ",
+      "home": "ホームページ"
+    },
+    "dialog": {
+      "viewConfiguration": "構成を見る"
+    },
+    "tooltip": {
+      "serviceWarmingUp": "サービスを準備中です。しばらくお待ちください..."
+    }
+  },
+  "table": {
+    "header": {
+      "file_name": "ファイル名",
+      "owner": "所有者",
+      "created_at": "作成日",
+      "kb_name": "ナレッジベース名",
+      "is_default": "デフォルトです",
+      "category": "カテゴリ",
+      "kb_author": "作成者",
+      "documents": "ドキュメント",
+      "uploaded_at": "アップロード日",
+      "files": "共有ファイル",
+      "ingested_time": "取り込み日",
+      "status": "ステータス",
+      "size": "サイズ",
+      "total_pages": "総ページ数",
+      "project_name": "プロジェクト名",
+      "members": "メンバー",
+      "actions": "操作",
+      "last_modified": "最終更新日",
+      "rule_name": "ルール名"
+    }
+  },
+  "welcome": "ウェブサイトへようこそ"
+}

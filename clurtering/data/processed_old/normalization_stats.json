@@ -1,0 +1,31 @@
+{
+  "total_candidates": 158,
+  "raw_skills_count": 1271,
+  "normalized_skills_count": 1232,
+  "reduction_count": 39,
+  "reduction_percentage": 3.068450039339103,
+  "avg_skills_per_candidate_before": 23.265822784810126,
+  "avg_skills_per_candidate_after": 23.050632911392405,
+  "top_20_normalized_skills": {
+    "application programming interface design": 91,
+    "data modeling": 74,
+    "testing": 70,
+    "error handling": 69,
+    "performance optimization": 68,
+    "data flow management": 59,
+    "microservices architecture": 59,
+    "database management": 54,
+    "technical skills": 50,
+    "microservices": 46,
+    "scalability": 43,
+    "load testing": 41,
+    "data consistency": 40,
+    "monitoring": 40,
+    "java": 33,
+    "spring boot": 33,
+    "application programming interface development": 32,
+    "data management": 32,
+    "kafka": 32,
+    "backend": 29
+  }
+}

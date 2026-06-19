@@ -1,0 +1,402 @@
+//
+//		filename:	RX200_1.PLN
+//
+//		plan file HD64F7058F test program. for V3300
+//
+//		date:2001/04/11 rev1.0 1'st created by T.Shimozato
+
+
+////////////////////////////////////////////////////////////////////////////
+/////////////////	Test station setup control switches   //////////////
+////////////////////////////////////////////////////////////////////////////
+[configuration_switches]
+
+// RUN PROGRAM MENU CHOICES
+EXTERNAL_PROGRAM N:\bin\do-pif.dvp
+EXTERNAL_PROGRAM N:\BIN\vl-pif.dvp
+
+ENABLE_CRM_TIMING_SWITCH OFF
+
+IGNORE_INITIALIZE_ERRORS        // or = OFF
+TEST_PLAN_WARNING OFF
+
+ENABLE_SLAVE_MODE
+DISPLAY_PHYSICAL_SITE	OFF
+TESTER_ID V5000-13
+
+[end configuration_switches]
+
+////////////////////////////////////////////////////////////////////////////
+/////////////////	Test program setup control switches   //////////////
+////////////////////////////////////////////////////////////////////////////
+[test_switches]
+
+
+/////////////////	Program file definitions	//////////////////
+
+USE_REMOTE_FILES
+DEVICE_TYPE		RC04EX
+
+PROGRAM_FILE    	P:\src\User\Flash\SOTB_IO\obj\RC04EX.ppcout
+VECTOR			P:\src\User\Flash\SOTB_IO\obj\RC04EX.vec
+
+PROGRAM_VERSION 0
+///////////////// Test option switches //////////////////
+
+SORT_FLOW		1
+SORT_TYPE		WAFER	// DIE or WAFER
+
+VALIDATE		0x14	// 1 = dv lock,
+				// 2 = menu lock,
+				// 4 = setup validate,
+				// 0x8 = disable EX commands
+				// 0x10 = checksums,
+				// 0x20 = check device, revision
+				// 0x100 = Wafer numbers
+
+//	ENABLE_SLAVE_MODE	// 96 pin mode when present
+//	DIAGNOSTICS wafer	// LOT, WAFER, #
+NOINIT				// skip initialization when present.
+
+[end test_switches]
+
+
+
+//////////////////////////////////////////////////////////////////////
+/////////////////	Prober setup control switches	//////////////
+//////////////////////////////////////////////////////////////////////
+[interface_switches]
+
+DEFINE_DUT DUT=1 PROBER=0,0,1 TSITE=A1a
+DEFINE_DUT DUT=2 PROBER=1,0,2 TSITE=A1b
+DEFINE_DUT DUT=3 PROBER=0,1,3 TSITE=A1c
+DEFINE_DUT DUT=4 PROBER=1,1,4 TSITE=A1d
+
+XMIN  84 /*0*/
+YMIN  46/*0*/
+XSIZE 60 /*34*/			// 8inch wafer 18 x 18
+YSIZE 60 /*34*/			// 8inch wafer 18 x 18
+XMUL 1
+YMUL 1
+
+REJECT 0=0,3,1			// reject bin=ifc, color, print
+REJECT 1=1,0xd,1
+
+OFF_WAFER_MASK FAIL		// legal 0 only bad die (ALL for all die)
+//	LEGAL Bin=X,Y
+//	MODE  mode=X,Y
+//	PROBE
+//	MONITOR
+
+//	 Define Test Modes
+//	 DEFINE_MODE mode = dlog , lya , var1 , var2
+DEFAULT_MODE	1
+DEFINE_MODE		0 = 0xfffff, 0, 0, 0
+DEFINE_MODE		1 = 0, 0, 0, 0
+DEFINE_MODE		255 = 0x000000ff, 0xffffffff, 0, 0
+
+[end interface_switches]
+
+
+/////////////////////////////////////////////////////////////////
+/////////////////	Summary control switches  ///////////////
+/////////////////////////////////////////////////////////////////
+[summary_switches]
+
+DLOG_CAPTURE	ON		// ON or OFF
+SAVE_TEST_DATALOG			// Save DataLog to SummaryFile
+MIN_LOT_SPACE 4000000		// min disk space check for a lot
+MIN_SUMMARY_SPACE 2000000	// min disk space check for a wafer
+MAX_FILE_AGE 3				// Days of File Age
+PROCESSED_FILE_AGE 3		// Days of Processed File Age
+
+
+//	 Data bin definitions
+DBIN 0 = COUNT		// bin 0 = legal opens
+DBIN 1 = GOOD		// bin 1 = passing die
+DBIN 2 = GOOD		// bin 2 = passing die
+DBIN 3 = GOOD
+DBIN 4 = GOOD
+DBIN 5
+DBIN 6
+DBIN 7
+DBIN 8
+DBIN 9
+DBIN 10
+DBIN 11
+DBIN 12
+DBIN 13
+DBIN 14
+DBIN 15
+DBIN 16
+DBIN 17
+DBIN 18
+DBIN 19
+DBIN 20
+DBIN 21
+DBIN 22
+DBIN 23
+DBIN 24
+DBIN 25
+DBIN 26
+DBIN 27
+DBIN 28
+DBIN 29
+DBIN 30
+DBIN 31
+DBIN 32
+DBIN 33
+DBIN 34
+DBIN 35
+DBIN 36
+DBIN 37
+DBIN 38
+DBIN 39
+DBIN 40
+DBIN 41
+DBIN 42
+DBIN 43
+DBIN 44
+DBIN 45
+DBIN 46
+DBIN 47
+DBIN 48
+DBIN 49
+DBIN 50
+DBIN 51
+DBIN 52
+DBIN 53
+DBIN 54
+DBIN 55
+DBIN 56
+DBIN 57
+DBIN 58
+DBIN 59
+DBIN 60
+DBIN 61
+DBIN 62
+DBIN 63
+DBIN 64
+DBIN 65
+DBIN 66
+DBIN 67
+DBIN 68
+DBIN 69
+DBIN 70
+DBIN 71
+DBIN 72
+DBIN 73
+DBIN 74
+DBIN 75
+DBIN 76
+DBIN 77
+DBIN 78
+DBIN 79
+DBIN 80
+DBIN 81
+DBIN 82
+DBIN 83
+DBIN 84
+DBIN 85
+DBIN 86
+DBIN 87
+DBIN 88
+DBIN 89
+DBIN 90
+DBIN 91
+DBIN 92
+DBIN 93
+DBIN 94
+DBIN 95
+DBIN 96
+DBIN 97
+DBIN 98
+DBIN 99
+DBIN 100
+DBIN 101
+DBIN 102
+DBIN 103
+DBIN 104
+DBIN 105
+DBIN 106
+DBIN 107
+DBIN 108
+DBIN 109
+DBIN 110
+DBIN 111
+DBIN 112
+DBIN 113
+DBIN 114
+DBIN 115
+DBIN 116
+DBIN 117
+DBIN 118
+DBIN 119
+DBIN 120
+DBIN 121
+DBIN 122
+DBIN 123
+DBIN 124
+DBIN 125
+DBIN 126
+DBIN 127
+DBIN 128
+DBIN 129
+DBIN 130
+DBIN 131
+DBIN 132
+DBIN 133
+DBIN 134
+DBIN 135
+DBIN 136
+DBIN 137
+DBIN 138
+DBIN 139
+DBIN 140
+DBIN 141
+DBIN 142
+DBIN 143
+DBIN 144
+DBIN 145
+DBIN 146
+DBIN 147
+DBIN 148
+DBIN 149
+DBIN 150
+DBIN 151
+DBIN 152
+DBIN 153
+DBIN 154
+DBIN 155
+DBIN 156
+DBIN 157
+DBIN 158
+DBIN 159
+DBIN 160
+DBIN 161
+DBIN 162
+DBIN 163
+DBIN 164
+DBIN 165
+DBIN 166
+DBIN 167
+DBIN 168
+DBIN 169
+DBIN 170
+DBIN 171
+DBIN 172
+DBIN 173
+DBIN 174
+DBIN 175
+DBIN 176
+DBIN 177
+DBIN 178
+DBIN 179
+DBIN 180
+DBIN 181
+DBIN 182
+DBIN 183
+DBIN 184
+DBIN 185
+DBIN 186
+DBIN 187
+DBIN 188
+DBIN 189
+DBIN 190
+DBIN 191
+DBIN 192
+DBIN 193
+DBIN 194
+DBIN 195
+DBIN 196
+DBIN 197
+DBIN 198
+DBIN 199
+DBIN 200
+
+// First line is at top of map
+DBIN_MAP_NAME  \f\t\t\t\t\tWAFER MAP HEADING
+DBIN_MAP_NAME  \t\t\t\t\tDATA BINS MAP NAME LINE 2
+DBIN_MAP_NAME  \t\t\t\t\tDATA BINS MAP NAME LINE 3
+
+// Functional Bins
+FBIN 1
+FBIN 2
+FBIN 3
+FBIN 4
+
+ALT1 0 = COUNT
+ALT1 1 = GOOD
+ALT1 2 = GOOD
+ALT1 3 = GOOD
+ALT1 4 = GOOD
+ALT1 5
+ALT1 6
+ALT1 7
+ALT1 8
+ALT1 9
+ALT1 10 PERCENT
+ALT1 11
+ALT1 12
+ALT1 13
+ALT1 14
+ALT1 15
+ALT1 16
+ALT1 17
+ALT1 18
+ALT1 19
+ALT1 20
+ALT1 21
+ALT1 22
+ALT1 23
+ALT1 24
+ALT1 25
+ALT1 26
+ALT1 27
+ALT1 28
+ALT1 29
+ALT1 30
+ALT1 31
+ALT1 32
+
+// First line is at top of map
+ALT1_MAP_NAME	\f
+ALT1_MAP_NAME	\t\t\t\t\tALT1 MAP TITLE LINE 2
+ALT1_MAP_NAME	\t\t\t\t\tALT1 MAP TITLE LINE 3
+
+// Enable Data log printing
+// PRINT_GENERAL_DATALOG	// remove to skip general datalog
+// PRINT_TEST_DATALOG		// remove to skip site datalog
+// PRINT_EMPTY_DATALOG		// add to print datalog for sites with no info.
+
+
+// use 16.6 cpi on HPLJ II connected to LPT1
+PRINTER_PATH lpt1
+PRINT_SETUP_STRING \eE\e&l0o8D\e(1L\e(s16.6H
+PRINT_PAGE_HEADER  Wafer Summary TESTER: (ttt)\tWAFER: (www)\t\tLOT: (llllllllllllllllllllllllll)\t\tPAGE: (ppp)\n\n
+PRINT_PAGE_LENGTH 77
+
+
+// NO_PRINT_SUMMARIES		// Never print summaries (LPT1)
+// ENABLE_PRINT_SUMMARIES	// Always print summaries
+REQUESTED_PRINT_SUMMARIES	// Print only menu requested summaries
+
+NO_SITE_SUMMARIES		// Never generate site summaries
+// ENABLE_SITE_SUMMARIES	// Always generate site summaries
+// REQUESTED_SITE_SUMMARIES	// Print only Menu Requested site summaries.
+
+
+// Specify File copy Options.  Copy files to specified path
+// if specified otherwise do nothing
+//
+//WAFER_NET_PATH c:\TESTOUT\R%w_run(%%0.7s)%\W%w_wafer(%%0.7s)%
+//WAFER_BACKUP_PATH x:\BACK
+//DLOG_NET_PATH x:\NET
+//DLOG_BACKUP_PATH x:\BACK
+//SUMMARY_NET_PATH X:\NET
+//SUMMARY_BACKUP_PATH x:\BACK
+//PLAN_NET_PATH x:\NET
+//PLAN_BACKUP_PATH x:\BACK
+
+[end summary_switches]
+

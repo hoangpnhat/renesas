@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python generate_data.py)",
+      "Bash(../.venv/Scripts/python.exe generate_data.py)",
+      "Bash(.venv/Scripts/python.exe submission/src/generate_data.py)",
+      "Bash(.venv/Scripts/pip.exe install -r submission/requirements.txt)",
+      "Bash(\".venv/Scripts/python.exe\" -m pip install -r submission/requirements.txt)",
+      "Bash(\".venv/Scripts/python.exe\" submission/src/rules_baseline.py)",
+      "Bash(\".venv/Scripts/python.exe\" submission/src/model_train_eval.py)",
+      "Bash(\".venv/Scripts/python.exe\" submission/src/ai_helper.py)",
+      "Bash(\".venv/Scripts/python.exe\" submission/src/generate_results.py)",
+      "Bash(\".venv/Scripts/python.exe\" submission/src/model_train_eval_improved.py)"
+    ]
+  }
+}

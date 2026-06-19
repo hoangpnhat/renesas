@@ -1,0 +1,38 @@
+common: &common_external_configs
+  permissions: ${var.permissions}
+  budget_policy_id: ${var.budget_policy_id}
+  ai_gateway:
+    usage_tracking_config:
+      enabled: true
+    inference_table_config: ${var.inference_table_configurations}
+  tags:
+    - key: ai_project_id
+      value: ${bundle.name}
+
+resources:
+  model_serving_endpoints:
+    qwen_coder_autocompletion:
+      name: ${var.prefix}-${var.env}-${bundle.name}-qwen-coder-autocompletion
+      <<: *common_external_configs
+      config:
+        served_entities:
+          - name: ${var.prefix}-${var.env}-${bundle.name}-qwen-2-5-coder-7b-autocompletion
+            max_provisioned_concurrency: 16
+            min_provisioned_concurrency: 4
+            entity_name: ${var.delta_sharing_configurations.catalog_name}.${var.delta_sharing_configurations.schema_name}.qwen2_5_coder_7b_awq
+            entity_version: 23
+            scale_to_zero_enabled: false
+            workload_type: GPU_SMALL
+
+    deepseek_autocompletion:
+      name: ${var.prefix}-${var.env}-${bundle.name}-deepseek-coder-6-7b-autocompletion
+      <<: *common_external_configs
+      config:
+        served_entities:
+          - name: ${var.prefix}-${var.env}-${bundle.name}-deepseek-coder-6-7b-autocompletion
+            max_provisioned_concurrency: 4
+            min_provisioned_concurrency: 0
+            entity_name: ${var.delta_sharing_configurations.catalog_name}.${var.delta_sharing_configurations.schema_name}.deepseek-coder-6dot7b-base-awq
+            entity_version: 4
+            scale_to_zero_enabled: false
+            workload_type: GPU_SMALL

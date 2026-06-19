@@ -1,0 +1,70 @@
+# This is a Databricks asset bundle definition for coding_assistant.
+# See https://docs.databricks.com/dev-tools/bundles/index.html for documentation.
+bundle:
+  name: coding_assistant
+
+include:
+  # - resources/*.yml
+  # - resources/deploy_selfhost_model_provision.yml
+  - resources/deploy_jina_model.yml
+  - ./variables.yml
+
+
+# No variables needed when using Databricks CLI profiles
+# Authentication is handled by the profile configuration
+
+targets:
+  dev:
+    # The default target uses 'mode: development' to create a development copy.
+    # - Deployed resources get prefixed with '[dev my_user_name]'
+    # - Any job schedules and triggers are paused by default.
+    # See also https://docs.databricks.com/dev-tools/bundles/deployment-modes.html.
+    presets:
+      trigger_pause_status: PAUSED
+      pipelines_development: true
+      tags:
+        ai_project_id: coding
+
+    mode: development
+    workspace:
+      host: https://adb-379144824042062.2.azuredatabricks.net
+      root_path: /Workspace/Users/${workspace.current_user.userName}/${bundle.name}/${bundle.target}
+
+  uat:
+    presets:
+      trigger_pause_status: PAUSED
+      pipelines_development: true
+      tags:
+        ai_project_id: coding
+    workspace:
+      host: https://adb-893717583776115.15.azuredatabricks.net/
+      root_path: /Workspace/Users/${workspace.current_user.userName}/${bundle.name}/${bundle.target}
+
+  uat_2:
+    presets:
+      trigger_pause_status: PAUSED
+      pipelines_development: true
+      tags:
+        ai_project_id: coding
+
+    workspace:
+      host: https://adb-2735645151323815.15.azuredatabricks.net
+      root_path: /Workspace/Users/${workspace.current_user.userName}/${bundle.name}/${bundle.target}
+
+  prod:
+    mode: production
+    workspace:
+      host: https://adb-274484419102998.18.azuredatabricks.net/
+      root_path: /Workspace/Users/${workspace.current_user.userName}/${bundle.name}/${bundle.target}
+    permissions:
+      - user_name: hoang.pham.uh@renesas.com
+        level: CAN_MANAGE
+
+  prod_2:
+    mode: production
+    workspace:
+      host: https://adb-4265374015564621.1.azuredatabricks.net/
+      root_path: /Workspace/Users/${workspace.current_user.userName}/${bundle.name}/${bundle.target}
+    permissions:
+      - user_name: hoang.pham.uh@renesas.com
+        level: CAN_MANAGE

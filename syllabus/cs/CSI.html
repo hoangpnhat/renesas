@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scratch Basic</title>
+
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        /* background: #ffc371;
+        background: linear-gradient(to right, #ff5f6d, #ffc371); */
+        font-family: "Quicksand", sans-serif;
+        color: #ffffff;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      .container {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 10px 10px 100px 10px;
+      }
+      .container h1 {
+        text-align: center;
+        margin-bottom: 30px;
+        font-weight: 500;
+      }
+      .container h2 {
+        font-weight: 500;
+      }
+      .accordion {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: auto;
+      }
+      .accordion .a-container {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        padding-bottom: 5px;
+      }
+      .accordion .a-container .a-btn {
+        margin: 0;
+        position: relative;
+        padding: 15px 30px;
+        width: 100%;
+        color: #ffffff;
+        font-weight: 400;
+        display: block;
+        font-weight: 500;
+        background-color: #c00;
+        cursor: pointer;
+        transition: all 0.3s ease-in-out;
+        border-radius: 5px;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15),
+          0 10px 10px -5px rgba(163, 37, 37, 0.1) !important;
+      }
+      .accordion .a-container .a-btn span {
+        display: block;
+        position: absolute;
+        height: 14px;
+        width: 14px;
+        right: 20px;
+        top: 18px;
+      }
+      .accordion .a-container .a-btn span:after {
+        content: "";
+        width: 14px;
+        height: 3px;
+        border-radius: 2px;
+        background-color: rgb(255, 255, 255);
+        position: absolute;
+        top: 6px;
+      }
+      .accordion .a-container .a-btn span:before {
+        content: "";
+        width: 14px;
+        height: 3px;
+        border-radius: 2px;
+        background-color: rgb(255, 255, 255);
+        position: absolute;
+        top: 6px;
+        transform: rotate(90deg);
+        transition: all 0.3s ease-in-out;
+      }
+      .accordion .a-container .a-panel {
+        width: 100%;
+        color: #000000;
+        transition: all 0.2s ease-in-out;
+        opacity: 0;
+        height: auto;
+        max-height: 0;
+        overflow: hidden;
+        padding: 0px 10px;
+      }
+      .accordion .a-container.active .a-btn {
+        color: #fff;
+      }
+      .accordion .a-container.active .a-btn span::before {
+        transform: rotate(0deg);
+      }
+      .accordion .a-container.active .a-panel {
+        padding: 15px 10px 10px 10px;
+        opacity: 1;
+        max-height: 500px;
+      }
+    </style>
+  </head>
+  <body>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <div class="container">
+      <div class="accordion v1">
+        <div class="a-container">
+          <p class="a-btn">
+            Lesson 1: Ôn tập về Python và Các cấu trúc dữ liệu cơ bản
+            <span></span>
+          </p>
+          <div class="a-panel">
+            <h4>Lesson 1.1: Ôn tập về Python và Các cấu trúc dữ liệu cơ bản</h4>
+            <h4>Lesson 1.2: Thực hành online</h4>
+            <p>
+              - Các cấu trúc dữ liệu cơ bản: list, tuple, string, set,
+              dictionary
+            </p>
+          </div>
+        </div>
+        <div class="a-container">
+          <p class="a-btn">
+            Lesson 2: Giới thiệu chung về Thuật toán và Cấu trúc dữ liệu
+            <span></span>
+          </p>
+          <div class="a-panel">
+            <h4>Lesson 2.1: Special Method và Kế thừa</h4>
+            <h4>Lesson 2.2: Thực hành online</h4>
+            <p>- Mối liên hệ giữa cấu trúc dữ liệu và thuật toán</p>
+          </div>
+        </div>
+        <div class="a-container">
+          <p class="a-btn">
+            Lesson 3: Tư duy thuật toán và Một số thuật toán đơn giản
+            <span></span>
+          </p>
+          <div class="a-panel">
+            <h4>Lesson 3.1: Tư duy thuật toán và Một số thuật toán đơn giản</h4>
+            <h4>Lesson 3.2: Thực hành online</h4>
+            <p>
+              - Một số thuật toán đơn giản: Kiểm tra số nguyên tố và Sàng nguyên
+              tố
+            </p>
+          </div>
+        </div>
+        <div class="a-container">
+          <p class="a-btn">
+            Lesson 4: Cấu trúc dữ liệu 1: Cơ chế hoạt động và Ứng dụng của từng
+            cấu trúc dữ liệu cơ bản
+            <span></span>
+          </p>
+          <div class="a-panel">
+            <h4>
+              Lesson 4.1: Cấu trúc dữ liệu 1: Cơ chế hoạt động và Ứng dụng của
+              từng cấu trúc dữ liệu cơ bản
+            </h4>
+            <h4>Lesson 4.2: Thực hành online</h4>
+            <p>- Ứng dụng của từng kiểu dữ liệu</p>
+          </div>
+        </div>
+        <div class="a-container">
+          <p class="a-btn">
+            Lesson 5: Cấu trúc dữ liệu 2: Stack, Queue và Ứng dụng
+            <span></span>
+          </p>
+          <div class="a-panel">
+            <h4>Lesson 5.1: Cấu trúc dữ liệu 2: Stack, Queue và Ứng dụng</h4>
+            <h4>Lesson 5.2: Thực hành online</h4>
+            <p>
+              - Ứng dụng Stack: đệ quy, khử đệ quy, infix sang prefix và
+              postfix, kiểm tra dãy ngoặc
+            </p>
+            <p>- Ứng dụng Queue: xử lí request, BFS</p>
+          </div>
+        </div>
+        <div class="a-container">
+          <p class="a-btn">
+            Lesson 6: Cấu trúc dữ liệu 3: Tree, Graph và Ứng dụng
+            <span></span>
+          </p>
+          <div class="a-panel">
+            <h4>Lesson 6.1: Cấu trúc dữ liệu 3: Tree, Graph và Ứng dụng</h4>
+            <h4>Lesson 6.2: Thực hành online</h4>
+            <p>- Ứng dụng Tree: file system, binary search tree, heap</p>
+            <p>
+              - Ứng dụng Graph: lưu bản đồ, thực hiện các thuật toán tìm đường
+            </p>
+          </div>
+        </div>
+        <div class="a-container">
+          <p class="a-btn">
+            Lesson 7: Thuật toán tìm kiếm: Linear Search, Binary Search,
+            Substring
+            <span></span>
+          </p>
+          <div class="a-panel">
+            <h4>
+              Lesson 7.1: Thuật toán tìm kiếm: Linear Search, Binary Search,
+              Substring
+            </h4>
+            <h4>Lesson 7.2: Thực hành online</h4>
+            <p>- Ứng dụng vào bài tập cụ thể</p>
+          </div>
+        </div>
+        <div class="a-container">
+          <p class="a-btn">
+            Lesson 8: Thuật toán sắp xếp 1: Bubble Sort, Insertion Sort
+
+            <span></span>
+          </p>
+          <div class="a-panel">
+            <h4>
+              Lesson 8.1: Thuật toán sắp xếp 1: Bubble Sort, Insertion Sort
+            </h4>
+            <h4>Lesson 8.2: Thực hành online</h4>
+            <p>- Ứng dụng vào bài tập cụ thể</p>
+          </div>
+        </div>
+        <div class="a-container">
+          <p class="a-btn">
+            Lesson 9: Thuật toán sắp xếp 2: Merge Sort, Quick Sort
+            <span></span>
+          </p>
+          <div class="a-panel">
+            <h4>Lesson 9.1: Thuật toán sắp xếp 2: Merge Sort, Quick Sort</h4>
+            <h4>Lesson 9.2: Thực hành online</h4>
+            <p>- Ứng dụng vào bài tập cụ thể</p>
+          </div>
+        </div>
+        <div class="a-container">
+          <p class="a-btn">
+            Lesson 10: Buổi 10. Thuật toán sắp xếp 3: Counting Sort, Tổng kết
+            các thuật toán sắp xếp
+            <span></span>
+          </p>
+          <div class="a-panel">
+            <h4>
+              Lesson 10.1: Buổi 10. Thuật toán sắp xếp 3: Counting Sort, Tổng
+              kết các thuật toán sắp xếp
+            </h4>
+            <h4>Lesson 10.2: Thực hành online</h4>
+            <p>- Ứng dụng vào bài tập cụ thể</p>
+          </div>
+        </div>
+        <div class="a-container">
+          <p class="a-btn">
+            Lesson 11: Thuật toán tìm đường 1: BFS trên mảng 2 chiều và trên
+            graph
+            <span></span>
+          </p>
+          <div class="a-panel">
+            <h4>
+              Lesson 11.1: Thuật toán tìm đường 1: BFS trên mảng 2 chiều và trên
+              graph
+            </h4>
+            <h4>Lesson 11.2: Thực hành online</h4>
+            <p>- Ứng dụng vào bài tập cụ thể</p>
+          </div>
+        </div>
+        <div class="a-container">
+          <p class="a-btn">
+            Lesson 12: Visualizing data
+            <span></span>
+          </p>
+          <div class="a-panel">
+            <h4>Lesson 12.1: Visualizing data</h4>
+            <h4>Lesson 12.2: Thực hành online</h4>
+            <p>- Ứng dụng vào bài tập cụ thể</p>
+          </div>
+        </div>
+        <div class="a-container">
+          <p class="a-btn">
+            Lesson 13: Hackathon tạo Dashboard mô tả data
+            <span></span>
+          </p>
+          <div class="a-panel">
+            <h4>
+              Lesson 13.1: Tổng kết kiến thức, Làm quen với phần mềm thi đấu
+            </h4>
+            <h4>Lesson 13.2: Thực hành online:</h4>
+            <p>- Làm quen với nội quy và phần mềm thi đấu (dạng cuộc thi ACM)</p>
+          </div>
+        </div>
+        <div class="a-container">
+          <p class="a-btn">
+            Lesson 14: Thi đấu
+            <span></span>
+          </p>
+          <div class="a-panel">
+            <h4>Thi đấu</h4>
+            <h4>Ôn tập online</h4>
+            <p>- Workshop trao đổi, đánh giá, định hướng học tập</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function initAcc(elem, option) {
+        document.addEventListener("click", function (e) {
+          if (!e.target.matches(elem + " .a-btn")) return;
+          else {
+            if (!e.target.parentElement.classList.contains("active")) {
+              if (option == true) {
+                var elementList = document.querySelectorAll(
+                  elem + " .a-container"
+                );
+                Array.prototype.forEach.call(elementList, function (e) {
+                  e.classList.remove("active");
+                });
+              }
+              e.target.parentElement.classList.add("active");
+            } else {
+              e.target.parentElement.classList.remove("active");
+            }
+          }
+        });
+      }
+
+      initAcc(".accordion.v1", true);
+    </script>
+  </body>
+</html>

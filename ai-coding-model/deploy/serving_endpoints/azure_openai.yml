@@ -1,0 +1,108 @@
+common: &common_external_configs
+  permissions: ${var.permissions}
+  budget_policy_id: ${var.budget_policy_id}
+  ai_gateway:
+    usage_tracking_config:
+      enabled: true
+    inference_table_config: ${var.inference_table_configurations}
+  tags:
+    - key: ai_project_id
+      value: ${bundle.name}
+
+resources:
+  model_serving_endpoints:
+    gpt_4_1_autocompletion:
+      name: ${var.prefix}-${var.env}-${bundle.name}-ais-gpt-41-autocompletion
+      <<: *common_external_configs
+      config:
+        served_entities:
+          - external_model:
+              openai_config:
+                openai_deployment_name: ai-${var.dev_mode}-${bundle.name}-ais-gpt-4.1
+                openai_api_base: ${var.openai_api_base}
+                openai_api_version: ${var.openai_api_version}
+                openai_api_key: "{{secrets/ai-${var.env}-common-ais-sc/oai-ai-${var.env}-common-key}}"
+                openai_api_type: azure
+              name: ai-${var.dev_mode}-${bundle.name}-ais-gpt-41
+              provider: openai
+              task: llm/v1/chat
+
+    gpt_4_1_chat:
+      name: ${var.prefix}-${var.env}-${bundle.name}-ais-gpt-41-chat
+      <<: *common_external_configs
+      config:
+        served_entities:
+          - external_model:
+              openai_config:
+                openai_deployment_name: ai-${var.dev_mode}-${bundle.name}-ais-gpt-4.1
+                openai_api_base: ${var.openai_api_base}
+                openai_api_version: ${var.openai_api_version}
+                openai_api_key: "{{secrets/ai-${var.env}-common-ais-sc/oai-ai-${var.env}-common-key}}"
+                openai_api_type: azure
+              name: ai-${var.dev_mode}-${bundle.name}-ais-gpt-41
+              provider: openai
+              task: llm/v1/chat
+
+    gpt_4_1_mini_autocompletion:
+      name: ${var.prefix}-${var.env}-${bundle.name}-ais-gpt-41-mini-autocompletion
+      <<: *common_external_configs
+      config:
+        served_entities:
+          - external_model:
+              openai_config:
+                openai_deployment_name: ai-${var.dev_mode}-${bundle.name}-ais-gpt-4.1-mini
+                openai_api_base: ${var.openai_api_base}
+                openai_api_version: ${var.openai_api_version}
+                openai_api_key: "{{secrets/ai-${var.env}-common-ais-sc/oai-ai-${var.env}-common-key}}"
+                openai_api_type: azure
+              name: ai-${var.dev_mode}-${bundle.name}-ais-gpt-41-mini
+              provider: openai
+              task: llm/v1/chat
+
+    gpt_4_1_mini_chat:
+      name: ${var.prefix}-${var.env}-${bundle.name}-ais-gpt-41-mini-chat
+      <<: *common_external_configs
+      config:
+        served_entities:
+          - external_model:
+              openai_config:
+                openai_deployment_name: ai-${var.dev_mode}-${bundle.name}-ais-gpt-4.1-mini
+                openai_api_base: ${var.openai_api_base}
+                openai_api_version: ${var.openai_api_version}
+                openai_api_key: "{{secrets/ai-${var.env}-common-ais-sc/oai-ai-${var.env}-common-key}}"
+                openai_api_type: azure
+              name: ai-${var.dev_mode}-${bundle.name}-ais-gpt-41-mini
+              provider: openai
+              task: llm/v1/chat
+
+    gpt_4_1_nano_autocompletion:
+      name: ${var.prefix}-${var.env}-${bundle.name}-ais-gpt-41-nano-autocompletion
+      <<: *common_external_configs
+      config:
+        served_entities:
+          - external_model:
+              openai_config:
+                openai_deployment_name: ai-${var.dev_mode}-${bundle.name}-ais-gpt-4.1-nano
+                openai_api_base: ${var.openai_api_base}
+                openai_api_version: ${var.openai_api_version}
+                openai_api_key: "{{secrets/ai-${var.env}-common-ais-sc/oai-ai-${var.env}-common-key}}"
+                openai_api_type: azure
+              name: ai-${var.dev_mode}-${bundle.name}-ais-gpt-41-nano
+              provider: openai
+              task: llm/v1/chat
+
+    gpt_4_1_nano_chat:
+      name: ${var.prefix}-${var.env}-${bundle.name}-ais-gpt-41-nano-chat
+      <<: *common_external_configs
+      config:
+        served_entities:
+          - external_model:
+              openai_config:
+                openai_deployment_name: ai-${var.dev_mode}-${bundle.name}-ais-gpt-4.1-nano
+                openai_api_base: ${var.openai_api_base}
+                openai_api_version: ${var.openai_api_version}
+                openai_api_key: "{{secrets/ai-${var.env}-common-ais-sc/oai-ai-${var.env}-common-key}}"
+                openai_api_type: azure
+              name: ai-${var.dev_mode}-${bundle.name}-ais-gpt-41-nano
+              provider: openai
+              task: llm/v1/chat

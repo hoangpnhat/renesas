@@ -1,0 +1,17 @@
+# Core dependencies for ICT RL Trading Bot
+numpy>=1.21.0
+pandas>=1.3.0
+gym>=0.21.0
+gymnasium>=0.28.0  # Alternative to gym
+
+# For RL training (Phase 4)
+# stable-baselines3>=2.0.0
+# torch>=2.0.0
+
+# For data handling and visualization (optional)
+# matplotlib>=3.5.0
+# seaborn>=0.12.0
+
+# For real data fetching (optional, Phase 7)
+# yfinance>=0.2.0
+# python-binance>=1.0.0

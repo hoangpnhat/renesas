@@ -1,0 +1,84 @@
+# Virtual environments (Python)
+.venv/
+venv/
+env/
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Node.js
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Rust
+target/
+
+# Go
+vendor/
+
+# IDE
+.vscode/
+.idea/
+
+# Project specific
+.rica
+.databricks
+.streamlit
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Logs
+*.log
+
+# Misc
+*.swp
+*.swo
+
+# Large files - archives
+*.zip
+*.tar.gz
+*.tar
+*.rar
+*.7z
+
+# Large files - ML models
+*.keras
+*.h5
+*.hdf5
+*.onnx
+*.pt
+*.pth
+*.bin
+*.safetensors
+*.ckpt
+*.pkl
+*.pickle
+
+# Large files - data
+*.jsonl
+*.parquet
+*.feather
+*.arrow
+
+# Large files - media
+*.gif
+*.mp4
+*.avi
+*.mov
+
+# Large files - misc
+*.whl
+*.so
+*.dll
+*.dylib

@@ -1,0 +1,74 @@
+info:
+  title: Socket.IO API
+  version: 1.0.0
+openapi: 3.1.0
+paths:
+  /socket.io:
+    get:
+      description: Endpoint for Socket.IO connections
+      responses:
+        '101':
+          description: Switching Protocols to WebSocket
+      summary: Socket.IO endpoint
+      x-socketio:
+        events:
+        - description: Client connection event
+          name: connect
+          requestBody:
+            content:
+              application/json:
+                schema:
+                  properties:
+                    data:
+                      type: string
+                  type: object
+          responses:
+            '200':
+              content:
+                application/json:
+                  schema:
+                    properties:
+                      data:
+                        type: string
+                    type: object
+              description: Response from server
+        - description: Client disconnection event
+          name: disconnect
+          requestBody:
+            content:
+              application/json:
+                schema:
+                  properties:
+                    data:
+                      type: string
+                  type: object
+          responses:
+            '200':
+              content:
+                application/json:
+                  schema:
+                    properties:
+                      data:
+                        type: string
+                    type: object
+              description: Response from server
+        - description: Client message to socket server
+          name: message
+          requestBody:
+            content:
+              application/json:
+                schema:
+                  properties:
+                    data:
+                      type: string
+                  type: object
+          responses:
+            '200':
+              content:
+                application/json:
+                  schema:
+                    properties:
+                      data:
+                        type: string
+                    type: object
+              description: Response from server

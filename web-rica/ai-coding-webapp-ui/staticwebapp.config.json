@@ -1,0 +1,37 @@
+{
+  "routes": [
+    {
+      "route": "/assets/*.css",
+      "headers": {
+        "content-type": "text/css"
+      }
+    },
+    {
+      "route": "/*.svg",
+      "headers": {
+        "content-type": "image/svg+xml"
+      }
+    },
+    {
+      "route": "/assets/*.js",
+      "headers": {
+        "content-type": "application/javascript"
+      }
+    },
+    {
+      "route": "/*",
+      "rewrite": "/index.html"
+    }
+  ],
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": ["/assets/*.{js,css,map}"]
+  },
+  "mimeTypes": {
+    ".js": "application/javascript",
+    ".css": "text/css",
+    ".html": "text/html",
+    ".json": "text/json",
+    ".svg": "image/svg+xml"
+  }
+}

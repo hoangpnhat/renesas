@@ -1,0 +1,66 @@
+# IDEs and editors
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Python
+.venv
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Environment variables (should be passed at runtime)
+.env
+.env.local
+.env.*.local
+
+# Documentation
+README.md
+CLAUDE.md
+*.md
+
+# Terraform and infrastructure
+.terraform
+*.tfstate
+*.tfstate.*
+
+# Logs
+*.log
+logs/
+app/src/logs/
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Testing
+app/test/
+tests/
+*.test.py
+
+# Development scripts
+startup.sh
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+
+# Docker
+docker-compose*.yml
+Dockerfile.dev

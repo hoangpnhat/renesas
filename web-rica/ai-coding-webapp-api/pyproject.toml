@@ -1,0 +1,38 @@
+[tool.mypy]
+mypy_path = "app"
+files = ["app"]
+explicit_package_bases = true
+namespace_packages = true
+
+python_version = "3.12"
+
+check_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_return_any = true
+warn_unreachable = true
+
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = [
+    "odmantic.*",
+    "motor.*",
+    "taskiq.*",
+    "taskiq_redis.*",
+    "socketio.*",
+    "jose.*",
+    "passlib.*",
+    "argon2.*",
+    "spire.*",
+    "requests.*",
+    "pandas.*",
+    "openpyxl.*",
+]
+ignore_missing_imports = true
+
+[tool.pydantic-mypy]
+init_forbid_extra = true
+init_typed = true
+warn_required_dynamic_aliases = true

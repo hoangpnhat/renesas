@@ -1,0 +1,792 @@
+[
+  {
+    "candidate_id": "001e7efe-a36a-4b4c-a459-ada3f9268ac9",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "0045a9bb-beab-42c2-97b5-7d5d341dde7d",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "0092fb93-eecb-4304-91f7-2d063006269f",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "0262224e-1253-4624-830e-8448d9a7db2a",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "03d1a9e9-7d6d-4999-ad21-e60bb05be071",
+    "cluster_id": "cluster_2",
+    "cluster_label": "StrongReact_WeakCaching_WeakAlgorithms"
+  },
+  {
+    "candidate_id": "04b57e5f-adad-4a82-bbf0-efba044bff48",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "05107fca-fc13-4336-bf7f-e690721bb744",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "053df53c-1069-4fc2-8cc3-88272c9558ae",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "059ca914-da30-4ad3-8987-c0e7014a4f05",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "085cafbc-bf39-4b43-bb91-37cc6d3f6b5d",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "08e30e36-7f4f-4daa-b9bf-87a9a09b3d60",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "0a784b91-d0d7-4971-8edc-cba1a5eb40cd",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "0b5576c0-7344-4bb9-a360-7145298d0cbe",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "0b80a9e3-638a-41b5-96fd-4da84727a1d0",
+    "cluster_id": "cluster_0",
+    "cluster_label": "StrongKafka_WeakDatamodelevolution_WeakGeospatialqueries"
+  },
+  {
+    "candidate_id": "10a6376c-5308-42f7-ae2e-3839c0689b0a",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "148c71f6-9489-4b40-b2de-61c52d4c836d",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "15e0811a-c67a-40f5-89fa-7a735e123c22",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "168e3595-f4bf-4c0a-a740-48036e13f003",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "16a7336c-b625-46ad-a50c-0008970afdf1",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "17fa0a65-4f77-4903-b89e-d4c1d525d92a",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "18fef903-d786-4498-ac8a-157c017dd051",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "1907303d-9435-4966-88cf-eb04e3464f66",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "1e41f055-7d8a-49ff-aa74-0607167a4048",
+    "cluster_id": "cluster_2",
+    "cluster_label": "StrongReact_WeakCaching_WeakAlgorithms"
+  },
+  {
+    "candidate_id": "200f01f1-1c2c-4c2d-b94a-16d158a60164",
+    "cluster_id": "cluster_3",
+    "cluster_label": "StrongC++_WeakApidesign_WeakEvaluationmetrics"
+  },
+  {
+    "candidate_id": "21085cd8-0dbd-4155-864c-9b4140e7b1ac",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "221088ed-4ef6-4b86-8031-3abfafe78222",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "235b0fa3-c908-42cf-ad41-c97ec7415561",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "263ba5ec-f2fb-44ae-8543-061a7c2da381",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "27dc093e-c8b0-4508-adfe-4dbea1d97e1f",
+    "cluster_id": "cluster_2",
+    "cluster_label": "StrongReact_WeakCaching_WeakAlgorithms"
+  },
+  {
+    "candidate_id": "28e9f4af-3e26-4b03-9a12-d8b577ee8d69",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "298f58fc-3462-426a-9773-387ee807b8ee",
+    "cluster_id": "cluster_6",
+    "cluster_label": "StrongAws_WeakCaching"
+  },
+  {
+    "candidate_id": "2bcaeb34-786e-4e5d-9470-c0e9df302840",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "2d4e118d-6571-45f6-8dc2-a34dd1fa2842",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "2dffcb28-825d-4430-ab3a-a8ea5d58b563",
+    "cluster_id": "cluster_6",
+    "cluster_label": "StrongAws_WeakCaching"
+  },
+  {
+    "candidate_id": "332b6494-c46e-4bac-93ef-daa09f82c96e",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "35872b2d-9a11-40fb-b820-2b4e9d8e8aad",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "368f8566-9028-4df0-8a34-be3a60589db3",
+    "cluster_id": "cluster_3",
+    "cluster_label": "StrongC++_WeakApidesign_WeakEvaluationmetrics"
+  },
+  {
+    "candidate_id": "37ee2c6c-3d87-4b9e-a068-35abf35189a3",
+    "cluster_id": "cluster_3",
+    "cluster_label": "StrongC++_WeakApidesign_WeakEvaluationmetrics"
+  },
+  {
+    "candidate_id": "37f9b4fb-21e2-484c-92fa-59306eeb6633",
+    "cluster_id": "cluster_0",
+    "cluster_label": "StrongKafka_WeakDatamodelevolution_WeakGeospatialqueries"
+  },
+  {
+    "candidate_id": "380c89f5-8a2e-41a7-9640-dda5e5d74714",
+    "cluster_id": "cluster_4",
+    "cluster_label": "StrongSpringboot_StrongAws_StrongJava"
+  },
+  {
+    "candidate_id": "39a94cf5-0bb3-44b2-b491-301e669736a1",
+    "cluster_id": "cluster_6",
+    "cluster_label": "StrongAws_WeakCaching"
+  },
+  {
+    "candidate_id": "3c24c04b-d901-4128-9d13-d098d95ff1ce",
+    "cluster_id": "cluster_5",
+    "cluster_label": "StrongAws_StrongRestapi_StrongJava"
+  },
+  {
+    "candidate_id": "3da0e7e9-bba6-49c9-8f28-78afcbcaf358",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "3f0e2eea-d794-44a7-9030-8c882204c459",
+    "cluster_id": "cluster_6",
+    "cluster_label": "StrongAws_WeakCaching"
+  },
+  {
+    "candidate_id": "40307515-361c-4a88-adf8-c8da04fd4ab3",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "42fa7648-97f0-49f5-a19d-7223f780abfd",
+    "cluster_id": "cluster_3",
+    "cluster_label": "StrongC++_WeakApidesign_WeakEvaluationmetrics"
+  },
+  {
+    "candidate_id": "447fc121-7b64-4988-89bc-2b013bce756a",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "44b140a8-8346-4536-9ca7-bcea50f27598",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "476f2943-9b4a-4565-9019-7e02685e8b3a",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "4ac8afe0-3cc6-400f-932d-d6bc4753109c",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "4bb99332-b7a7-4f63-a76f-ade29bb67ade",
+    "cluster_id": "cluster_6",
+    "cluster_label": "StrongAws_WeakCaching"
+  },
+  {
+    "candidate_id": "4de466d6-e46e-4699-8021-21fc869c7f39",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "4eb40d50-87a3-427e-9d9d-fdae9c9c4dc5",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "4ef95467-863b-405f-8077-36691c895442",
+    "cluster_id": "cluster_3",
+    "cluster_label": "StrongC++_WeakApidesign_WeakEvaluationmetrics"
+  },
+  {
+    "candidate_id": "4f58ccb6-2c61-4133-a4e8-6c0301159aa3",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "4fcb292e-dc99-4434-9e83-9a59d5cc3bf5",
+    "cluster_id": "cluster_3",
+    "cluster_label": "StrongC++_WeakApidesign_WeakEvaluationmetrics"
+  },
+  {
+    "candidate_id": "51f16200-53a8-455c-a772-5f5be1b51dbb",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "55c13123-8683-42e1-bec6-086504cc15c5",
+    "cluster_id": "cluster_2",
+    "cluster_label": "StrongReact_WeakCaching_WeakAlgorithms"
+  },
+  {
+    "candidate_id": "55c43879-304a-4cb1-923b-2f6ea46c46dc",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "55f08fba-8371-445f-b460-1250d2262c31",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "5a9958af-ea4e-4c11-a5f2-9f9ae5a59371",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "5bd89291-619f-4931-945d-dd99539ec51c",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "5d1b3ba1-6493-4d15-b387-a7a5cf43ced7",
+    "cluster_id": "cluster_2",
+    "cluster_label": "StrongReact_WeakCaching_WeakAlgorithms"
+  },
+  {
+    "candidate_id": "5d9d6199-16f9-473f-bd16-d647cbdf2e4a",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "5fa7e24f-f44f-4be6-ba2d-255207769e5d",
+    "cluster_id": "cluster_4",
+    "cluster_label": "StrongSpringboot_StrongAws_StrongJava"
+  },
+  {
+    "candidate_id": "622fbbf2-c998-41ab-be43-66bc29651e21",
+    "cluster_id": "cluster_5",
+    "cluster_label": "StrongAws_StrongRestapi_StrongJava"
+  },
+  {
+    "candidate_id": "6281b972-fab5-4cb5-a0cd-b1aa74959bef",
+    "cluster_id": "cluster_5",
+    "cluster_label": "StrongAws_StrongRestapi_StrongJava"
+  },
+  {
+    "candidate_id": "632bd6f1-c228-4372-8914-1e8c63acd06f",
+    "cluster_id": "cluster_6",
+    "cluster_label": "StrongAws_WeakCaching"
+  },
+  {
+    "candidate_id": "65e29742-c14b-48c5-9e56-2ad1087ffd87",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "68a94584-c571-4d47-9954-38ce7b11ea4c",
+    "cluster_id": "cluster_6",
+    "cluster_label": "StrongAws_WeakCaching"
+  },
+  {
+    "candidate_id": "69d64324-a933-41bb-bbe1-13c520e746c4",
+    "cluster_id": "cluster_3",
+    "cluster_label": "StrongC++_WeakApidesign_WeakEvaluationmetrics"
+  },
+  {
+    "candidate_id": "6a714b5d-242c-45fc-a88d-a328899fa496",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "6b9859a6-7f8c-4fdc-8395-1be9958e0708",
+    "cluster_id": "cluster_3",
+    "cluster_label": "StrongC++_WeakApidesign_WeakEvaluationmetrics"
+  },
+  {
+    "candidate_id": "6b99bbe7-5490-4767-b3e0-cca17820248d",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "6be8fe2c-0357-4c71-bf91-77787bdf99bc",
+    "cluster_id": "cluster_3",
+    "cluster_label": "StrongC++_WeakApidesign_WeakEvaluationmetrics"
+  },
+  {
+    "candidate_id": "6c9583ac-a7a3-4618-981a-32a4688fa8a5",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "6ebebd49-ebb1-4506-a122-151bbe109f64",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "738bfd2b-06ce-49a3-9adb-c3c0269b01ba",
+    "cluster_id": "cluster_6",
+    "cluster_label": "StrongAws_WeakCaching"
+  },
+  {
+    "candidate_id": "750b148f-f24a-4f85-b3b5-143737916693",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "81f3207d-1b34-445c-a5b1-8a47ca992099",
+    "cluster_id": "cluster_3",
+    "cluster_label": "StrongC++_WeakApidesign_WeakEvaluationmetrics"
+  },
+  {
+    "candidate_id": "82f1cefd-da57-49dd-8cc8-1b5c1be9555c",
+    "cluster_id": "cluster_5",
+    "cluster_label": "StrongAws_StrongRestapi_StrongJava"
+  },
+  {
+    "candidate_id": "83204d7a-5a28-41be-99a4-9696929f9156",
+    "cluster_id": "cluster_3",
+    "cluster_label": "StrongC++_WeakApidesign_WeakEvaluationmetrics"
+  },
+  {
+    "candidate_id": "86435608-abb9-4661-b044-49645c5a8b01",
+    "cluster_id": "cluster_6",
+    "cluster_label": "StrongAws_WeakCaching"
+  },
+  {
+    "candidate_id": "867b6e68-97f9-4fdc-b5d5-ef32f1e1a291",
+    "cluster_id": "cluster_5",
+    "cluster_label": "StrongAws_StrongRestapi_StrongJava"
+  },
+  {
+    "candidate_id": "87b54038-9ed9-403f-a2d0-7200602cb8bb",
+    "cluster_id": "cluster_6",
+    "cluster_label": "StrongAws_WeakCaching"
+  },
+  {
+    "candidate_id": "884510c2-eed9-400b-be08-10dd8315df81",
+    "cluster_id": "cluster_3",
+    "cluster_label": "StrongC++_WeakApidesign_WeakEvaluationmetrics"
+  },
+  {
+    "candidate_id": "88daa878-6265-449f-ae45-133bafe17472",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "88f9747d-b1ef-4752-9d24-ed3991116d45",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "8c8949dd-788e-47f1-995e-5de3f83707ea",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "8c8ce408-9e88-45f3-9ae3-a6c5375fab90",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "8cdc1a61-e752-431d-95dc-e2dd354985f8",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "93774994-9ee0-4818-833a-1fedcdb7ba7d",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "95852bec-6839-4a9f-8ab4-87b2c5405ae2",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "97375bcb-4a6d-4395-81fc-00dcbfe695bd",
+    "cluster_id": "cluster_4",
+    "cluster_label": "StrongSpringboot_StrongAws_StrongJava"
+  },
+  {
+    "candidate_id": "9b46eefb-287b-4c3e-9f0c-d4d91048d024",
+    "cluster_id": "cluster_2",
+    "cluster_label": "StrongReact_WeakCaching_WeakAlgorithms"
+  },
+  {
+    "candidate_id": "9dad83d8-5058-4a7a-ab7f-81bab76c89f2",
+    "cluster_id": "cluster_4",
+    "cluster_label": "StrongSpringboot_StrongAws_StrongJava"
+  },
+  {
+    "candidate_id": "9f2438db-4cb6-490a-be54-64c1b8ce4984",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "9f717817-6d2b-4dd0-b9ee-a5e4da3aabe2",
+    "cluster_id": "cluster_3",
+    "cluster_label": "StrongC++_WeakApidesign_WeakEvaluationmetrics"
+  },
+  {
+    "candidate_id": "a0fca09d-4711-41fc-8eda-1c534ad02d9e",
+    "cluster_id": "cluster_0",
+    "cluster_label": "StrongKafka_WeakDatamodelevolution_WeakGeospatialqueries"
+  },
+  {
+    "candidate_id": "a1d8573e-eb85-413a-a946-a2b7fad96f68",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "a1e95afa-e4b2-4f6b-8c55-f9fdd8559b6b",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "a5865f65-89a3-4939-9879-d95f212afcbd",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "a5a7a988-c963-4035-b491-2f76809f15e8",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "a5c2aec5-fd86-4e75-810e-3bb744a0a8e1",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "a6fda8c3-befb-415c-920f-4a56750b12da",
+    "cluster_id": "cluster_5",
+    "cluster_label": "StrongAws_StrongRestapi_StrongJava"
+  },
+  {
+    "candidate_id": "a8782043-d40f-48fe-a881-50e99c446348",
+    "cluster_id": "cluster_5",
+    "cluster_label": "StrongAws_StrongRestapi_StrongJava"
+  },
+  {
+    "candidate_id": "a9e5e971-cec2-4daa-849c-19aa48e33693",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "ace627bc-46f3-4688-b82e-df06347ba62a",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "b016018f-1406-418a-97b5-82c4f319f858",
+    "cluster_id": "cluster_0",
+    "cluster_label": "StrongKafka_WeakDatamodelevolution_WeakGeospatialqueries"
+  },
+  {
+    "candidate_id": "b0b2cee7-7386-4f44-916d-46fcdafcc7a9",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "b0b92b47-2cc0-4c68-af8a-92d52fa73654",
+    "cluster_id": "cluster_3",
+    "cluster_label": "StrongC++_WeakApidesign_WeakEvaluationmetrics"
+  },
+  {
+    "candidate_id": "b4ec6c93-b583-4216-8bd5-e2c80f3e9cc7",
+    "cluster_id": "cluster_6",
+    "cluster_label": "StrongAws_WeakCaching"
+  },
+  {
+    "candidate_id": "b5882536-7f70-4a7d-9d12-5e331ad9044b",
+    "cluster_id": "cluster_5",
+    "cluster_label": "StrongAws_StrongRestapi_StrongJava"
+  },
+  {
+    "candidate_id": "b5bfcd2a-0ec0-4c15-9abd-3b0e4e6471b7",
+    "cluster_id": "cluster_2",
+    "cluster_label": "StrongReact_WeakCaching_WeakAlgorithms"
+  },
+  {
+    "candidate_id": "b8bf1f76-5640-4f85-8808-3c76ffca1dfa",
+    "cluster_id": "cluster_3",
+    "cluster_label": "StrongC++_WeakApidesign_WeakEvaluationmetrics"
+  },
+  {
+    "candidate_id": "b8dfcd44-9e55-44ca-8ec8-d322385248fa",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "babfe54a-ce7f-49c6-b032-93d551e736e0",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "bb8735f2-acc7-424e-b051-9dc19f60fc2b",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "bc93bcf8-8f98-4bbf-87f2-e84faa94f028",
+    "cluster_id": "cluster_6",
+    "cluster_label": "StrongAws_WeakCaching"
+  },
+  {
+    "candidate_id": "bca60970-8371-4b87-b921-74bf2fdfe9d2",
+    "cluster_id": "cluster_6",
+    "cluster_label": "StrongAws_WeakCaching"
+  },
+  {
+    "candidate_id": "be976888-2c8b-469d-9431-1b036b32f66a",
+    "cluster_id": "cluster_2",
+    "cluster_label": "StrongReact_WeakCaching_WeakAlgorithms"
+  },
+  {
+    "candidate_id": "bea6cfae-7ba5-4a5d-99d0-e0d8465db05c",
+    "cluster_id": "cluster_2",
+    "cluster_label": "StrongReact_WeakCaching_WeakAlgorithms"
+  },
+  {
+    "candidate_id": "c1b35686-0c5a-4e57-9d25-b7952bf07a8c",
+    "cluster_id": "cluster_6",
+    "cluster_label": "StrongAws_WeakCaching"
+  },
+  {
+    "candidate_id": "c2365057-12ee-4022-962c-7e35f22f60e4",
+    "cluster_id": "cluster_4",
+    "cluster_label": "StrongSpringboot_StrongAws_StrongJava"
+  },
+  {
+    "candidate_id": "c4773009-fb7f-45d2-81e5-af455c44fc81",
+    "cluster_id": "cluster_2",
+    "cluster_label": "StrongReact_WeakCaching_WeakAlgorithms"
+  },
+  {
+    "candidate_id": "c52751b6-d157-4968-8a12-3629de314ffb",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "c85ccdd3-d17a-40cc-8e9c-7e5c64884ae9",
+    "cluster_id": "cluster_3",
+    "cluster_label": "StrongC++_WeakApidesign_WeakEvaluationmetrics"
+  },
+  {
+    "candidate_id": "c89167f9-bf28-47a1-bea8-11f67ee665e8",
+    "cluster_id": "cluster_0",
+    "cluster_label": "StrongKafka_WeakDatamodelevolution_WeakGeospatialqueries"
+  },
+  {
+    "candidate_id": "c8ead33f-ed8b-4729-8ed0-70ef695012ab",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "c9053886-c774-4bd6-8d85-ceba84b89e37",
+    "cluster_id": "cluster_3",
+    "cluster_label": "StrongC++_WeakApidesign_WeakEvaluationmetrics"
+  },
+  {
+    "candidate_id": "cc902bbc-cd64-453a-ba55-51ecadb7bd5b",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "cd816649-0ef9-484c-8211-5818fc4a762f",
+    "cluster_id": "cluster_4",
+    "cluster_label": "StrongSpringboot_StrongAws_StrongJava"
+  },
+  {
+    "candidate_id": "ce646a7a-00a3-43c7-b685-f9368703c603",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "ce6f6581-f6a4-43cc-9ba5-fed713664c99",
+    "cluster_id": "cluster_4",
+    "cluster_label": "StrongSpringboot_StrongAws_StrongJava"
+  },
+  {
+    "candidate_id": "cea7c308-6262-410b-835c-72ac7979e7e0",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "cf8ac49f-095d-4c05-8aa6-d869301ea868",
+    "cluster_id": "cluster_4",
+    "cluster_label": "StrongSpringboot_StrongAws_StrongJava"
+  },
+  {
+    "candidate_id": "cfdf8fd8-0094-4dc9-bdad-e6db3b5aa976",
+    "cluster_id": "cluster_6",
+    "cluster_label": "StrongAws_WeakCaching"
+  },
+  {
+    "candidate_id": "d0f67b93-4b71-4b26-bb9f-d6d4970e8609",
+    "cluster_id": "cluster_4",
+    "cluster_label": "StrongSpringboot_StrongAws_StrongJava"
+  },
+  {
+    "candidate_id": "d25b536b-4c34-43a5-9b1c-9e59ea7cbc39",
+    "cluster_id": "cluster_2",
+    "cluster_label": "StrongReact_WeakCaching_WeakAlgorithms"
+  },
+  {
+    "candidate_id": "d7196a88-6557-47d0-8ffe-f2e5fea81c59",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "d79ddbe5-6517-47b5-a71c-919e1a32adcb",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "d91b190e-e6cd-40d7-a9fd-5bbb422377ac",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "dc6a96de-437c-4687-854d-9f00bc0ceb54",
+    "cluster_id": "cluster_5",
+    "cluster_label": "StrongAws_StrongRestapi_StrongJava"
+  },
+  {
+    "candidate_id": "de4a28e3-32c6-4e3c-a71a-13a40184189e",
+    "cluster_id": "cluster_6",
+    "cluster_label": "StrongAws_WeakCaching"
+  },
+  {
+    "candidate_id": "de7e3942-a457-4317-80c8-1c5fb6cbba36",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "dfa32b66-7d77-4f23-b148-7f1d1c68e154",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "e2980fd4-1ca0-4983-9bb3-1ac61bf3f5df",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "e3460a23-9973-4efb-b9db-9d32d63d6051",
+    "cluster_id": "cluster_2",
+    "cluster_label": "StrongReact_WeakCaching_WeakAlgorithms"
+  },
+  {
+    "candidate_id": "e52180ea-a171-4452-9f36-d65e26d73ce0",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "e98f4247-6538-43b9-a3ea-52c94b985116",
+    "cluster_id": "cluster_6",
+    "cluster_label": "StrongAws_WeakCaching"
+  },
+  {
+    "candidate_id": "ea2183ec-cb4b-44fb-808b-88e5c9cb06c4",
+    "cluster_id": "cluster_5",
+    "cluster_label": "StrongAws_StrongRestapi_StrongJava"
+  },
+  {
+    "candidate_id": "ebb2fc04-0f98-4499-a438-be40d666a0d9",
+    "cluster_id": "cluster_4",
+    "cluster_label": "StrongSpringboot_StrongAws_StrongJava"
+  },
+  {
+    "candidate_id": "ec86a7f1-faf9-4eb8-9fce-a7edadd4b556",
+    "cluster_id": "cluster_5",
+    "cluster_label": "StrongAws_StrongRestapi_StrongJava"
+  },
+  {
+    "candidate_id": "f017098f-3781-4d5d-b428-2be8ecee20c5",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "f26842a0-007c-4210-833c-6a027c8aed82",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "f3364ba9-13c7-4b86-ba12-b591cc04190c",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "f7a92f8f-2594-41f2-ad67-1a6827ba171d",
+    "cluster_id": "cluster_1",
+    "cluster_label": "StrongAws_StrongSpringboot"
+  },
+  {
+    "candidate_id": "f956fee1-791e-478b-a28a-bcdcd3a5b1c9",
+    "cluster_id": "cluster_2",
+    "cluster_label": "StrongReact_WeakCaching_WeakAlgorithms"
+  }
+]

@@ -1,0 +1,109 @@
+#!/usr/bin/env sh
+#
+# Copyright © 2025 Renesas Electronics Corporation. All Rights Reserved.
+#
+
+set -e
+
+echo "🚀 Running pre-commit checks..."
+
+# Function to check MUI imports
+check_mui_imports() {
+    echo "\n🔍 Checking for non-tree-shakable MUI imports..."
+
+    # Check for bad imports and store results
+    bad_material_imports=$(grep -rn "import.*from.*'@mui/material'" src/ --include="*.tsx" --include="*.ts" | grep -E "(import \*|import.*,.*\*)" || true)
+    bad_icon_imports=$(grep -rn "import.*from.*'@mui/icons-material'" src/ --include="*.tsx" --include="*.ts" | grep -E "(import \*|import.*,.*\*)" || true)
+    star_imports=$(grep -rn "import.*\*.*from.*'@mui/" src/ --include="*.tsx" --include="*.ts" || true)
+
+    # Report bad imports if found
+    if [ -n "$bad_material_imports" ]; then
+        echo "❌ Bad MUI Material imports found:"
+        echo "$bad_material_imports" | while IFS= read -r line; do
+            echo "  📁 $line"
+        done
+        echo ""
+    fi
+
+    if [ -n "$bad_icon_imports" ]; then
+        echo "❌ Bad MUI Icons imports found:"
+        echo "$bad_icon_imports" | while IFS= read -r line; do
+            echo "  📁 $line"
+        done
+        echo ""
+    fi
+
+    if [ -n "$star_imports" ]; then
+        echo "⚠️  Star imports from MUI found:"
+        echo "$star_imports" | while IFS= read -r line; do
+            echo "  📁 $line"
+        done
+        echo ""
+    fi
+
+    # Statistics
+    material_count=$(grep -r "from.*'@mui/material'" src/ --include="*.tsx" --include="*.ts" | wc -l || echo "0")
+    icons_count=$(grep -r "from.*'@mui/icons-material'" src/ --include="*.tsx" --include="*.ts" | wc -l || echo "0")
+    star_count=$(grep -r "import.*\*.*from.*'@mui/" src/ --include="*.tsx" --include="*.ts" | wc -l || echo "0")
+
+    echo "📊 MUI import statistics:"
+    echo "  • Total MUI material imports: $material_count"
+    echo "  • Total MUI icons imports: $icons_count"
+    echo "  • Potential non-tree-shakable imports: $star_count"
+
+    # Fail if bad imports found
+    if [ -n "$bad_material_imports" ] || [ -n "$bad_icon_imports" ] || [ -n "$star_imports" ]; then
+        echo "\n❌ Found non-tree-shakable MUI imports!"
+        echo "💡 Please use named imports instead of star imports:"
+        echo "   ✅ import { Button, TextField } from '@mui/material';"
+        echo "   ❌ import * as MUI from '@mui/material';"
+        return 1
+    fi
+
+    echo "✅ All MUI imports are tree-shakable!"
+    return 0
+}
+
+# Function to run lint-staged
+run_lint_staged() {
+    echo "\n🔧 Running lint-staged..."
+    if ! yarn lint-staged; then
+        echo "❌ Linting failed!"
+        return 1
+    fi
+    echo "✅ Linting passed!"
+}
+
+# Function to run type checking
+run_type_check() {
+    echo "\n🔍 Running type checking..."
+    if ! yarn type-check; then
+        echo "❌ Type checking failed!"
+        return 1
+    fi
+    echo "✅ Type checking passed!"
+}
+
+
+
+# Main execution
+main() {
+    echo "Starting pre-commit validation..."
+
+    # Check if we're in a git repository
+    if ! git rev-parse --git-dir > /dev/null 2>&1; then
+        echo "❌ Not in a git repository!"
+        exit 1
+    fi
+
+    # Run checks
+    check_mui_imports || exit 1
+    run_lint_staged || exit 1
+    run_type_check || exit 1
+
+    echo "\n🎉 All pre-commit checks passed!"
+    echo "Ready to commit! 🚀"
+}
+
+# Execute main function
+main "$@"

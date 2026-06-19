@@ -1,0 +1,24 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy only necessary application code for migrations
+COPY app/migrations ./app/migrations
+COPY app/core ./app/core
+COPY app/utils ./app/utils
+COPY app/__init__.py ./app/__init__.py
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONPATH=/app
+
+# Create entrypoint script
+COPY migrate.sh /migrate.sh
+RUN chmod +x /migrate.sh
+
+ENTRYPOINT ["/migrate.sh"]

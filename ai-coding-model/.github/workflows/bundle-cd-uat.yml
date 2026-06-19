@@ -1,0 +1,59 @@
+name: Bundle Deployment for Uat
+
+on:
+  pull_request:
+    branches:
+      - uat
+    types: [closed]
+  workflow_call:
+jobs:
+  uat:
+    if: github.event.pull_request.base.ref == 'uat' && github.event.pull_request.head.ref == 'dev'
+    runs-on: ai-coding-runner
+    env: 
+      azure-cli: 2.62.0-1~$(lsb_release -cs)
+      vault: kv-ai-nonprod-dso-001
+      dbx-clientid-key: coding-client-id-uat
+      dbx-sc-key: coding-client-secret-uat
+      dbx-pat: coding-pat-uat
+    steps: 
+      - name: Install Azure CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install ca-certificates curl apt-transport-https lsb-release gnupg -y
+          curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/microsoft.gpg > /dev/null
+          AZ_REPO=$(lsb_release -cs)
+          echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | sudo tee /etc/apt/sources.list.d/azure-cli.list
+          sudo apt-get update
+          sudo apt-get install azure-cli=${{ env.azure-cli }} -y
+          az --version
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          auth-type: IDENTITY
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          # enable-AzPSSession: true
+      - name: Install Azure CLI
+        run: |
+          DATABRICKS_CLIENT_ID=$(az keyvault secret show --name ${{ env.dbx-clientid-key }} --vault-name ${{ env.vault }} --query value -o tsv)
+          DATABRICKS_CLIENT_SECRET=$(az keyvault secret show --name ${{ env.dbx-sc-key }} --vault-name ${{ env.vault }} --query value -o tsv)
+          DATABRICKS_PAT=$(az keyvault secret show --name ${{ env.dbx-pat }} --vault-name ${{ env.vault }} --query value -o tsv)
+          echo "::add-mask::$DATABRICKS_PAT"
+          echo DATABRICKS_PAT=$DATABRICKS_PAT >> $GITHUB_ENV
+          echo "::add-mask::$DATABRICKS_CLIENT_ID"
+          echo DATABRICKS_CLIENT_ID=$DATABRICKS_CLIENT_ID >> $GITHUB_ENV
+          echo "::add-mask::$DATABRICKS_CLIENT_SECRET"
+          echo DATABRICKS_CLIENT_SECRET=$DATABRICKS_CLIENT_SECRET >> $GITHUB_ENV
+      - uses: actions/checkout@v4
+      # Setup databrick cli
+      - uses: databricks/setup-cli@v0.233.0
+      - name: Validate Bundle for UAT
+        id: validate
+        run: |
+          databricks bundle validate --var="dbx_token=$DATABRICKS_PAT" -t uat
+      - name: Deploy Bundle for UAT
+        id: deploy
+        run: |
+          databricks bundle deploy --var="dbx_token=$DATABRICKS_PAT" -t uat

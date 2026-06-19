@@ -1,0 +1,22 @@
+{
+  "name": "@renesas/rica-cli",
+  "description": "RICA CLI - Renesas Intelligent Coding Assistant. AI-powered development assistant for Renesas engineers.",
+  "bin": {
+    "rica": "dist/rica.js"
+  },
+  "scripts": {
+    "build": "node ../../rica/scripts/build-cli.mjs",
+    "build:validate": "echo skip",
+    "build:bundle": "node ../../rica/scripts/build-cli.mjs"
+  },
+  "author": "ADADAI Renesas",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.global.renesas.com/ids_ai/rica-oss.git"
+  },
+  "bugs": {
+    "url": "https://gitlab.global.renesas.com/ids_ai/rica-oss/-/issues"
+  },
+  "homepage": "https://rica.global.renesas.com"
+}

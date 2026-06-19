@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c \"import pandas as pd; df = pd.read_csv(''C:\\Users\\a5153207\\Documents\\code\\Proplens - AI Engineer Challenge V2\\Property_sales_agent_Challenge.csv''); print(''Shape:'', df.shape); print(''\\nColumns:'', df.columns.tolist()); print(''\\nData types:\\n'', df.dtypes); print(''\\nMissing values:\\n'', df.isnull().sum()); print(''\\nFirst 5 project names:\\n'', df[''Project name''].head().tolist())\")",
+      "Bash(.venvScriptspython.exe -c \"import pandas as pd; df = pd.read_csv(''Property_sales_agent_Challenge.csv''); print(''Shape:'', df.shape); print(''\\nColumns:''); print(df.columns.tolist()); print(''\\nData types:''); print(df.dtypes); print(''\\n=== Missing Values ===''); print(df.isnull().sum()); print(''\\n=== Unique Values ===''); print(''Unique cities:'', df[''city''].nunique()); print(''Unique countries:'', df[''country''].nunique()); print(''Unique bedrooms:'', df[''No of bedrooms''].unique()[:20])\")",
+      "Bash(.venv/Scripts/python.exe -c \"import pandas as pd; df = pd.read_csv(''Property_sales_agent_Challenge.csv''); print(''Shape:'', df.shape); print(''\\nColumns:''); print(df.columns.tolist()); print(''\\nData types:''); print(df.dtypes); print(''\\n=== Missing Values ===''); print(df.isnull().sum()); print(''\\n=== Unique Values ===''); print(''Unique cities:'', df[''city''].nunique()); print(''Unique countries:'', df[''country''].nunique()); print(''Unique bedrooms:'', sorted([x for x in df[''No of bedrooms''].unique() if pd.notna(x)])[:20])\")",
+      "Bash(C:Usersa5153207DocumentscodeProplens' - AI Engineer Challenge V2'.venvScriptsactivate.bat)",
+      "Bash(\".venv/Scripts/python.exe\" --version)",
+      "Bash(\".venv/Scripts/python.exe\" -c \"import pandas as pd; print(''Pandas version:'', pd.__version__)\")",
+      "Bash(\".venv/Scripts/python.exe\" -c \"import pandas as pd; df = pd.read_csv(''Property_sales_agent_Challenge.csv''); print(''Shape:'', df.shape); print(''\\nColumns:''); print(df.columns.tolist()); print(''\\nData types:''); print(df.dtypes); print(''\\n=== Missing Values ===''); print(df.isnull().sum()); print(''\\n=== Unique Values ===''); print(''Unique cities:'', df[''city''].nunique()); print(''Unique countries:'', df[''country''].nunique()); print(''Unique bedrooms:'', sorted([x for x in df[''No of bedrooms''].unique() if pd.notna(x)])[:20]); print(''\\n=== Price Range ===''); print(''Min price:'', df[''Price (USD)''].min()); print(''Max price:'', df[''Price (USD)''].max()); print(''\\n=== Sample Projects ===''); print(df[[''Project name'', ''city'', ''country'', ''No of bedrooms'', ''Price (USD)'']].head(10))\")",
+      "Bash(\".venv/Scripts/python.exe\" -c \"import pandas as pd; df = pd.read_csv(''Property_sales_agent_Challenge.csv''); print(''=== City Distribution (Top 15) ===''); print(df[''city''].value_counts().head(15)); print(''\\n=== Country Distribution ===''); print(df[''country''].value_counts()); print(''\\n=== Property Type Distribution ===''); print(df[''Property type (apartment/villa)''].value_counts()); print(''\\n=== Bedroom Distribution ===''); print(df[''No of bedrooms''].value_counts().sort_index()); print(''\\n=== Developer Distribution (Top 10) ===''); print(df[''developer name''].value_counts().head(10))\")",
+      "Bash(\".venv/Scripts/python.exe\" -m pip list)",
+      "Bash(\".venv/Scripts/python.exe\" setup_database.py)",
+      "Bash(\".venv/Scripts/python.exe\" test_basic.py)",
+      "Bash(dir)",
+      "Bash(.venvScriptsactivate.ps1)",
+      "Bash(powershell -Command \"& {.\\.venv\\Scripts\\Activate.ps1; python --version}\")",
+      "Bash(dir /s /b *.csv)",
+      "Bash(findstr /v \".venv\")",
+      "Bash(if [ -f .venv/Scripts/activate ])",
+      "Bash(then source .venv/Scripts/activate)",
+      "Bash(else echo \"Using activate.bat/ps1 instead\")",
+      "Bash(fi)",
+      "Bash(python -c \"import pandas as pd; df = pd.read_csv(''Property sales agent - Challenge.csv''); print(''Unique cities:'', df[''city''].nunique()); print(df[''city''].value_counts()); print(''\\nUnique countries:'', df[''country''].value_counts()); print(''\\nUnique developers:'', df[''developer name''].nunique()); print(''\\nPrice range: $:,.0f - $:,.0f''.format(df[''Price (USD)''].min(), df[''Price (USD)''].max()))\")",
+      "Bash(python -c \"import pandas as pd; df = pd.read_csv(''Property sales agent - Challenge.csv''); print(''Unique cities:'', df[''city''].nunique()); print(df[''city''].value_counts()); print(''\\nUnique countries:'', df[''country''].value_counts()); print(''\\nUnique developers:'', df[''developer name''].nunique())\")",
+      "Bash(curl http://localhost:8000/health)",
+      "Bash(python -c \"from app.main import app; print(''App loaded successfully'')\")"
+    ]
+  }
+}

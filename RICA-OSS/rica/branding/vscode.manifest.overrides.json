@@ -1,0 +1,51 @@
+{
+  "name": "rica",
+  "displayName": "RICA",
+  "publisher": "Rica",
+  "description": "The in-house AI coding assistant of Renesas",
+  "icon": "media/icon-rica.png",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.global.renesas.com/ids_ai/rica-oss"
+  },
+  "bugs": {
+    "url": "https://gitlab.global.renesas.com/ids_ai/rica-oss/-/issues"
+  },
+  "homepage": "https://rica.global.renesas.com",
+  "pricing": "Free",
+  "contributes": {
+    "configuration": {
+      "title": "RICA",
+      "properties": {
+        "rica.telemetryEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable anonymous telemetry for RICA"
+        },
+        "rica.enableTabAutocomplete": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Enable tab autocomplete in RICA"
+        }
+      }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "rica",
+          "title": "RICA",
+          "icon": "media/text-sidebar-icon.png"
+        }
+      ]
+    },
+    "views": {
+      "rica": [
+        {
+          "type": "webview",
+          "id": "rica.ricaGUIView",
+          "name": "RICA"
+        }
+      ]
+    }
+  }
+}

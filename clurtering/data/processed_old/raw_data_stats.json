@@ -1,0 +1,24 @@
+{
+  "total_candidates": 158,
+  "total_raw_skills": 1271,
+  "total_evaluations": 30422,
+  "avg_skills_per_candidate": 23.265822784810126,
+  "avg_score_global": 74.87002826901585,
+  "median_score_global": 80.0,
+  "score_range": {
+    "min": 0.0,
+    "max": 100.0
+  },
+  "top_10_skills_by_frequency": {
+    "API Design": 1590,
+    "Microservices Architecture": 1054,
+    "Error Handling": 900,
+    "Performance Optimization": 846,
+    "Database Management": 612,
+    "Data Modeling": 598,
+    "Data Flow Management": 474,
+    "Testing": 458,
+    "Kafka": 438,
+    "Microservices": 420
+  }
+}

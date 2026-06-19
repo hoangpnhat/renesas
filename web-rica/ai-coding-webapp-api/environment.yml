@@ -1,0 +1,3 @@
+name: rica_app
+dependencies:
+  - python==3.10

@@ -1,0 +1,31 @@
+databricks_resources:
+  llm_endpoint_name: databricks-meta-llama-3-1-405b-instruct
+  vector_search_endpoint_name: coding_assistant_vector_search
+input_example:
+  messages:
+  - content: What is RAG?
+    role: user
+llm_config:
+  llm_parameters:
+    max_tokens: 1500
+    temperature: 0.01
+  llm_system_prompt_template: 'You are a coding assistant that answers questions from user related to propramming C and semiconductors.
+    Use the following pieces of retrieved context (including Passage and Code) to answer the question. Some pieces of context
+    may be irrelevant, in which case you should not use them to form the answer.
+    If you think that all contexts are not suitable please warn to users that "Contexts are not enough, and this is my anwser \n".
+    Then you can answer the question as what you are thinking.
+
+    Context: {context}'
+retriever_config:
+  chunk_template: 'Passage: {chunk_text}
+
+    '
+  data_pipeline_tag: poc
+  parameters:
+    k: 5
+    query_type: ann
+  schema:
+    chunk_text: chunked_text
+    document_uri: path
+    primary_key: chunk_id
+  vector_search_index: ai_dev.coding_assistant_poc.coding_assistant_poc_chunked_docs_gold_index

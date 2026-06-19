@@ -1,0 +1,52 @@
+variables:
+  permissions:
+    description: Permission configurations
+    type: complex
+    default:
+      - level: CAN_MANAGE
+        group_name: 04_AI_CODING_PROJECT
+
+  prefix:
+    default: ai
+
+  env:
+    description: Environment name (dev, uat, prod)
+
+  dev_mode:
+    description: Development mode ("dev, uat" -> nonprod, prod)
+
+  alt_name:
+    description: Alternative name of RICA, known as coding
+    default: coding
+
+  openai_api_base:
+    description: OpenAI API base
+    default: https://azure-openai-857219.openai.azure.com
+
+  openai_api_version:
+    default: 2024-10-21
+
+  budget_policy_id:
+    description: Budget policy ID
+    default: d01697ef-9452-4a51-987e-9faa7a28b382
+
+  inference_table_configurations:
+    type: complex
+    default:
+      enabled: true
+      catalog_name: ai_uat
+      schema_name: ai_uat_coding_gold
+
+  delta_sharing_configurations:
+    type: complex
+    default:
+      catalog_name: ai_uat_delta_shared
+      schema_name: ai_uat_coding_gold
+
+  databricks_api_token:
+    description: API Token use to configure access to Pay-per-token serving endpoints
+    default: empty
+
+  shared_warehouse_id:
+    description: ID of the SQL warehouse for creating materialized view
+    default: 249321e809ad49be

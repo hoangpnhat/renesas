@@ -1,0 +1,2973 @@
+[
+  {
+    "candidate_id": "001e7efe-a36a-4b4c-a459-ada3f9268ac9",
+    "clusters": [
+      {
+        "cluster_id": 8,
+        "distance": 0.7265916466712952,
+        "score": 0.5791757702827454
+      },
+      {
+        "cluster_id": 3,
+        "distance": 0.7911263108253479,
+        "score": 0.558307945728302
+      },
+      {
+        "cluster_id": 9,
+        "distance": 1.0705349445343018,
+        "score": 0.48296698927879333
+      },
+      {
+        "cluster_id": 5,
+        "distance": 1.0725699663162231,
+        "score": 0.4824927747249603
+      }
+    ],
+    "primary_cluster": 8,
+    "num_clusters": 4
+  },
+  {
+    "candidate_id": "0045a9bb-beab-42c2-97b5-7d5d341dde7d",
+    "clusters": [
+      {
+        "cluster_id": 3,
+        "distance": 0.5338953733444214,
+        "score": 0.6519349217414856
+      }
+    ],
+    "primary_cluster": 3,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "0092fb93-eecb-4304-91f7-2d063006269f",
+    "clusters": [
+      {
+        "cluster_id": 3,
+        "distance": 0.3157116770744324,
+        "score": 0.7600449323654175
+      }
+    ],
+    "primary_cluster": 3,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "0262224e-1253-4624-830e-8448d9a7db2a",
+    "clusters": [
+      {
+        "cluster_id": 9,
+        "distance": 0.5422982573509216,
+        "score": 0.6483830213546753
+      },
+      {
+        "cluster_id": 3,
+        "distance": 0.6595277190208435,
+        "score": 0.6025810837745667
+      }
+    ],
+    "primary_cluster": 9,
+    "num_clusters": 2
+  },
+  {
+    "candidate_id": "03d1a9e9-7d6d-4999-ad21-e60bb05be071",
+    "clusters": [
+      {
+        "cluster_id": 4,
+        "distance": 0.7810842990875244,
+        "score": 0.5614557266235352
+      },
+      {
+        "cluster_id": 8,
+        "distance": 1.0869625806808472,
+        "score": 0.479165256023407
+      },
+      {
+        "cluster_id": 5,
+        "distance": 1.1175721883773804,
+        "score": 0.4722388982772827
+      },
+      {
+        "cluster_id": 3,
+        "distance": 1.1336379051208496,
+        "score": 0.4686830937862396
+      }
+    ],
+    "primary_cluster": 4,
+    "num_clusters": 4
+  },
+  {
+    "candidate_id": "04b57e5f-adad-4a82-bbf0-efba044bff48",
+    "clusters": [
+      {
+        "cluster_id": 0,
+        "distance": 0.5553650259971619,
+        "score": 0.6429358720779419
+      },
+      {
+        "cluster_id": 7,
+        "distance": 0.7092701196670532,
+        "score": 0.5850450396537781
+      }
+    ],
+    "primary_cluster": 0,
+    "num_clusters": 2
+  },
+  {
+    "candidate_id": "05107fca-fc13-4336-bf7f-e690721bb744",
+    "clusters": [
+      {
+        "cluster_id": 0,
+        "distance": 0.6200685501098633,
+        "score": 0.617257833480835
+      },
+      {
+        "cluster_id": 5,
+        "distance": 0.8769053220748901,
+        "score": 0.5327919125556946
+      },
+      {
+        "cluster_id": 7,
+        "distance": 0.9007633328437805,
+        "score": 0.5261044502258301
+      }
+    ],
+    "primary_cluster": 0,
+    "num_clusters": 3
+  },
+  {
+    "candidate_id": "053df53c-1069-4fc2-8cc3-88272c9558ae",
+    "clusters": [
+      {
+        "cluster_id": 8,
+        "distance": 0.5367324948310852,
+        "score": 0.6507313847541809
+      },
+      {
+        "cluster_id": 2,
+        "distance": 0.7701140642166138,
+        "score": 0.5649353265762329
+      }
+    ],
+    "primary_cluster": 8,
+    "num_clusters": 2
+  },
+  {
+    "candidate_id": "059ca914-da30-4ad3-8987-c0e7014a4f05",
+    "clusters": [
+      {
+        "cluster_id": 5,
+        "distance": 0.33653149008750916,
+        "score": 0.748205304145813
+      }
+    ],
+    "primary_cluster": 5,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "085cafbc-bf39-4b43-bb91-37cc6d3f6b5d",
+    "clusters": [
+      {
+        "cluster_id": 0,
+        "distance": 0.5805900692939758,
+        "score": 0.6326751112937927
+      },
+      {
+        "cluster_id": 1,
+        "distance": 0.8295740485191345,
+        "score": 0.5465753078460693
+      }
+    ],
+    "primary_cluster": 0,
+    "num_clusters": 2
+  },
+  {
+    "candidate_id": "08e30e36-7f4f-4daa-b9bf-87a9a09b3d60",
+    "clusters": [
+      {
+        "cluster_id": 8,
+        "distance": 0.2242467999458313,
+        "score": 0.8168287873268127
+      }
+    ],
+    "primary_cluster": 8,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "0a784b91-d0d7-4971-8edc-cba1a5eb40cd",
+    "clusters": [
+      {
+        "cluster_id": 5,
+        "distance": 0.45532479882240295,
+        "score": 0.6871318221092224
+      }
+    ],
+    "primary_cluster": 5,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "0b5576c0-7344-4bb9-a360-7145298d0cbe",
+    "clusters": [
+      {
+        "cluster_id": 2,
+        "distance": 0.5193782448768616,
+        "score": 0.6581639647483826
+      }
+    ],
+    "primary_cluster": 2,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "0b80a9e3-638a-41b5-96fd-4da84727a1d0",
+    "clusters": [
+      {
+        "cluster_id": 4,
+        "distance": 0.39785313606262207,
+        "score": 0.7153827548027039
+      }
+    ],
+    "primary_cluster": 4,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "10a6376c-5308-42f7-ae2e-3839c0689b0a",
+    "clusters": [
+      {
+        "cluster_id": 3,
+        "distance": 0.5207116603851318,
+        "score": 0.6575868725776672
+      }
+    ],
+    "primary_cluster": 3,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "148c71f6-9489-4b40-b2de-61c52d4c836d",
+    "clusters": [
+      {
+        "cluster_id": 0,
+        "distance": 0.6514002680778503,
+        "score": 0.6055467128753662
+      },
+      {
+        "cluster_id": 1,
+        "distance": 0.8504945039749146,
+        "score": 0.5403960943222046
+      },
+      {
+        "cluster_id": 7,
+        "distance": 0.8605279922485352,
+        "score": 0.5374818444252014
+      },
+      {
+        "cluster_id": 9,
+        "distance": 0.9168208241462708,
+        "score": 0.5216971635818481
+      },
+      {
+        "cluster_id": 5,
+        "distance": 0.9391473531723022,
+        "score": 0.5156905651092529
+      }
+    ],
+    "primary_cluster": 0,
+    "num_clusters": 5
+  },
+  {
+    "candidate_id": "15e0811a-c67a-40f5-89fa-7a735e123c22",
+    "clusters": [
+      {
+        "cluster_id": 7,
+        "distance": 0.6862120628356934,
+        "score": 0.5930452346801758
+      },
+      {
+        "cluster_id": 0,
+        "distance": 0.7301753759384155,
+        "score": 0.5779761075973511
+      },
+      {
+        "cluster_id": 4,
+        "distance": 0.8408060073852539,
+        "score": 0.5432403087615967
+      },
+      {
+        "cluster_id": 5,
+        "distance": 0.9188376069068909,
+        "score": 0.5211488604545593
+      },
+      {
+        "cluster_id": 3,
+        "distance": 1.0058201551437378,
+        "score": 0.4985491633415222
+      }
+    ],
+    "primary_cluster": 7,
+    "num_clusters": 5
+  },
+  {
+    "candidate_id": "168e3595-f4bf-4c0a-a740-48036e13f003",
+    "clusters": [
+      {
+        "cluster_id": 7,
+        "distance": 0.5446096658706665,
+        "score": 0.6474127769470215
+      },
+      {
+        "cluster_id": 0,
+        "distance": 0.7471917271614075,
+        "score": 0.5723470449447632
+      }
+    ],
+    "primary_cluster": 7,
+    "num_clusters": 2
+  },
+  {
+    "candidate_id": "16a7336c-b625-46ad-a50c-0008970afdf1",
+    "clusters": [
+      {
+        "cluster_id": 1,
+        "distance": 0.609662652015686,
+        "score": 0.621248185634613
+      },
+      {
+        "cluster_id": 8,
+        "distance": 0.6942014694213867,
+        "score": 0.5902485847473145
+      },
+      {
+        "cluster_id": 5,
+        "distance": 0.8038439750671387,
+        "score": 0.5543716549873352
+      }
+    ],
+    "primary_cluster": 1,
+    "num_clusters": 3
+  },
+  {
+    "candidate_id": "17fa0a65-4f77-4903-b89e-d4c1d525d92a",
+    "clusters": [
+      {
+        "cluster_id": 5,
+        "distance": 0.4708046019077301,
+        "score": 0.6798999905586243
+      }
+    ],
+    "primary_cluster": 5,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "18fef903-d786-4498-ac8a-157c017dd051",
+    "clusters": [
+      {
+        "cluster_id": 1,
+        "distance": 0.5876207947731018,
+        "score": 0.6298733353614807
+      },
+      {
+        "cluster_id": 9,
+        "distance": 0.8450571298599243,
+        "score": 0.5419886112213135
+      },
+      {
+        "cluster_id": 5,
+        "distance": 0.8470221757888794,
+        "score": 0.5414119958877563
+      }
+    ],
+    "primary_cluster": 1,
+    "num_clusters": 3
+  },
+  {
+    "candidate_id": "1907303d-9435-4966-88cf-eb04e3464f66",
+    "clusters": [
+      {
+        "cluster_id": 7,
+        "distance": 0.537629246711731,
+        "score": 0.6503518223762512
+      },
+      {
+        "cluster_id": 0,
+        "distance": 0.5848098993301392,
+        "score": 0.6309905052185059
+      }
+    ],
+    "primary_cluster": 7,
+    "num_clusters": 2
+  },
+  {
+    "candidate_id": "1e41f055-7d8a-49ff-aa74-0607167a4048",
+    "clusters": [
+      {
+        "cluster_id": 3,
+        "distance": 0.6428725123405457,
+        "score": 0.6086899638175964
+      },
+      {
+        "cluster_id": 5,
+        "distance": 0.7441322803497314,
+        "score": 0.5733510255813599
+      },
+      {
+        "cluster_id": 4,
+        "distance": 0.8767256736755371,
+        "score": 0.5328429341316223
+      },
+      {
+        "cluster_id": 8,
+        "distance": 0.9544071555137634,
+        "score": 0.511664092540741
+      }
+    ],
+    "primary_cluster": 3,
+    "num_clusters": 4
+  },
+  {
+    "candidate_id": "200f01f1-1c2c-4c2d-b94a-16d158a60164",
+    "clusters": [
+      {
+        "cluster_id": 2,
+        "distance": 0.6918386220932007,
+        "score": 0.5910729169845581
+      }
+    ],
+    "primary_cluster": 2,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "21085cd8-0dbd-4155-864c-9b4140e7b1ac",
+    "clusters": [
+      {
+        "cluster_id": 0,
+        "distance": 0.4067404568195343,
+        "score": 0.7108631730079651
+      }
+    ],
+    "primary_cluster": 0,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "221088ed-4ef6-4b86-8031-3abfafe78222",
+    "clusters": [
+      {
+        "cluster_id": 9,
+        "distance": 0.4479106068611145,
+        "score": 0.6906504034996033
+      }
+    ],
+    "primary_cluster": 9,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "235b0fa3-c908-42cf-ad41-c97ec7415561",
+    "clusters": [
+      {
+        "cluster_id": 8,
+        "distance": 0.7187618017196655,
+        "score": 0.581814169883728
+      },
+      {
+        "cluster_id": 2,
+        "distance": 0.8145835995674133,
+        "score": 0.551090657711029
+      }
+    ],
+    "primary_cluster": 8,
+    "num_clusters": 2
+  },
+  {
+    "candidate_id": "263ba5ec-f2fb-44ae-8543-061a7c2da381",
+    "clusters": [
+      {
+        "cluster_id": 3,
+        "distance": 0.45919176936149597,
+        "score": 0.6853108406066895
+      }
+    ],
+    "primary_cluster": 3,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "27dc093e-c8b0-4508-adfe-4dbea1d97e1f",
+    "clusters": [
+      {
+        "cluster_id": 5,
+        "distance": 0.7297535538673401,
+        "score": 0.5781170725822449
+      },
+      {
+        "cluster_id": 10,
+        "distance": 0.9069232940673828,
+        "score": 0.5244049429893494
+      },
+      {
+        "cluster_id": 4,
+        "distance": 0.9785172343254089,
+        "score": 0.5054289698600769
+      },
+      {
+        "cluster_id": 0,
+        "distance": 0.9959446787834167,
+        "score": 0.5010159015655518
+      },
+      {
+        "cluster_id": 3,
+        "distance": 1.046167016029358,
+        "score": 0.4887186884880066
+      }
+    ],
+    "primary_cluster": 5,
+    "num_clusters": 5
+  },
+  {
+    "candidate_id": "28e9f4af-3e26-4b03-9a12-d8b577ee8d69",
+    "clusters": [
+      {
+        "cluster_id": 5,
+        "distance": 0.6907341480255127,
+        "score": 0.5914590358734131
+      },
+      {
+        "cluster_id": 3,
+        "distance": 0.8519805073738098,
+        "score": 0.5399625301361084
+      },
+      {
+        "cluster_id": 0,
+        "distance": 0.9203881025314331,
+        "score": 0.5207280516624451
+      }
+    ],
+    "primary_cluster": 5,
+    "num_clusters": 3
+  },
+  {
+    "candidate_id": "298f58fc-3462-426a-9773-387ee807b8ee",
+    "clusters": [
+      {
+        "cluster_id": 11,
+        "distance": 0.7829451560974121,
+        "score": 0.5608697533607483
+      },
+      {
+        "cluster_id": 7,
+        "distance": 1.05852472782135,
+        "score": 0.4857848286628723
+      }
+    ],
+    "primary_cluster": 11,
+    "num_clusters": 2
+  },
+  {
+    "candidate_id": "2bcaeb34-786e-4e5d-9470-c0e9df302840",
+    "clusters": [
+      {
+        "cluster_id": 5,
+        "distance": 0.6627565026283264,
+        "score": 0.601410984992981
+      },
+      {
+        "cluster_id": 3,
+        "distance": 0.7275933623313904,
+        "score": 0.578839898109436
+      },
+      {
+        "cluster_id": 4,
+        "distance": 0.8503745198249817,
+        "score": 0.5404311418533325
+      },
+      {
+        "cluster_id": 8,
+        "distance": 0.8574771881103516,
+        "score": 0.5383646488189697
+      }
+    ],
+    "primary_cluster": 5,
+    "num_clusters": 4
+  },
+  {
+    "candidate_id": "2d4e118d-6571-45f6-8dc2-a34dd1fa2842",
+    "clusters": [
+      {
+        "cluster_id": 0,
+        "distance": 0.41347184777259827,
+        "score": 0.707477867603302
+      }
+    ],
+    "primary_cluster": 0,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "2dffcb28-825d-4430-ab3a-a8ea5d58b563",
+    "clusters": [
+      {
+        "cluster_id": 6,
+        "distance": 0.6658326387405396,
+        "score": 0.6003003716468811
+      }
+    ],
+    "primary_cluster": 6,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "332b6494-c46e-4bac-93ef-daa09f82c96e",
+    "clusters": [
+      {
+        "cluster_id": 0,
+        "distance": 0.5960593819618225,
+        "score": 0.6265431046485901
+      },
+      {
+        "cluster_id": 5,
+        "distance": 0.8820903301239014,
+        "score": 0.5313241481781006
+      }
+    ],
+    "primary_cluster": 0,
+    "num_clusters": 2
+  },
+  {
+    "candidate_id": "35872b2d-9a11-40fb-b820-2b4e9d8e8aad",
+    "clusters": [
+      {
+        "cluster_id": 5,
+        "distance": 0.58984375,
+        "score": 0.6289926171302795
+      },
+      {
+        "cluster_id": 4,
+        "distance": 0.7476211786270142,
+        "score": 0.5722063779830933
+      }
+    ],
+    "primary_cluster": 5,
+    "num_clusters": 2
+  },
+  {
+    "candidate_id": "368f8566-9028-4df0-8a34-be3a60589db3",
+    "clusters": [
+      {
+        "cluster_id": 2,
+        "distance": 0.9171560406684875,
+        "score": 0.5216059684753418
+      },
+      {
+        "cluster_id": 6,
+        "distance": 0.9941368699073792,
+        "score": 0.5014700889587402
+      },
+      {
+        "cluster_id": 10,
+        "distance": 1.0109044313430786,
+        "score": 0.49728870391845703
+      },
+      {
+        "cluster_id": 11,
+        "distance": 1.2517441511154175,
+        "score": 0.44410017132759094
+      }
+    ],
+    "primary_cluster": 2,
+    "num_clusters": 4
+  },
+  {
+    "candidate_id": "37ee2c6c-3d87-4b9e-a068-35abf35189a3",
+    "clusters": [
+      {
+        "cluster_id": 2,
+        "distance": 0.4542767107486725,
+        "score": 0.6876270771026611
+      }
+    ],
+    "primary_cluster": 2,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "37f9b4fb-21e2-484c-92fa-59306eeb6633",
+    "clusters": [
+      {
+        "cluster_id": 4,
+        "distance": 0.4330507218837738,
+        "score": 0.697812020778656
+      }
+    ],
+    "primary_cluster": 4,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "380c89f5-8a2e-41a7-9640-dda5e5d74714",
+    "clusters": [
+      {
+        "cluster_id": 0,
+        "distance": 0.7851753234863281,
+        "score": 0.5601690411567688
+      },
+      {
+        "cluster_id": 5,
+        "distance": 0.8522568345069885,
+        "score": 0.5398819446563721
+      },
+      {
+        "cluster_id": 4,
+        "distance": 0.9571877121925354,
+        "score": 0.5109372138977051
+      },
+      {
+        "cluster_id": 9,
+        "distance": 1.0133837461471558,
+        "score": 0.4966762661933899
+      },
+      {
+        "cluster_id": 7,
+        "distance": 1.0570780038833618,
+        "score": 0.48612645268440247
+      },
+      {
+        "cluster_id": 3,
+        "distance": 1.0739123821258545,
+        "score": 0.4821804463863373
+      },
+      {
+        "cluster_id": 1,
+        "distance": 1.1032302379608154,
+        "score": 0.47545912861824036
+      }
+    ],
+    "primary_cluster": 0,
+    "num_clusters": 7
+  },
+  {
+    "candidate_id": "39a94cf5-0bb3-44b2-b491-301e669736a1",
+    "clusters": [
+      {
+        "cluster_id": 6,
+        "distance": 0.6444688439369202,
+        "score": 0.608099102973938
+      }
+    ],
+    "primary_cluster": 6,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "3c24c04b-d901-4128-9d13-d098d95ff1ce",
+    "clusters": [
+      {
+        "cluster_id": 9,
+        "distance": 0.6507204174995422,
+        "score": 0.6057960987091064
+      },
+      {
+        "cluster_id": 4,
+        "distance": 0.9367418885231018,
+        "score": 0.5163310766220093
+      },
+      {
+        "cluster_id": 7,
+        "distance": 0.938088595867157,
+        "score": 0.5159722566604614
+      }
+    ],
+    "primary_cluster": 9,
+    "num_clusters": 3
+  },
+  {
+    "candidate_id": "3da0e7e9-bba6-49c9-8f28-78afcbcaf358",
+    "clusters": [
+      {
+        "cluster_id": 9,
+        "distance": 0.6329268217086792,
+        "score": 0.612397313117981
+      },
+      {
+        "cluster_id": 1,
+        "distance": 0.7296893000602722,
+        "score": 0.5781384706497192
+      }
+    ],
+    "primary_cluster": 9,
+    "num_clusters": 2
+  },
+  {
+    "candidate_id": "3f0e2eea-d794-44a7-9030-8c882204c459",
+    "clusters": [
+      {
+        "cluster_id": 6,
+        "distance": 0.9703922867774963,
+        "score": 0.507513165473938
+      },
+      {
+        "cluster_id": 2,
+        "distance": 1.3648898601531982,
+        "score": 0.42285266518592834
+      },
+      {
+        "cluster_id": 10,
+        "distance": 1.4362908601760864,
+        "score": 0.41046005487442017
+      },
+      {
+        "cluster_id": 4,
+        "distance": 1.4375085830688477,
+        "score": 0.41025495529174805
+      }
+    ],
+    "primary_cluster": 6,
+    "num_clusters": 4
+  },
+  {
+    "candidate_id": "40307515-361c-4a88-adf8-c8da04fd4ab3",
+    "clusters": [
+      {
+        "cluster_id": 0,
+        "distance": 0.5257331728935242,
+        "score": 0.655422568321228
+      }
+    ],
+    "primary_cluster": 0,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "42fa7648-97f0-49f5-a19d-7223f780abfd",
+    "clusters": [
+      {
+        "cluster_id": 10,
+        "distance": 0.7361299991607666,
+        "score": 0.5759937167167664
+      },
+      {
+        "cluster_id": 5,
+        "distance": 1.0845369100570679,
+        "score": 0.4797228276729584
+      }
+    ],
+    "primary_cluster": 10,
+    "num_clusters": 2
+  },
+  {
+    "candidate_id": "447fc121-7b64-4988-89bc-2b013bce756a",
+    "clusters": [
+      {
+        "cluster_id": 3,
+        "distance": 0.628346860408783,
+        "score": 0.6141197681427002
+      }
+    ],
+    "primary_cluster": 3,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "44b140a8-8346-4536-9ca7-bcea50f27598",
+    "clusters": [
+      {
+        "cluster_id": 0,
+        "distance": 0.6261084079742432,
+        "score": 0.6149651408195496
+      },
+      {
+        "cluster_id": 7,
+        "distance": 0.8957746028900146,
+        "score": 0.5274888873100281
+      }
+    ],
+    "primary_cluster": 0,
+    "num_clusters": 2
+  },
+  {
+    "candidate_id": "476f2943-9b4a-4565-9019-7e02685e8b3a",
+    "clusters": [
+      {
+        "cluster_id": 8,
+        "distance": 0.4153439402580261,
+        "score": 0.7065420150756836
+      }
+    ],
+    "primary_cluster": 8,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "4ac8afe0-3cc6-400f-932d-d6bc4753109c",
+    "clusters": [
+      {
+        "cluster_id": 0,
+        "distance": 0.5763835906982422,
+        "score": 0.6343633532524109
+      }
+    ],
+    "primary_cluster": 0,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "4bb99332-b7a7-4f63-a76f-ade29bb67ade",
+    "clusters": [
+      {
+        "cluster_id": 11,
+        "distance": 0.6113839149475098,
+        "score": 0.6205845475196838
+      }
+    ],
+    "primary_cluster": 11,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "4de466d6-e46e-4699-8021-21fc869c7f39",
+    "clusters": [
+      {
+        "cluster_id": 1,
+        "distance": 0.615522563457489,
+        "score": 0.6189947128295898
+      }
+    ],
+    "primary_cluster": 1,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "4eb40d50-87a3-427e-9d9d-fdae9c9c4dc5",
+    "clusters": [
+      {
+        "cluster_id": 5,
+        "distance": 0.6510658264160156,
+        "score": 0.605669379234314
+      },
+      {
+        "cluster_id": 3,
+        "distance": 0.850620687007904,
+        "score": 0.5403592586517334
+      }
+    ],
+    "primary_cluster": 5,
+    "num_clusters": 2
+  },
+  {
+    "candidate_id": "4ef95467-863b-405f-8077-36691c895442",
+    "clusters": [
+      {
+        "cluster_id": 10,
+        "distance": 0.4461958706378937,
+        "score": 0.6914693117141724
+      }
+    ],
+    "primary_cluster": 10,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "4f58ccb6-2c61-4133-a4e8-6c0301159aa3",
+    "clusters": [
+      {
+        "cluster_id": 0,
+        "distance": 0.6464837193489075,
+        "score": 0.6073549389839172
+      },
+      {
+        "cluster_id": 7,
+        "distance": 0.9174122214317322,
+        "score": 0.5215362310409546
+      }
+    ],
+    "primary_cluster": 0,
+    "num_clusters": 2
+  },
+  {
+    "candidate_id": "4fcb292e-dc99-4434-9e83-9a59d5cc3bf5",
+    "clusters": [
+      {
+        "cluster_id": 6,
+        "distance": 0.888828694820404,
+        "score": 0.5294286012649536
+      },
+      {
+        "cluster_id": 2,
+        "distance": 0.9177845120429993,
+        "score": 0.521435022354126
+      },
+      {
+        "cluster_id": 11,
+        "distance": 1.2542598247528076,
+        "score": 0.44360458850860596
+      }
+    ],
+    "primary_cluster": 6,
+    "num_clusters": 3
+  },
+  {
+    "candidate_id": "51f16200-53a8-455c-a772-5f5be1b51dbb",
+    "clusters": [
+      {
+        "cluster_id": 3,
+        "distance": 0.6473495960235596,
+        "score": 0.6070356965065002
+      }
+    ],
+    "primary_cluster": 3,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "55c13123-8683-42e1-bec6-086504cc15c5",
+    "clusters": [
+      {
+        "cluster_id": 9,
+        "distance": 0.7431665062904358,
+        "score": 0.5736686587333679
+      },
+      {
+        "cluster_id": 4,
+        "distance": 0.7862277626991272,
+        "score": 0.5598390102386475
+      },
+      {
+        "cluster_id": 5,
+        "distance": 0.929044783115387,
+        "score": 0.5183913111686707
+      },
+      {
+        "cluster_id": 3,
+        "distance": 0.9301272630691528,
+        "score": 0.5181005597114563
+      },
+      {
+        "cluster_id": 8,
+        "distance": 1.0140117406845093,
+        "score": 0.4965214133262634
+      },
+      {
+        "cluster_id": 1,
+        "distance": 1.051141619682312,
+        "score": 0.4875333607196808
+      }
+    ],
+    "primary_cluster": 9,
+    "num_clusters": 6
+  },
+  {
+    "candidate_id": "55c43879-304a-4cb1-923b-2f6ea46c46dc",
+    "clusters": [
+      {
+        "cluster_id": 8,
+        "distance": 0.4412285089492798,
+        "score": 0.6938524842262268
+      }
+    ],
+    "primary_cluster": 8,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "55f08fba-8371-445f-b460-1250d2262c31",
+    "clusters": [
+      {
+        "cluster_id": 0,
+        "distance": 0.4916255474090576,
+        "score": 0.6704095602035522
+      }
+    ],
+    "primary_cluster": 0,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "5a9958af-ea4e-4c11-a5f2-9f9ae5a59371",
+    "clusters": [
+      {
+        "cluster_id": 3,
+        "distance": 0.75774085521698,
+        "score": 0.5689120888710022
+      },
+      {
+        "cluster_id": 5,
+        "distance": 0.9065011143684387,
+        "score": 0.5245211124420166
+      },
+      {
+        "cluster_id": 7,
+        "distance": 0.9080725312232971,
+        "score": 0.5240890979766846
+      },
+      {
+        "cluster_id": 0,
+        "distance": 0.9202155470848083,
+        "score": 0.5207748413085938
+      },
+      {
+        "cluster_id": 4,
+        "distance": 1.0876320600509644,
+        "score": 0.479011595249176
+      },
+      {
+        "cluster_id": 9,
+        "distance": 1.0969196557998657,
+        "score": 0.47689002752304077
+      }
+    ],
+    "primary_cluster": 3,
+    "num_clusters": 6
+  },
+  {
+    "candidate_id": "5bd89291-619f-4931-945d-dd99539ec51c",
+    "clusters": [
+      {
+        "cluster_id": 2,
+        "distance": 0.47451305389404297,
+        "score": 0.6781899929046631
+      }
+    ],
+    "primary_cluster": 2,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "5d1b3ba1-6493-4d15-b387-a7a5cf43ced7",
+    "clusters": [
+      {
+        "cluster_id": 3,
+        "distance": 0.8477258086204529,
+        "score": 0.5412058234214783
+      },
+      {
+        "cluster_id": 4,
+        "distance": 0.9118161797523499,
+        "score": 0.5230628848075867
+      },
+      {
+        "cluster_id": 5,
+        "distance": 0.952640175819397,
+        "score": 0.5121271014213562
+      },
+      {
+        "cluster_id": 8,
+        "distance": 1.0456336736679077,
+        "score": 0.4888460636138916
+      },
+      {
+        "cluster_id": 0,
+        "distance": 1.0805351734161377,
+        "score": 0.4806455671787262
+      },
+      {
+        "cluster_id": 7,
+        "distance": 1.1613584756851196,
+        "score": 0.46267199516296387
+      },
+      {
+        "cluster_id": 1,
+        "distance": 1.1627354621887207,
+        "score": 0.4623773992061615
+      },
+      {
+        "cluster_id": 9,
+        "distance": 1.2070406675338745,
+        "score": 0.45309537649154663
+      }
+    ],
+    "primary_cluster": 3,
+    "num_clusters": 8
+  },
+  {
+    "candidate_id": "5d9d6199-16f9-473f-bd16-d647cbdf2e4a",
+    "clusters": [
+      {
+        "cluster_id": 1,
+        "distance": 0.5637930631637573,
+        "score": 0.6394708156585693
+      }
+    ],
+    "primary_cluster": 1,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "5fa7e24f-f44f-4be6-ba2d-255207769e5d",
+    "clusters": [
+      {
+        "cluster_id": 4,
+        "distance": 0.7443334460258484,
+        "score": 0.5732848644256592
+      },
+      {
+        "cluster_id": 0,
+        "distance": 0.9030605554580688,
+        "score": 0.5254693627357483
+      },
+      {
+        "cluster_id": 1,
+        "distance": 0.9061145782470703,
+        "score": 0.5246274471282959
+      },
+      {
+        "cluster_id": 5,
+        "distance": 1.0340182781219482,
+        "score": 0.4916376769542694
+      }
+    ],
+    "primary_cluster": 4,
+    "num_clusters": 4
+  },
+  {
+    "candidate_id": "622fbbf2-c998-41ab-be43-66bc29651e21",
+    "clusters": [
+      {
+        "cluster_id": 7,
+        "distance": 0.6951592564582825,
+        "score": 0.5899150967597961
+      },
+      {
+        "cluster_id": 9,
+        "distance": 0.7883228063583374,
+        "score": 0.5591831803321838
+      },
+      {
+        "cluster_id": 0,
+        "distance": 0.9854723811149597,
+        "score": 0.5036584734916687
+      }
+    ],
+    "primary_cluster": 7,
+    "num_clusters": 3
+  },
+  {
+    "candidate_id": "6281b972-fab5-4cb5-a0cd-b1aa74959bef",
+    "clusters": [
+      {
+        "cluster_id": 9,
+        "distance": 0.7491608262062073,
+        "score": 0.5717027187347412
+      },
+      {
+        "cluster_id": 1,
+        "distance": 0.9498647451400757,
+        "score": 0.5128560662269592
+      },
+      {
+        "cluster_id": 7,
+        "distance": 0.9677016139030457,
+        "score": 0.5082071423530579
+      },
+      {
+        "cluster_id": 0,
+        "distance": 1.0079624652862549,
+        "score": 0.498017281293869
+      }
+    ],
+    "primary_cluster": 9,
+    "num_clusters": 4
+  },
+  {
+    "candidate_id": "632bd6f1-c228-4372-8914-1e8c63acd06f",
+    "clusters": [
+      {
+        "cluster_id": 6,
+        "distance": 0.8112369775772095,
+        "score": 0.552108883857727
+      },
+      {
+        "cluster_id": 11,
+        "distance": 1.0093806982040405,
+        "score": 0.49766573309898376
+      },
+      {
+        "cluster_id": 10,
+        "distance": 1.1168370246887207,
+        "score": 0.4724029302597046
+      }
+    ],
+    "primary_cluster": 6,
+    "num_clusters": 3
+  },
+  {
+    "candidate_id": "65e29742-c14b-48c5-9e56-2ad1087ffd87",
+    "clusters": [
+      {
+        "cluster_id": 8,
+        "distance": 0.5138947367668152,
+        "score": 0.6605478525161743
+      }
+    ],
+    "primary_cluster": 8,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "68a94584-c571-4d47-9954-38ce7b11ea4c",
+    "clusters": [
+      {
+        "cluster_id": 10,
+        "distance": 0.5747622847557068,
+        "score": 0.6350164413452148
+      }
+    ],
+    "primary_cluster": 10,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "69d64324-a933-41bb-bbe1-13c520e746c4",
+    "clusters": [
+      {
+        "cluster_id": 10,
+        "distance": 0.6320253610610962,
+        "score": 0.6127355694770813
+      }
+    ],
+    "primary_cluster": 10,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "6a714b5d-242c-45fc-a88d-a328899fa496",
+    "clusters": [
+      {
+        "cluster_id": 3,
+        "distance": 0.6864206194877625,
+        "score": 0.5929718613624573
+      }
+    ],
+    "primary_cluster": 3,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "6b9859a6-7f8c-4fdc-8395-1be9958e0708",
+    "clusters": [
+      {
+        "cluster_id": 2,
+        "distance": 0.7538810968399048,
+        "score": 0.5701640844345093
+      },
+      {
+        "cluster_id": 10,
+        "distance": 0.8923231363296509,
+        "score": 0.5284509658813477
+      },
+      {
+        "cluster_id": 6,
+        "distance": 1.1096456050872803,
+        "score": 0.4740132689476013
+      }
+    ],
+    "primary_cluster": 2,
+    "num_clusters": 3
+  },
+  {
+    "candidate_id": "6b99bbe7-5490-4767-b3e0-cca17820248d",
+    "clusters": [
+      {
+        "cluster_id": 0,
+        "distance": 0.7584145665168762,
+        "score": 0.5686941146850586
+      },
+      {
+        "cluster_id": 7,
+        "distance": 0.8730037212371826,
+        "score": 0.5339017510414124
+      },
+      {
+        "cluster_id": 1,
+        "distance": 0.8848137259483337,
+        "score": 0.5305563807487488
+      },
+      {
+        "cluster_id": 9,
+        "distance": 0.9406763911247253,
+        "score": 0.5152842402458191
+      }
+    ],
+    "primary_cluster": 0,
+    "num_clusters": 4
+  },
+  {
+    "candidate_id": "6be8fe2c-0357-4c71-bf91-77787bdf99bc",
+    "clusters": [
+      {
+        "cluster_id": 2,
+        "distance": 0.621361255645752,
+        "score": 0.6167656779289246
+      }
+    ],
+    "primary_cluster": 2,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "6c9583ac-a7a3-4618-981a-32a4688fa8a5",
+    "clusters": [
+      {
+        "cluster_id": 7,
+        "distance": 0.589099109172821,
+        "score": 0.6292873620986938
+      }
+    ],
+    "primary_cluster": 7,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "6ebebd49-ebb1-4506-a122-151bbe109f64",
+    "clusters": [
+      {
+        "cluster_id": 5,
+        "distance": 0.8290464282035828,
+        "score": 0.5467329621315002
+      },
+      {
+        "cluster_id": 3,
+        "distance": 0.9147174954414368,
+        "score": 0.5222702622413635
+      },
+      {
+        "cluster_id": 9,
+        "distance": 0.9548544883728027,
+        "score": 0.5115470290184021
+      },
+      {
+        "cluster_id": 4,
+        "distance": 1.0232107639312744,
+        "score": 0.4942638874053955
+      },
+      {
+        "cluster_id": 7,
+        "distance": 1.2138923406600952,
+        "score": 0.4516931176185608
+      }
+    ],
+    "primary_cluster": 5,
+    "num_clusters": 5
+  },
+  {
+    "candidate_id": "738bfd2b-06ce-49a3-9adb-c3c0269b01ba",
+    "clusters": [
+      {
+        "cluster_id": 10,
+        "distance": 0.8384683132171631,
+        "score": 0.5439310669898987
+      },
+      {
+        "cluster_id": 11,
+        "distance": 0.9709202647209167,
+        "score": 0.5073772072792053
+      },
+      {
+        "cluster_id": 6,
+        "distance": 1.229859471321106,
+        "score": 0.44845879077911377
+      }
+    ],
+    "primary_cluster": 10,
+    "num_clusters": 3
+  },
+  {
+    "candidate_id": "750b148f-f24a-4f85-b3b5-143737916693",
+    "clusters": [
+      {
+        "cluster_id": 1,
+        "distance": 0.523988664150238,
+        "score": 0.6561728119850159
+      }
+    ],
+    "primary_cluster": 1,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "81f3207d-1b34-445c-a5b1-8a47ca992099",
+    "clusters": [
+      {
+        "cluster_id": 6,
+        "distance": 0.7883471846580505,
+        "score": 0.5591754913330078
+      },
+      {
+        "cluster_id": 2,
+        "distance": 0.9511436223983765,
+        "score": 0.5125199556350708
+      }
+    ],
+    "primary_cluster": 6,
+    "num_clusters": 2
+  },
+  {
+    "candidate_id": "82f1cefd-da57-49dd-8cc8-1b5c1be9555c",
+    "clusters": [
+      {
+        "cluster_id": 9,
+        "distance": 0.7093796730041504,
+        "score": 0.5850075483322144
+      },
+      {
+        "cluster_id": 3,
+        "distance": 0.923815906047821,
+        "score": 0.5198002457618713
+      },
+      {
+        "cluster_id": 1,
+        "distance": 0.9471763968467712,
+        "score": 0.5135641098022461
+      },
+      {
+        "cluster_id": 5,
+        "distance": 1.0070546865463257,
+        "score": 0.49824249744415283
+      }
+    ],
+    "primary_cluster": 9,
+    "num_clusters": 4
+  },
+  {
+    "candidate_id": "83204d7a-5a28-41be-99a4-9696929f9156",
+    "clusters": [
+      {
+        "cluster_id": 2,
+        "distance": 0.7024874687194824,
+        "score": 0.587375819683075
+      }
+    ],
+    "primary_cluster": 2,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "86435608-abb9-4661-b044-49645c5a8b01",
+    "clusters": [
+      {
+        "cluster_id": 11,
+        "distance": 0.7772562503814697,
+        "score": 0.5626650452613831
+      }
+    ],
+    "primary_cluster": 11,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "867b6e68-97f9-4fdc-b5d5-ef32f1e1a291",
+    "clusters": [
+      {
+        "cluster_id": 9,
+        "distance": 0.6271770000457764,
+        "score": 0.6145613193511963
+      },
+      {
+        "cluster_id": 7,
+        "distance": 0.8195827603340149,
+        "score": 0.5495765805244446
+      }
+    ],
+    "primary_cluster": 9,
+    "num_clusters": 2
+  },
+  {
+    "candidate_id": "87b54038-9ed9-403f-a2d0-7200602cb8bb",
+    "clusters": [
+      {
+        "cluster_id": 11,
+        "distance": 0.5204001665115356,
+        "score": 0.6577215790748596
+      }
+    ],
+    "primary_cluster": 11,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "884510c2-eed9-400b-be08-10dd8315df81",
+    "clusters": [
+      {
+        "cluster_id": 2,
+        "distance": 0.891670823097229,
+        "score": 0.528633177280426
+      },
+      {
+        "cluster_id": 10,
+        "distance": 0.9373928308486938,
+        "score": 0.5161575675010681
+      },
+      {
+        "cluster_id": 6,
+        "distance": 1.1768819093704224,
+        "score": 0.4593726694583893
+      },
+      {
+        "cluster_id": 4,
+        "distance": 1.2931815385818481,
+        "score": 0.4360753893852234
+      },
+      {
+        "cluster_id": 5,
+        "distance": 1.2989065647125244,
+        "score": 0.43498939275741577
+      },
+      {
+        "cluster_id": 3,
+        "distance": 1.3318818807601929,
+        "score": 0.42883816361427307
+      }
+    ],
+    "primary_cluster": 2,
+    "num_clusters": 6
+  },
+  {
+    "candidate_id": "88daa878-6265-449f-ae45-133bafe17472",
+    "clusters": [
+      {
+        "cluster_id": 5,
+        "distance": 0.5170190334320068,
+        "score": 0.6591874957084656
+      }
+    ],
+    "primary_cluster": 5,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "88f9747d-b1ef-4752-9d24-ed3991116d45",
+    "clusters": [
+      {
+        "cluster_id": 9,
+        "distance": 0.6182717084884644,
+        "score": 0.6179432272911072
+      }
+    ],
+    "primary_cluster": 9,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "8c8949dd-788e-47f1-995e-5de3f83707ea",
+    "clusters": [
+      {
+        "cluster_id": 5,
+        "distance": 0.5797860026359558,
+        "score": 0.6329970955848694
+      }
+    ],
+    "primary_cluster": 5,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "8c8ce408-9e88-45f3-9ae3-a6c5375fab90",
+    "clusters": [
+      {
+        "cluster_id": 8,
+        "distance": 0.5140326023101807,
+        "score": 0.6604877710342407
+      }
+    ],
+    "primary_cluster": 8,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "8cdc1a61-e752-431d-95dc-e2dd354985f8",
+    "clusters": [
+      {
+        "cluster_id": 0,
+        "distance": 0.6064662337303162,
+        "score": 0.6224842667579651
+      },
+      {
+        "cluster_id": 7,
+        "distance": 0.7038465738296509,
+        "score": 0.5869073271751404
+      }
+    ],
+    "primary_cluster": 0,
+    "num_clusters": 2
+  },
+  {
+    "candidate_id": "93774994-9ee0-4818-833a-1fedcdb7ba7d",
+    "clusters": [
+      {
+        "cluster_id": 0,
+        "distance": 0.7000460028648376,
+        "score": 0.5882193446159363
+      },
+      {
+        "cluster_id": 7,
+        "distance": 1.018826961517334,
+        "score": 0.4953371584415436
+      }
+    ],
+    "primary_cluster": 0,
+    "num_clusters": 2
+  },
+  {
+    "candidate_id": "95852bec-6839-4a9f-8ab4-87b2c5405ae2",
+    "clusters": [
+      {
+        "cluster_id": 5,
+        "distance": 0.47022438049316406,
+        "score": 0.6801682710647583
+      }
+    ],
+    "primary_cluster": 5,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "97375bcb-4a6d-4395-81fc-00dcbfe695bd",
+    "clusters": [
+      {
+        "cluster_id": 4,
+        "distance": 0.9015457630157471,
+        "score": 0.5258879661560059
+      },
+      {
+        "cluster_id": 0,
+        "distance": 1.0001044273376465,
+        "score": 0.4999738931655884
+      },
+      {
+        "cluster_id": 7,
+        "distance": 1.1188995838165283,
+        "score": 0.47194308042526245
+      },
+      {
+        "cluster_id": 5,
+        "distance": 1.1198692321777344,
+        "score": 0.4717272222042084
+      },
+      {
+        "cluster_id": 3,
+        "distance": 1.1404228210449219,
+        "score": 0.4671974182128906
+      },
+      {
+        "cluster_id": 1,
+        "distance": 1.152627944946289,
+        "score": 0.4645484685897827
+      },
+      {
+        "cluster_id": 9,
+        "distance": 1.1577008962631226,
+        "score": 0.46345624327659607
+      },
+      {
+        "cluster_id": 8,
+        "distance": 1.2785634994506836,
+        "score": 0.4388729929924011
+      }
+    ],
+    "primary_cluster": 4,
+    "num_clusters": 8
+  },
+  {
+    "candidate_id": "9b46eefb-287b-4c3e-9f0c-d4d91048d024",
+    "clusters": [
+      {
+        "cluster_id": 5,
+        "distance": 0.6781898736953735,
+        "score": 0.5958801507949829
+      }
+    ],
+    "primary_cluster": 5,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "9dad83d8-5058-4a7a-ab7f-81bab76c89f2",
+    "clusters": [
+      {
+        "cluster_id": 11,
+        "distance": 0.7094433903694153,
+        "score": 0.5849857330322266
+      },
+      {
+        "cluster_id": 0,
+        "distance": 1.0081207752227783,
+        "score": 0.49797800183296204
+      }
+    ],
+    "primary_cluster": 11,
+    "num_clusters": 2
+  },
+  {
+    "candidate_id": "9f2438db-4cb6-490a-be54-64c1b8ce4984",
+    "clusters": [
+      {
+        "cluster_id": 3,
+        "distance": 0.5807504653930664,
+        "score": 0.6326109170913696
+      }
+    ],
+    "primary_cluster": 3,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "9f717817-6d2b-4dd0-b9ee-a5e4da3aabe2",
+    "clusters": [
+      {
+        "cluster_id": 6,
+        "distance": 0.9088039398193359,
+        "score": 0.5238882899284363
+      }
+    ],
+    "primary_cluster": 6,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "a0fca09d-4711-41fc-8eda-1c534ad02d9e",
+    "clusters": [
+      {
+        "cluster_id": 4,
+        "distance": 0.7324946522712708,
+        "score": 0.5772023797035217
+      },
+      {
+        "cluster_id": 5,
+        "distance": 0.8317274451255798,
+        "score": 0.5459327101707458
+      },
+      {
+        "cluster_id": 0,
+        "distance": 1.0848472118377686,
+        "score": 0.47965145111083984
+      }
+    ],
+    "primary_cluster": 4,
+    "num_clusters": 3
+  },
+  {
+    "candidate_id": "a1d8573e-eb85-413a-a946-a2b7fad96f68",
+    "clusters": [
+      {
+        "cluster_id": 7,
+        "distance": 0.4300614297389984,
+        "score": 0.6992706656455994
+      }
+    ],
+    "primary_cluster": 7,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "a1e95afa-e4b2-4f6b-8c55-f9fdd8559b6b",
+    "clusters": [
+      {
+        "cluster_id": 1,
+        "distance": 0.4986460506916046,
+        "score": 0.6672689914703369
+      }
+    ],
+    "primary_cluster": 1,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "a5865f65-89a3-4939-9879-d95f212afcbd",
+    "clusters": [
+      {
+        "cluster_id": 3,
+        "distance": 0.771599531173706,
+        "score": 0.5644616484642029
+      },
+      {
+        "cluster_id": 7,
+        "distance": 0.895221471786499,
+        "score": 0.5276428461074829
+      },
+      {
+        "cluster_id": 9,
+        "distance": 1.073324203491211,
+        "score": 0.4823172390460968
+      },
+      {
+        "cluster_id": 0,
+        "distance": 1.083067774772644,
+        "score": 0.4800611734390259
+      }
+    ],
+    "primary_cluster": 3,
+    "num_clusters": 4
+  },
+  {
+    "candidate_id": "a5a7a988-c963-4035-b491-2f76809f15e8",
+    "clusters": [
+      {
+        "cluster_id": 0,
+        "distance": 0.7151157855987549,
+        "score": 0.5830510258674622
+      },
+      {
+        "cluster_id": 7,
+        "distance": 0.7939581871032715,
+        "score": 0.5574265718460083
+      }
+    ],
+    "primary_cluster": 0,
+    "num_clusters": 2
+  },
+  {
+    "candidate_id": "a5c2aec5-fd86-4e75-810e-3bb744a0a8e1",
+    "clusters": [
+      {
+        "cluster_id": 8,
+        "distance": 0.6070724725723267,
+        "score": 0.6222494840621948
+      },
+      {
+        "cluster_id": 1,
+        "distance": 0.8728314638137817,
+        "score": 0.5339508652687073
+      }
+    ],
+    "primary_cluster": 8,
+    "num_clusters": 2
+  },
+  {
+    "candidate_id": "a6fda8c3-befb-415c-920f-4a56750b12da",
+    "clusters": [
+      {
+        "cluster_id": 7,
+        "distance": 0.7834936380386353,
+        "score": 0.5606972575187683
+      },
+      {
+        "cluster_id": 9,
+        "distance": 0.8375638127326965,
+        "score": 0.5441988110542297
+      },
+      {
+        "cluster_id": 4,
+        "distance": 0.918147087097168,
+        "score": 0.5213364362716675
+      }
+    ],
+    "primary_cluster": 7,
+    "num_clusters": 3
+  },
+  {
+    "candidate_id": "a8782043-d40f-48fe-a881-50e99c446348",
+    "clusters": [
+      {
+        "cluster_id": 1,
+        "distance": 0.8037558794021606,
+        "score": 0.554398775100708
+      },
+      {
+        "cluster_id": 9,
+        "distance": 0.9833303093910217,
+        "score": 0.5042024850845337
+      },
+      {
+        "cluster_id": 8,
+        "distance": 1.0136617422103882,
+        "score": 0.4966077208518982
+      },
+      {
+        "cluster_id": 3,
+        "distance": 1.0149667263031006,
+        "score": 0.4962861239910126
+      },
+      {
+        "cluster_id": 2,
+        "distance": 1.1415867805480957,
+        "score": 0.4669434726238251
+      }
+    ],
+    "primary_cluster": 1,
+    "num_clusters": 5
+  },
+  {
+    "candidate_id": "a9e5e971-cec2-4daa-849c-19aa48e33693",
+    "clusters": [
+      {
+        "cluster_id": 3,
+        "distance": 0.6561250686645508,
+        "score": 0.6038191318511963
+      }
+    ],
+    "primary_cluster": 3,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "ace627bc-46f3-4688-b82e-df06347ba62a",
+    "clusters": [
+      {
+        "cluster_id": 3,
+        "distance": 0.6613110899925232,
+        "score": 0.6019341945648193
+      }
+    ],
+    "primary_cluster": 3,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "b016018f-1406-418a-97b5-82c4f319f858",
+    "clusters": [
+      {
+        "cluster_id": 4,
+        "distance": 0.6692968010902405,
+        "score": 0.5990546941757202
+      }
+    ],
+    "primary_cluster": 4,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "b0b2cee7-7386-4f44-916d-46fcdafcc7a9",
+    "clusters": [
+      {
+        "cluster_id": 0,
+        "distance": 0.6649177670478821,
+        "score": 0.6006302833557129
+      },
+      {
+        "cluster_id": 7,
+        "distance": 0.7199567556381226,
+        "score": 0.5814099907875061
+      }
+    ],
+    "primary_cluster": 0,
+    "num_clusters": 2
+  },
+  {
+    "candidate_id": "b0b92b47-2cc0-4c68-af8a-92d52fa73654",
+    "clusters": [
+      {
+        "cluster_id": 2,
+        "distance": 0.8334718942642212,
+        "score": 0.5454133152961731
+      },
+      {
+        "cluster_id": 8,
+        "distance": 1.047447919845581,
+        "score": 0.48841291666030884
+      }
+    ],
+    "primary_cluster": 2,
+    "num_clusters": 2
+  },
+  {
+    "candidate_id": "b4ec6c93-b583-4216-8bd5-e2c80f3e9cc7",
+    "clusters": [
+      {
+        "cluster_id": 11,
+        "distance": 0.5255120992660522,
+        "score": 0.655517578125
+      }
+    ],
+    "primary_cluster": 11,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "b5882536-7f70-4a7d-9d12-5e331ad9044b",
+    "clusters": [
+      {
+        "cluster_id": 1,
+        "distance": 0.8767401576042175,
+        "score": 0.5328388214111328
+      },
+      {
+        "cluster_id": 9,
+        "distance": 1.0101745128631592,
+        "score": 0.4974692463874817
+      },
+      {
+        "cluster_id": 0,
+        "distance": 1.0234383344650269,
+        "score": 0.4942082464694977
+      },
+      {
+        "cluster_id": 5,
+        "distance": 1.1178337335586548,
+        "score": 0.47218063473701477
+      },
+      {
+        "cluster_id": 3,
+        "distance": 1.1592985391616821,
+        "score": 0.463113397359848
+      },
+      {
+        "cluster_id": 4,
+        "distance": 1.1679943799972534,
+        "score": 0.4612557888031006
+      },
+      {
+        "cluster_id": 7,
+        "distance": 1.1819871664047241,
+        "score": 0.45829781889915466
+      },
+      {
+        "cluster_id": 8,
+        "distance": 1.2950010299682617,
+        "score": 0.43572965264320374
+      }
+    ],
+    "primary_cluster": 1,
+    "num_clusters": 8
+  },
+  {
+    "candidate_id": "b5bfcd2a-0ec0-4c15-9abd-3b0e4e6471b7",
+    "clusters": [
+      {
+        "cluster_id": 3,
+        "distance": 0.7763553857803345,
+        "score": 0.5629504323005676
+      },
+      {
+        "cluster_id": 5,
+        "distance": 0.964239239692688,
+        "score": 0.5091029405593872
+      },
+      {
+        "cluster_id": 0,
+        "distance": 1.151218295097351,
+        "score": 0.46485283970832825
+      }
+    ],
+    "primary_cluster": 3,
+    "num_clusters": 3
+  },
+  {
+    "candidate_id": "b8bf1f76-5640-4f85-8808-3c76ffca1dfa",
+    "clusters": [
+      {
+        "cluster_id": 2,
+        "distance": 0.5925756096839905,
+        "score": 0.6279137134552002
+      }
+    ],
+    "primary_cluster": 2,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "b8dfcd44-9e55-44ca-8ec8-d322385248fa",
+    "clusters": [
+      {
+        "cluster_id": 5,
+        "distance": 0.7769109606742859,
+        "score": 0.5627743601799011
+      },
+      {
+        "cluster_id": 10,
+        "distance": 1.0280033349990845,
+        "score": 0.49309587478637695
+      },
+      {
+        "cluster_id": 8,
+        "distance": 1.0847828388214111,
+        "score": 0.47966626286506653
+      }
+    ],
+    "primary_cluster": 5,
+    "num_clusters": 3
+  },
+  {
+    "candidate_id": "babfe54a-ce7f-49c6-b032-93d551e736e0",
+    "clusters": [
+      {
+        "cluster_id": 5,
+        "distance": 0.5496379137039185,
+        "score": 0.6453120112419128
+      }
+    ],
+    "primary_cluster": 5,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "bb8735f2-acc7-424e-b051-9dc19f60fc2b",
+    "clusters": [
+      {
+        "cluster_id": 5,
+        "distance": 0.6622635722160339,
+        "score": 0.6015892624855042
+      },
+      {
+        "cluster_id": 3,
+        "distance": 0.9494737982749939,
+        "score": 0.5129589438438416
+      }
+    ],
+    "primary_cluster": 5,
+    "num_clusters": 2
+  },
+  {
+    "candidate_id": "bc93bcf8-8f98-4bbf-87f2-e84faa94f028",
+    "clusters": [
+      {
+        "cluster_id": 11,
+        "distance": 0.8702552318572998,
+        "score": 0.5346863865852356
+      }
+    ],
+    "primary_cluster": 11,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "bca60970-8371-4b87-b921-74bf2fdfe9d2",
+    "clusters": [
+      {
+        "cluster_id": 6,
+        "distance": 0.9914923310279846,
+        "score": 0.5021359920501709
+      }
+    ],
+    "primary_cluster": 6,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "be976888-2c8b-469d-9431-1b036b32f66a",
+    "clusters": [
+      {
+        "cluster_id": 8,
+        "distance": 0.7634137272834778,
+        "score": 0.5670819282531738
+      },
+      {
+        "cluster_id": 3,
+        "distance": 0.9171977043151855,
+        "score": 0.5215946435928345
+      },
+      {
+        "cluster_id": 1,
+        "distance": 1.0698713064193726,
+        "score": 0.483121782541275
+      },
+      {
+        "cluster_id": 5,
+        "distance": 1.101308822631836,
+        "score": 0.47589388489723206
+      }
+    ],
+    "primary_cluster": 8,
+    "num_clusters": 4
+  },
+  {
+    "candidate_id": "bea6cfae-7ba5-4a5d-99d0-e0d8465db05c",
+    "clusters": [
+      {
+        "cluster_id": 4,
+        "distance": 0.7035399675369263,
+        "score": 0.5870129466056824
+      },
+      {
+        "cluster_id": 8,
+        "distance": 0.9549649953842163,
+        "score": 0.511518120765686
+      }
+    ],
+    "primary_cluster": 4,
+    "num_clusters": 2
+  },
+  {
+    "candidate_id": "c1b35686-0c5a-4e57-9d25-b7952bf07a8c",
+    "clusters": [
+      {
+        "cluster_id": 6,
+        "distance": 0.8287726044654846,
+        "score": 0.5468148589134216
+      },
+      {
+        "cluster_id": 10,
+        "distance": 1.2087126970291138,
+        "score": 0.4527524411678314
+      }
+    ],
+    "primary_cluster": 6,
+    "num_clusters": 2
+  },
+  {
+    "candidate_id": "c2365057-12ee-4022-962c-7e35f22f60e4",
+    "clusters": [
+      {
+        "cluster_id": 4,
+        "distance": 0.8026763796806335,
+        "score": 0.5547307133674622
+      },
+      {
+        "cluster_id": 7,
+        "distance": 0.9626812934875488,
+        "score": 0.5095070600509644
+      },
+      {
+        "cluster_id": 0,
+        "distance": 1.071885585784912,
+        "score": 0.48265212774276733
+      },
+      {
+        "cluster_id": 5,
+        "distance": 1.0836565494537354,
+        "score": 0.4799255430698395
+      },
+      {
+        "cluster_id": 3,
+        "distance": 1.1113053560256958,
+        "score": 0.47364065051078796
+      },
+      {
+        "cluster_id": 9,
+        "distance": 1.164736270904541,
+        "score": 0.46195003390312195
+      }
+    ],
+    "primary_cluster": 4,
+    "num_clusters": 6
+  },
+  {
+    "candidate_id": "c4773009-fb7f-45d2-81e5-af455c44fc81",
+    "clusters": [
+      {
+        "cluster_id": 4,
+        "distance": 0.7319400310516357,
+        "score": 0.5773872137069702
+      },
+      {
+        "cluster_id": 8,
+        "distance": 0.9033833146095276,
+        "score": 0.5253802537918091
+      },
+      {
+        "cluster_id": 5,
+        "distance": 1.0300999879837036,
+        "score": 0.492586612701416
+      }
+    ],
+    "primary_cluster": 4,
+    "num_clusters": 3
+  },
+  {
+    "candidate_id": "c52751b6-d157-4968-8a12-3629de314ffb",
+    "clusters": [
+      {
+        "cluster_id": 0,
+        "distance": 0.7137620449066162,
+        "score": 0.5835115909576416
+      },
+      {
+        "cluster_id": 7,
+        "distance": 0.9433417916297913,
+        "score": 0.5145775079727173
+      }
+    ],
+    "primary_cluster": 0,
+    "num_clusters": 2
+  },
+  {
+    "candidate_id": "c85ccdd3-d17a-40cc-8e9c-7e5c64884ae9",
+    "clusters": [
+      {
+        "cluster_id": 10,
+        "distance": 0.6319007873535156,
+        "score": 0.61278235912323
+      }
+    ],
+    "primary_cluster": 10,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "c89167f9-bf28-47a1-bea8-11f67ee665e8",
+    "clusters": [
+      {
+        "cluster_id": 4,
+        "distance": 0.5765101313591003,
+        "score": 0.6343124508857727
+      }
+    ],
+    "primary_cluster": 4,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "c8ead33f-ed8b-4729-8ed0-70ef695012ab",
+    "clusters": [
+      {
+        "cluster_id": 3,
+        "distance": 0.8432002067565918,
+        "score": 0.5425346493721008
+      },
+      {
+        "cluster_id": 9,
+        "distance": 0.9727318286895752,
+        "score": 0.5069112777709961
+      },
+      {
+        "cluster_id": 8,
+        "distance": 1.008608341217041,
+        "score": 0.49785712361335754
+      },
+      {
+        "cluster_id": 1,
+        "distance": 1.1421802043914795,
+        "score": 0.4668141305446625
+      },
+      {
+        "cluster_id": 4,
+        "distance": 1.2292503118515015,
+        "score": 0.4485812783241272
+      },
+      {
+        "cluster_id": 5,
+        "distance": 1.245810627937317,
+        "score": 0.4452735483646393
+      }
+    ],
+    "primary_cluster": 3,
+    "num_clusters": 6
+  },
+  {
+    "candidate_id": "c9053886-c774-4bd6-8d85-ceba84b89e37",
+    "clusters": [
+      {
+        "cluster_id": 2,
+        "distance": 0.8216673135757446,
+        "score": 0.5489476323127747
+      }
+    ],
+    "primary_cluster": 2,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "cc902bbc-cd64-453a-ba55-51ecadb7bd5b",
+    "clusters": [
+      {
+        "cluster_id": 8,
+        "distance": 0.4793308973312378,
+        "score": 0.6759812831878662
+      }
+    ],
+    "primary_cluster": 8,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "cd816649-0ef9-484c-8211-5818fc4a762f",
+    "clusters": [
+      {
+        "cluster_id": 7,
+        "distance": 0.8066524267196655,
+        "score": 0.5535098910331726
+      },
+      {
+        "cluster_id": 0,
+        "distance": 0.8287566900253296,
+        "score": 0.5468196272850037
+      }
+    ],
+    "primary_cluster": 7,
+    "num_clusters": 2
+  },
+  {
+    "candidate_id": "ce646a7a-00a3-43c7-b685-f9368703c603",
+    "clusters": [
+      {
+        "cluster_id": 8,
+        "distance": 0.5672919154167175,
+        "score": 0.638043224811554
+      }
+    ],
+    "primary_cluster": 8,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "ce6f6581-f6a4-43cc-9ba5-fed713664c99",
+    "clusters": [
+      {
+        "cluster_id": 7,
+        "distance": 0.634597897529602,
+        "score": 0.6117712259292603
+      }
+    ],
+    "primary_cluster": 7,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "cea7c308-6262-410b-835c-72ac7979e7e0",
+    "clusters": [
+      {
+        "cluster_id": 5,
+        "distance": 0.5614943504333496,
+        "score": 0.6404121518135071
+      }
+    ],
+    "primary_cluster": 5,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "cf8ac49f-095d-4c05-8aa6-d869301ea868",
+    "clusters": [
+      {
+        "cluster_id": 0,
+        "distance": 0.8978911638259888,
+        "score": 0.526900589466095
+      },
+      {
+        "cluster_id": 1,
+        "distance": 0.9883140325546265,
+        "score": 0.5029386878013611
+      },
+      {
+        "cluster_id": 5,
+        "distance": 1.1505591869354248,
+        "score": 0.4649953544139862
+      },
+      {
+        "cluster_id": 4,
+        "distance": 1.2017478942871094,
+        "score": 0.4541845917701721
+      },
+      {
+        "cluster_id": 9,
+        "distance": 1.288346767425537,
+        "score": 0.4369966983795166
+      },
+      {
+        "cluster_id": 8,
+        "distance": 1.3114913702011108,
+        "score": 0.4326210916042328
+      },
+      {
+        "cluster_id": 7,
+        "distance": 1.333743929862976,
+        "score": 0.42849600315093994
+      }
+    ],
+    "primary_cluster": 0,
+    "num_clusters": 7
+  },
+  {
+    "candidate_id": "cfdf8fd8-0094-4dc9-bdad-e6db3b5aa976",
+    "clusters": [
+      {
+        "cluster_id": 11,
+        "distance": 0.9920495748519897,
+        "score": 0.5019955635070801
+      },
+      {
+        "cluster_id": 6,
+        "distance": 1.1505627632141113,
+        "score": 0.4649945795536041
+      },
+      {
+        "cluster_id": 7,
+        "distance": 1.2943938970565796,
+        "score": 0.43584492802619934
+      },
+      {
+        "cluster_id": 10,
+        "distance": 1.314857006072998,
+        "score": 0.4319921135902405
+      },
+      {
+        "cluster_id": 2,
+        "distance": 1.3214706182479858,
+        "score": 0.4307613968849182
+      },
+      {
+        "cluster_id": 0,
+        "distance": 1.435462474822998,
+        "score": 0.41059961915016174
+      }
+    ],
+    "primary_cluster": 11,
+    "num_clusters": 6
+  },
+  {
+    "candidate_id": "d0f67b93-4b71-4b26-bb9f-d6d4970e8609",
+    "clusters": [
+      {
+        "cluster_id": 0,
+        "distance": 0.9194135069847107,
+        "score": 0.5209924578666687
+      },
+      {
+        "cluster_id": 7,
+        "distance": 1.0417371988296509,
+        "score": 0.4897790253162384
+      },
+      {
+        "cluster_id": 4,
+        "distance": 1.1513434648513794,
+        "score": 0.464825838804245
+      },
+      {
+        "cluster_id": 5,
+        "distance": 1.1980924606323242,
+        "score": 0.45493990182876587
+      },
+      {
+        "cluster_id": 9,
+        "distance": 1.2671871185302734,
+        "score": 0.4410752058029175
+      },
+      {
+        "cluster_id": 1,
+        "distance": 1.2773233652114868,
+        "score": 0.43911200761795044
+      },
+      {
+        "cluster_id": 3,
+        "distance": 1.2774348258972168,
+        "score": 0.4390904903411865
+      }
+    ],
+    "primary_cluster": 0,
+    "num_clusters": 7
+  },
+  {
+    "candidate_id": "d25b536b-4c34-43a5-9b1c-9e59ea7cbc39",
+    "clusters": [
+      {
+        "cluster_id": 3,
+        "distance": 0.7991014719009399,
+        "score": 0.5558330416679382
+      },
+      {
+        "cluster_id": 4,
+        "distance": 0.9817568063735962,
+        "score": 0.5046027898788452
+      },
+      {
+        "cluster_id": 7,
+        "distance": 0.9890989065170288,
+        "score": 0.502740204334259
+      },
+      {
+        "cluster_id": 9,
+        "distance": 1.0856266021728516,
+        "score": 0.47947221994400024
+      }
+    ],
+    "primary_cluster": 3,
+    "num_clusters": 4
+  },
+  {
+    "candidate_id": "d7196a88-6557-47d0-8ffe-f2e5fea81c59",
+    "clusters": [
+      {
+        "cluster_id": 0,
+        "distance": 0.7780484557151794,
+        "score": 0.5624143481254578
+      },
+      {
+        "cluster_id": 7,
+        "distance": 0.9922328591346741,
+        "score": 0.5019493699073792
+      }
+    ],
+    "primary_cluster": 0,
+    "num_clusters": 2
+  },
+  {
+    "candidate_id": "d79ddbe5-6517-47b5-a71c-919e1a32adcb",
+    "clusters": [
+      {
+        "cluster_id": 7,
+        "distance": 0.6655323505401611,
+        "score": 0.6004086136817932
+      },
+      {
+        "cluster_id": 0,
+        "distance": 0.7804524898529053,
+        "score": 0.5616549849510193
+      }
+    ],
+    "primary_cluster": 7,
+    "num_clusters": 2
+  },
+  {
+    "candidate_id": "d91b190e-e6cd-40d7-a9fd-5bbb422377ac",
+    "clusters": [
+      {
+        "cluster_id": 9,
+        "distance": 0.7058453559875488,
+        "score": 0.5862196087837219
+      },
+      {
+        "cluster_id": 1,
+        "distance": 0.8558886647224426,
+        "score": 0.5388254523277283
+      }
+    ],
+    "primary_cluster": 9,
+    "num_clusters": 2
+  },
+  {
+    "candidate_id": "dc6a96de-437c-4687-854d-9f00bc0ceb54",
+    "clusters": [
+      {
+        "cluster_id": 9,
+        "distance": 0.5755062699317932,
+        "score": 0.6347166299819946
+      }
+    ],
+    "primary_cluster": 9,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "de4a28e3-32c6-4e3c-a71a-13a40184189e",
+    "clusters": [
+      {
+        "cluster_id": 6,
+        "distance": 0.8031291961669922,
+        "score": 0.5545914173126221
+      }
+    ],
+    "primary_cluster": 6,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "de7e3942-a457-4317-80c8-1c5fb6cbba36",
+    "clusters": [
+      {
+        "cluster_id": 1,
+        "distance": 0.5335744619369507,
+        "score": 0.6520713567733765
+      }
+    ],
+    "primary_cluster": 1,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "dfa32b66-7d77-4f23-b148-7f1d1c68e154",
+    "clusters": [
+      {
+        "cluster_id": 8,
+        "distance": 0.5559788346290588,
+        "score": 0.6426823139190674
+      }
+    ],
+    "primary_cluster": 8,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "e2980fd4-1ca0-4983-9bb3-1ac61bf3f5df",
+    "clusters": [
+      {
+        "cluster_id": 0,
+        "distance": 0.6049669981002808,
+        "score": 0.6230657696723938
+      },
+      {
+        "cluster_id": 7,
+        "distance": 0.8628154993057251,
+        "score": 0.5368218421936035
+      }
+    ],
+    "primary_cluster": 0,
+    "num_clusters": 2
+  },
+  {
+    "candidate_id": "e3460a23-9973-4efb-b9db-9d32d63d6051",
+    "clusters": [
+      {
+        "cluster_id": 3,
+        "distance": 0.9056206345558167,
+        "score": 0.5247634649276733
+      },
+      {
+        "cluster_id": 9,
+        "distance": 1.0239683389663696,
+        "score": 0.4940789043903351
+      },
+      {
+        "cluster_id": 5,
+        "distance": 1.0391144752502441,
+        "score": 0.4904089570045471
+      },
+      {
+        "cluster_id": 4,
+        "distance": 1.1121540069580078,
+        "score": 0.47345033288002014
+      },
+      {
+        "cluster_id": 7,
+        "distance": 1.2952309846878052,
+        "score": 0.43568602204322815
+      }
+    ],
+    "primary_cluster": 3,
+    "num_clusters": 5
+  },
+  {
+    "candidate_id": "e52180ea-a171-4452-9f36-d65e26d73ce0",
+    "clusters": [
+      {
+        "cluster_id": 0,
+        "distance": 0.6137506365776062,
+        "score": 0.6196743845939636
+      }
+    ],
+    "primary_cluster": 0,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "e98f4247-6538-43b9-a3ea-52c94b985116",
+    "clusters": [
+      {
+        "cluster_id": 7,
+        "distance": 1.0672005414962769,
+        "score": 0.4837459623813629
+      },
+      {
+        "cluster_id": 11,
+        "distance": 1.202392578125,
+        "score": 0.4540516436100006
+      },
+      {
+        "cluster_id": 9,
+        "distance": 1.3015587329864502,
+        "score": 0.4344881474971771
+      },
+      {
+        "cluster_id": 3,
+        "distance": 1.3692885637283325,
+        "score": 0.42206764221191406
+      },
+      {
+        "cluster_id": 2,
+        "distance": 1.4449249505996704,
+        "score": 0.40901052951812744
+      },
+      {
+        "cluster_id": 6,
+        "distance": 1.5272260904312134,
+        "score": 0.39569076895713806
+      },
+      {
+        "cluster_id": 0,
+        "distance": 1.5327167510986328,
+        "score": 0.39483293890953064
+      }
+    ],
+    "primary_cluster": 7,
+    "num_clusters": 7
+  },
+  {
+    "candidate_id": "ea2183ec-cb4b-44fb-808b-88e5c9cb06c4",
+    "clusters": [
+      {
+        "cluster_id": 9,
+        "distance": 0.46390587091445923,
+        "score": 0.6831040382385254
+      }
+    ],
+    "primary_cluster": 9,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "ebb2fc04-0f98-4499-a438-be40d666a0d9",
+    "clusters": [
+      {
+        "cluster_id": 0,
+        "distance": 0.8878793716430664,
+        "score": 0.5296948552131653
+      },
+      {
+        "cluster_id": 1,
+        "distance": 1.0283759832382202,
+        "score": 0.4930052161216736
+      },
+      {
+        "cluster_id": 5,
+        "distance": 1.2138690948486328,
+        "score": 0.4516978859901428
+      },
+      {
+        "cluster_id": 9,
+        "distance": 1.2563834190368652,
+        "score": 0.44318708777427673
+      },
+      {
+        "cluster_id": 4,
+        "distance": 1.2680991888046265,
+        "score": 0.44089779257774353
+      },
+      {
+        "cluster_id": 7,
+        "distance": 1.2798198461532593,
+        "score": 0.4386311173439026
+      }
+    ],
+    "primary_cluster": 0,
+    "num_clusters": 6
+  },
+  {
+    "candidate_id": "ec86a7f1-faf9-4eb8-9fce-a7edadd4b556",
+    "clusters": [
+      {
+        "cluster_id": 1,
+        "distance": 0.7432839870452881,
+        "score": 0.5736299753189087
+      },
+      {
+        "cluster_id": 9,
+        "distance": 0.9619435667991638,
+        "score": 0.5096986293792725
+      }
+    ],
+    "primary_cluster": 1,
+    "num_clusters": 2
+  },
+  {
+    "candidate_id": "f017098f-3781-4d5d-b428-2be8ecee20c5",
+    "clusters": [
+      {
+        "cluster_id": 8,
+        "distance": 0.764744758605957,
+        "score": 0.5666542053222656
+      },
+      {
+        "cluster_id": 5,
+        "distance": 0.8155487775802612,
+        "score": 0.5507976412773132
+      }
+    ],
+    "primary_cluster": 8,
+    "num_clusters": 2
+  },
+  {
+    "candidate_id": "f26842a0-007c-4210-833c-6a027c8aed82",
+    "clusters": [
+      {
+        "cluster_id": 7,
+        "distance": 0.7401957511901855,
+        "score": 0.5746480226516724
+      },
+      {
+        "cluster_id": 0,
+        "distance": 0.9968976974487305,
+        "score": 0.5007767677307129
+      },
+      {
+        "cluster_id": 9,
+        "distance": 1.0285946130752563,
+        "score": 0.4929521381855011
+      }
+    ],
+    "primary_cluster": 7,
+    "num_clusters": 3
+  },
+  {
+    "candidate_id": "f3364ba9-13c7-4b86-ba12-b591cc04190c",
+    "clusters": [
+      {
+        "cluster_id": 0,
+        "distance": 0.6179097890853882,
+        "score": 0.6180814504623413
+      },
+      {
+        "cluster_id": 7,
+        "distance": 0.753573477268219,
+        "score": 0.5702641010284424
+      }
+    ],
+    "primary_cluster": 0,
+    "num_clusters": 2
+  },
+  {
+    "candidate_id": "f7a92f8f-2594-41f2-ad67-1a6827ba171d",
+    "clusters": [
+      {
+        "cluster_id": 3,
+        "distance": 0.5984125733375549,
+        "score": 0.6256207227706909
+      }
+    ],
+    "primary_cluster": 3,
+    "num_clusters": 1
+  },
+  {
+    "candidate_id": "f956fee1-791e-478b-a28a-bcdcd3a5b1c9",
+    "clusters": [
+      {
+        "cluster_id": 3,
+        "distance": 0.88008052110672,
+        "score": 0.5318921208381653
+      },
+      {
+        "cluster_id": 4,
+        "distance": 0.9594804644584656,
+        "score": 0.5103393197059631
+      },
+      {
+        "cluster_id": 5,
+        "distance": 1.0494502782821655,
+        "score": 0.4879356920719147
+      },
+      {
+        "cluster_id": 8,
+        "distance": 1.1024096012115479,
+        "score": 0.47564470767974854
+      },
+      {
+        "cluster_id": 9,
+        "distance": 1.1336839199066162,
+        "score": 0.4686729907989502
+      }
+    ],
+    "primary_cluster": 3,
+    "num_clusters": 5
+  }
+]

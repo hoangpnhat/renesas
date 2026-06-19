@@ -1,0 +1,64 @@
+####################################
+# Makefile for the user test program
+####################################
+
+##################################
+# DO NOT MODIFY THE FOLLOWING LINE
+include $(GNUCOMP_PATH)\defs.mak
+##################################
+
+#Use ERR File
+#ERRTOFILE = 1
+
+ifeq ($(TSCTYPE),TSC960)
+  #define shell2 object file
+  EXTRA_LIBS = $(GNUCOMP_PATH)\shell\shell2a.o
+else
+  #define shell2 object file
+  EXTRA_LIBS = $(GNUCOMP_PATH)\shell\shell2b.o
+endif
+
+
+#insert name of project here
+OUT = RC04EX
+
+#insert source files here
+SOURCES = RC04EX_man.c\
+          RC04EX_slc.c\
+          RC04EX_def.c\
+          RC04EX_tst.c\
+          RC04EX_apg.c\
+          RC04EX_fnc.c\
+          RC04EX_CGR.c\
+          RC04EX_WT.c\
+          compat.c\
+          _vk_temp.c
+
+#insert apg files here
+APG = RC04EX_pat.apg
+
+
+#specify the object dierectory name
+/* OUTDIR = output */
+
+#set the development mode
+DEVMODE = PROD
+
+ifeq ($(TSCTYPE),TSC960)
+  EXTRA_CFLAGS = -DV4K5KTESTER -DV4KONLY -Wuninitialized -O
+else
+  EXTRA_CFLAGS = -DV4K5KTESTER -DV5KONLY -Wuninitialized -O
+endif
+
+# 2004/12/27 add, for apg file definition
+ifeq ($(TSCTYPE),TSC960)
+  override VAP += -DV4K5KTESTER -DV4KONLY
+else
+  override VAP += -DV4K5KTESTER -DV5KONLY
+endif
+
+
+##################################
+# DO NOT MODIFY THE FOLLOWING LINE
+include $(GNUCOMP_PATH)\rules.mak
+##################################

@@ -1,0 +1,16 @@
+resources:
+  jobs:
+    inference_materialized_view:
+      name: ${var.prefix}-${var.env}-${bundle.name}-create-inference-materialized-views
+      permissions: ${var.permissions}
+      budget_policy_id: ${var.budget_policy_id}
+      tasks:
+        - task_key: create-view
+          notebook_task:
+            notebook_path: ./src/inference_materialized_view.py
+            base_parameters:
+              catalog_name: ${var.inference_table_configurations.catalog_name}
+              schema_name: ${var.inference_table_configurations.schema_name}
+              dev_mode: ${var.env}
+              environment: ${var.env}
+              shared_warehouse_id: ${var.shared_warehouse_id}

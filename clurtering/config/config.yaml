@@ -1,0 +1,58 @@
+# Candidate Clustering Configuration
+
+# Skill Normalization Settings
+normalization:
+  # Tier 1: Rule-based normalization
+  tier1:
+    lowercase: true
+    strip_whitespace: true
+    remove_versions: true  # Python3.9 -> Python
+    expand_abbreviations: true  # JS -> JavaScript
+
+  # Tier 2: Embedding-based clustering
+  tier2:
+    model_name: "sentence-transformers/all-mpnet-base-v2"
+    min_cluster_size: 3
+    similarity_threshold: 0.85
+
+  # Tier 3: Co-occurrence graph
+  tier3:
+    min_cooccurrence: 5
+    louvain_resolution: 1.0
+
+  # Validation
+  validation:
+    target_accuracy: 0.95
+    manual_review_sample_size: 200
+
+# Feature Engineering Settings
+features:
+  skill_features:
+    top_n_skills: 300
+    confidence_weight: true
+  domain_aggregations:
+    domains: ["Backend", "Frontend", "Data", "ML/AI", "DevOps", "Cloud", "Security"]
+  weakness_modeling:
+    percentile_threshold: 0.40  # Below 40th percentile = weakness
+    weight_multiplier: 1.2
+
+# Clustering Settings
+clustering:
+  dimensionality_reduction:
+    pca_variance_retained: 0.95
+    umap_n_neighbors: 15
+    umap_min_dist: 0.1
+    umap_n_components: 25
+
+  algorithms:
+    hdbscan:
+      min_cluster_size: 20
+      min_samples: 5
+    target_n_clusters: 20
+    min_cluster_size: 20
+    max_cluster_size_ratio: 0.25
+
+# Logging
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"

@@ -1,0 +1,101 @@
+bundle:
+  name: coding
+
+presets:
+  tags:
+    ai_project_id: coding
+
+include:
+  - ./serving_endpoints/*.yml
+  - ./jobs/*.yml
+  - ./variables.yml
+
+workspace:
+  root_path: /Workspace/Users/${workspace.current_user.userName}/${bundle.name}/${bundle.target}
+
+############ Common variables ##################
+uat_non_shared_variables: &uat_non_shared_variables
+  env:
+    default: uat
+  dev_mode:
+    default: nonprod
+  delta_sharing_configurations:
+    default:
+      catalog_name: ai_uat
+      schema_name: ai_uat_coding_gold
+
+uat_shared_variables: &uat_shared_variables
+  env:
+    default: uat
+  dev_mode:
+    default: nonprod
+  delta_sharing_configurations:
+    default:
+      catalog_name: ai_uat_delta_shared
+      schema_name: ai_uat_coding_gold
+
+prod_shared_variables: &prod_shared_variables
+  env:
+    default: prd
+  dev_mode:
+    default: prod
+  delta_sharing_configurations:
+    default:
+      catalog_name: ai_uat_delta_shared
+      schema_name: ai_uat_coding_gold
+
+################# Targets ##################
+targets:
+  ai-uat:
+    workspace:
+      host: https://adb-893717583776115.15.azuredatabricks.net/
+    variables:
+      openai_api_base:
+        default: https://azure-openai-857219.openai.azure.com
+      inference_table_configurations:
+        default:
+          enabled: true
+          catalog_name: ai_uat
+          schema_name: ai_uat_coding_gold
+      <<: *uat_non_shared_variables
+
+  ai-uat-02:
+    workspace:
+      host: https://adb-2735645151323815.15.azuredatabricks.net/
+    variables:
+      openai_api_base:
+        default: https://azure-openai-733709.openai.azure.com
+      inference_table_configurations:
+        default:
+          enabled: true
+          catalog_name: ai_uat_02
+          schema_name: ai_uat_coding_logs
+      <<: *uat_shared_variables
+
+  ai-prod:
+    workspace:
+      host: https://adb-893717583776115.15.azuredatabricks.net/
+    variables:
+      openai_api_base:
+        default: https://azure-openai-857219.openai.azure.com
+      inference_table_configurations:
+        default:
+          enabled: true
+          catalog_name: ai_prod
+          schema_name: ai_prod_coding_logs
+      <<: *prod_shared_variables
+
+  ai-prod-02:
+    workspace:
+      host: https://adb-4265374015564621.1.azuredatabricks.net/
+    variables:
+      openai_api_base:
+        default: https://azure-openai-831152.openai.azure.com
+      shared_warehouse_id:
+        default: 249321e809ad49be
+      inference_table_configurations:
+        default:
+          enabled: true
+          catalog_name: ai_prd_02
+          schema_name: ai_prd_coding_logs
+      <<: *prod_shared_variables

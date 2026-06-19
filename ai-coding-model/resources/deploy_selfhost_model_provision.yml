@@ -1,0 +1,49 @@
+common_permissions: &permissions
+  permissions:
+    - level: CAN_MANAGE
+      group_name: 04_AI_Admin
+    - level: CAN_MANAGE
+      user_name: hoang.pham.uh@renesas.com
+
+# Define a new cluster configuration for this job
+new_cluster_config: &new_cluster
+  new_cluster:
+    spark_version: "15.4.x-scala2.12"
+    node_type_id: "Standard_DS3_v2"
+    num_workers: 0  # Single node for model operations
+    spark_conf:
+      spark.master: "local[*, 4]"
+      spark.databricks.cluster.profile: "singleNode"
+    custom_tags:
+      ResourceClass: "SingleNode"
+
+common_parameters: &env
+  dbx_token: ${var.dbx_token}
+  version: v1
+  environment: ${bundle.target}
+
+# The main job for coding_assistant.
+resources:
+  jobs:
+    selfhost_model_provision:
+      name: ai-${bundle.target}-deploy-selfhost-model-provision-job
+      tasks:
+        - task_key: llamafy-qwen
+          notebook_task:
+            notebook_path: ../deploy_serving_endpoint/provision/1.Llamafy-Qwen.py
+            base_parameters:
+              model_name: "Qwen/Qwen2.5-Coder-7B"
+              uc_volume_path: "/Volumes/ai_uat_02/ai_uat_coding_logs/qwencoder_models"
+              <<: *env
+        - task_key: register-llamifed-qwen
+          depends_on:
+            - task_key: llamafy-qwen
+          notebook_task:
+            notebook_path: ../deploy_serving_endpoint/provision/2.Register-Llamifed-Qwen-as-UC-Model.py
+            base_parameters:
+              model_path: "/Volumes/ai_uat_02/ai_uat_coding_logs/qwencoder_models/Qwen/Qwen2.5-Coder-7B-Llama"
+              env: ${bundle.target}
+              model_name: "qwencoder25-7b"
+              <<: *env
+      <<: *permissions
+        

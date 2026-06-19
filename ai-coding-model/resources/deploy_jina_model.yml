@@ -1,0 +1,62 @@
+common_permissions: &permissions
+  permissions:
+    - level: CAN_MANAGE
+      group_name: 04_AI_Admin
+    - level: CAN_MANAGE
+      user_name: hoang.pham.uh@renesas.com
+
+job_cluster: &job_cluster
+  job_cluster_key: ${bundle.target}-code-pipeline-cluster
+
+common_parameters: &env
+  dbx_token: ${var.dbx_token}
+  version: v1
+  environment: ${bundle.target}
+
+# The main job for coding_assistant.
+resources:
+  jobs:
+    selfhost_model:
+      job_clusters:
+        - new_cluster:
+            spark_version: 15.4.x-scala2.12
+            azure_attributes:
+              first_on_demand: 1
+              availability: SPOT_WITH_FALLBACK_AZURE
+              spot_bid_max_price: 100
+            node_type_id: Standard_NC4as_T4_v3
+            driver_node_type_id: Standard_NC4as_T4_v3
+            enable_elastic_disk: true
+            policy_id: 000D721D351E658D
+            data_security_mode: DATA_SECURITY_MODE_DEDICATED
+            kind: CLASSIC_PREVIEW
+            runtime_engine: STANDARD
+          <<: *job_cluster
+      name: ai-${bundle.target}-deploy-jina-model-job
+      tasks:
+        - task_key: deploy-jina-embedding-model
+          job_cluster_key: ${bundle.target}-code-pipeline-cluster
+          #   spark_version: 15.4.x-scala2.12
+          #   node_type_id: Standard_NC4as_T4_v3 #  Example node type
+          #   # Use 'Standard_D3_v2' for Azure, 'standard-16' for GCP etc.
+          #   num_workers: 1
+          # existing_cluster_id: 1010-094850-nt82dgwh
+          notebook_task:
+            notebook_path: ../deploy_serving_endpoint/jina_embedding/jina_deploy_notebook.py
+            base_parameters:
+              <<: *env
+        - task_key: deploy-jina-reranker-model
+          job_cluster_key: ${bundle.target}-code-pipeline-cluster
+
+          # new_cluster:
+          #   spark_version: 15.4.x-scala2.12
+          #   node_type_id: Standard_NC4as_T4_v3 #  Example node type
+          #   # Use 'Standard_D3_v2' for Azure, 'standard-16' for GCP etc.
+          #   num_workers: 1
+          # existing_cluster_id: 1010-094850-nt82dgwh
+          notebook_task:
+            notebook_path: ../deploy_serving_endpoint/jina_embedding/jina_reranker_deploy_notebook.py
+            base_parameters:
+              <<: *env
+      <<: *permissions
+        

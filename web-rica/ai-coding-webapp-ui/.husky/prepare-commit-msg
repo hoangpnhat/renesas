@@ -1,0 +1,59 @@
+#!/usr/bin/env sh
+#
+# Copyright © 2025 Renesas Electronics Corporation. All Rights Reserved.
+#
+
+COMMIT_MSG_FILE=$1
+COMMIT_SOURCE=$2
+BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || git branch --show-current 2>/dev/null)
+
+# Validate branch name pattern
+if ! echo "$BRANCH_NAME" | grep -qE "^(feature|feat|improve|improvement|bugfix|hotfix|release|experiment|chore)\/((ADAIT-[0-9]+)|([a-z0-9._-]+))$"; then
+  echo "❌ Branch name '$BRANCH_NAME' không hợp lệ!"
+  echo "  Yêu cầu: ^(feature|feat|improve|improvement|bugfix|hotfix|release|experiment|chore)\\/((ADAIT-[0-9]+)|([a-z0-9._-]+))$"
+  exit 1
+fi
+
+# Chỉ chạy khi commit từ command line
+if [ "$COMMIT_SOURCE" = "message" ] || [ -z "$COMMIT_SOURCE" ]; then
+
+  CURRENT_MSG=$(cat "$COMMIT_MSG_FILE" 2>/dev/null || echo "")
+
+  # Nếu đã hợp lệ thì thoát
+  if echo "$CURRENT_MSG" | grep -qE "^(feat|improvement|fix|docs|chore|test|refactor|style|perf|improve)(\((ADAIT-[0-9]+)\))?: .+"; then
+    exit 0
+  fi
+
+  # Detect ticket từ branch (chỉ ADAIT-xxx hợp lệ)
+  TICKET=""
+  if echo "$BRANCH_NAME" | grep -qE "ADAIT-[0-9]+"; then
+    TICKET=$(echo "$BRANCH_NAME" | grep -oE "ADAIT-[0-9]+" | head -1)
+  fi
+
+  # Detect type theo prefix branch
+  TYPE=""
+  case "$BRANCH_NAME" in
+    feature/*) TYPE="feat" ;;
+    bugfix/*|hotfix/*) TYPE="fix" ;;
+    release/*) TYPE="chore" ;;
+    chore/*) TYPE="chore" ;;
+    experiment/*) TYPE="improve" ;;
+    improvement/*) TYPE="improve" ;;
+    *) TYPE="feat" ;;
+  esac
+
+  # Build prefix
+  if [ -n "$TICKET" ]; then
+    PREFIX="${TYPE}(${TICKET}): "
+  else
+    PREFIX="${TYPE}: "
+  fi
+
+  # Update commit message
+  if [ -n "$CURRENT_MSG" ] && [ "$CURRENT_MSG" != "" ]; then
+    echo "${PREFIX}${CURRENT_MSG}" > "$COMMIT_MSG_FILE"
+  else
+    echo "${PREFIX}" > "$COMMIT_MSG_FILE"
+  fi
+
+fi

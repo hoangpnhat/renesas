@@ -1,0 +1,5086 @@
+{
+  "XML": {
+    "canonical": "xml",
+    "confidence": 0.98
+  },
+  "AWS Services": {
+    "canonical": "aws",
+    "confidence": 0.8187229037284851
+  },
+  "Service Mesh Configurations": {
+    "canonical": "service mesh configurations",
+    "confidence": 0.98
+  },
+  "Evaluation": {
+    "canonical": "evaluation",
+    "confidence": 0.98
+  },
+  "Data Patterns": {
+    "canonical": "data patterns",
+    "confidence": 0.98
+  },
+  "Operating Systems": {
+    "canonical": "operating systems",
+    "confidence": 0.98
+  },
+  "Resource Utilization": {
+    "canonical": "resource management",
+    "confidence": 0.8484693765640259
+  },
+  "Frontend Architecture": {
+    "canonical": "frontend frameworks",
+    "confidence": 0.7700819969177246
+  },
+  "Traffic Routing": {
+    "canonical": "traffic routing",
+    "confidence": 1.0000003576278687
+  },
+  "Familiarity with Advanced Models": {
+    "canonical": "familiarity with advanced models",
+    "confidence": 0.98
+  },
+  "Real-Time Operating Systems": {
+    "canonical": "real-time operating systems",
+    "confidence": 0.98
+  },
+  "Caching Architecture": {
+    "canonical": "caching",
+    "confidence": 0.680345892906189
+  },
+  "Kafka Consumer Configuration": {
+    "canonical": "kafka",
+    "confidence": 0.4330708384513855
+  },
+  "Language Proficiency": {
+    "canonical": "language proficiency",
+    "confidence": 0.98
+  },
+  "Algorithm Selection": {
+    "canonical": "algorithms",
+    "confidence": 0.7558243274688721
+  },
+  "Transaction Volume Assumptions": {
+    "canonical": "transaction volume assumptions",
+    "confidence": 0.98
+  },
+  "Data Transformation": {
+    "canonical": "data transformation",
+    "confidence": 0.98
+  },
+  "API Design Competence": {
+    "canonical": "api design",
+    "confidence": 1.0000001192092896
+  },
+  "Latency Measurement": {
+    "canonical": "latency",
+    "confidence": 0.7627311944961548
+  },
+  "Optimization": {
+    "canonical": "optimization",
+    "confidence": 0.9999999403953552
+  },
+  "Component Organization": {
+    "canonical": "component design",
+    "confidence": 0.793643057346344
+  },
+  "Testing and Reliability": {
+    "canonical": "testing and validation",
+    "confidence": 0.7489096522331238
+  },
+  "Grafana Mimir": {
+    "canonical": "grafana",
+    "confidence": 0.7718729972839355
+  },
+  "Data Freshness Management": {
+    "canonical": "data freshness management",
+    "confidence": 0.98
+  },
+  "TypeScript": {
+    "canonical": "typescript",
+    "confidence": 0.98
+  },
+  "Driver Development": {
+    "canonical": "driver development",
+    "confidence": 0.98
+  },
+  "Frameworks and Technologies": {
+    "canonical": "frameworks",
+    "confidence": 0.8011432886123657
+  },
+  "Query Optimization": {
+    "canonical": "sql optimization",
+    "confidence": 0.842083215713501
+  },
+  ".NET Core": {
+    "canonical": ".net core",
+    "confidence": 0.98
+  },
+  "Data Model Consistency": {
+    "canonical": "data model consistency",
+    "confidence": 0.98
+  },
+  "Accessibility": {
+    "canonical": "accessibility",
+    "confidence": 0.98
+  },
+  "Cloud Integration": {
+    "canonical": "cloud integration",
+    "confidence": 1.000000238418579
+  },
+  "Load Testing Tools": {
+    "canonical": "load testing",
+    "confidence": 0.8575723171234131
+  },
+  "Architectural Design and Integration": {
+    "canonical": "architecture",
+    "confidence": 0.5496195554733276
+  },
+  "Code Organization": {
+    "canonical": "code organization",
+    "confidence": 0.98
+  },
+  "Packaging": {
+    "canonical": "packaging",
+    "confidence": 0.98
+  },
+  "Token Generation": {
+    "canonical": "token generation",
+    "confidence": 0.98
+  },
+  "API Versioning": {
+    "canonical": "api versioning",
+    "confidence": 0.98
+  },
+  "Sorting Algorithms": {
+    "canonical": "sorting algorithms",
+    "confidence": 0.98
+  },
+  "Data Processing and Management": {
+    "canonical": "data processing",
+    "confidence": 0.8589370846748352
+  },
+  "HIPAA Compliance": {
+    "canonical": "hipaa compliance",
+    "confidence": 0.98
+  },
+  "Compliance and Security": {
+    "canonical": "security compliance",
+    "confidence": 0.899705171585083
+  },
+  "AI and Machine Learning Expertise": {
+    "canonical": "ai & machine learning",
+    "confidence": 0.8011511564254761
+  },
+  "Concurrency Control": {
+    "canonical": "concurrency",
+    "confidence": 0.7991732954978943
+  },
+  "Geospatial Data Modeling": {
+    "canonical": "geospatial queries",
+    "confidence": 0.657759428024292
+  },
+  "Java 17 Proficiency": {
+    "canonical": "java 17 proficiency",
+    "confidence": 0.98
+  },
+  "Throughput Measurement": {
+    "canonical": "throughput measurement",
+    "confidence": 0.98
+  },
+  "Message Queue Management": {
+    "canonical": "queue system",
+    "confidence": 0.7575435638427734
+  },
+  "Alerting Rules": {
+    "canonical": "alerting rules",
+    "confidence": 0.98
+  },
+  "Networking": {
+    "canonical": "networking",
+    "confidence": 1.0
+  },
+  "Data Architecture and Schema Design": {
+    "canonical": "schema design",
+    "confidence": 0.8722165822982788
+  },
+  "Linux Proficiency": {
+    "canonical": "linux proficiency",
+    "confidence": 0.98
+  },
+  "Component Architecture": {
+    "canonical": "component design",
+    "confidence": 0.8365537524223328
+  },
+  "Sequelize": {
+    "canonical": "sequelize",
+    "confidence": 0.98
+  },
+  "Spring WebFlux": {
+    "canonical": "spring boot",
+    "confidence": 0.5657792091369629
+  },
+  "Data Pipeline Design": {
+    "canonical": "data pipeline",
+    "confidence": 0.8988584876060486
+  },
+  "Input Validation": {
+    "canonical": "input validation",
+    "confidence": 0.98
+  },
+  "Monitoring and Alerting Systems": {
+    "canonical": "alerting system",
+    "confidence": 0.8394458293914795
+  },
+  "Performance Optimization Skills": {
+    "canonical": "performance optimization skills",
+    "confidence": 0.98
+  },
+  "ETL Process Design": {
+    "canonical": "etl process",
+    "confidence": 0.8853347301483154
+  },
+  "Integration of Components": {
+    "canonical": "integration of components",
+    "confidence": 0.98
+  },
+  "Role-Based Access Control": {
+    "canonical": "access control",
+    "confidence": 0.7928019165992737
+  },
+  "Asynchronous Messaging": {
+    "canonical": "asynchronous messaging",
+    "confidence": 0.98
+  },
+  "Data Normalization": {
+    "canonical": "data normalization",
+    "confidence": 1.000000238418579
+  },
+  "Security Measures in Networking": {
+    "canonical": "security measures in networking",
+    "confidence": 0.98
+  },
+  "Cluster State Consistency": {
+    "canonical": "cluster state consistency",
+    "confidence": 0.98
+  },
+  "Web Frameworks": {
+    "canonical": "frameworks",
+    "confidence": 0.7858899831771851
+  },
+  "Mockito": {
+    "canonical": "avro",
+    "confidence": 0.365786075592041
+  },
+  "Speech-to-Text Model Evaluation": {
+    "canonical": "speech-to-text model selection",
+    "confidence": 0.8323168158531189
+  },
+  "Messaging System": {
+    "canonical": "message broker",
+    "confidence": 0.7901345491409302
+  },
+  "AI Technologies": {
+    "canonical": "ai technologies",
+    "confidence": 0.98
+  },
+  "Database Migration": {
+    "canonical": "data migration",
+    "confidence": 0.8041332364082336
+  },
+  "Cloud Deployment": {
+    "canonical": "aws",
+    "confidence": 0.5208007097244263
+  },
+  "DynamoDB": {
+    "canonical": "dynamodb",
+    "confidence": 0.98
+  },
+  "Technical Skill in PyTorch": {
+    "canonical": "technical skill in pytorch",
+    "confidence": 0.98
+  },
+  "Grafana Mimir Technical Skills": {
+    "canonical": "grafana",
+    "confidence": 0.49253183603286743
+  },
+  "Scaling": {
+    "canonical": "scaling",
+    "confidence": 1.0000003576278687
+  },
+  "Technical Skill - TypeScript": {
+    "canonical": "technical skill - typescript",
+    "confidence": 0.98
+  },
+  "Data consistency and integrity": {
+    "canonical": "data integrity",
+    "confidence": 0.8532629013061523
+  },
+  "Android Development": {
+    "canonical": "android development",
+    "confidence": 0.98
+  },
+  "Retry Logic": {
+    "canonical": "retry logic",
+    "confidence": 1.0
+  },
+  "Error Recovery": {
+    "canonical": "error logging",
+    "confidence": 0.5899569392204285
+  },
+  "LLM Chaining": {
+    "canonical": "llm chaining",
+    "confidence": 0.98
+  },
+  "Data Preprocessing Techniques": {
+    "canonical": "data normalization",
+    "confidence": 0.5413572192192078
+  },
+  "Latency Optimization": {
+    "canonical": "latency",
+    "confidence": 0.7946462631225586
+  },
+  "Document Management": {
+    "canonical": "document management",
+    "confidence": 0.98
+  },
+  "Conditional Rendering": {
+    "canonical": "conditional rendering",
+    "confidence": 0.98
+  },
+  "REST API Knowledge": {
+    "canonical": "rest api knowledge",
+    "confidence": 1.0
+  },
+  "Similarity Measurement": {
+    "canonical": "similarity measurement",
+    "confidence": 0.98
+  },
+  "CI/CD Implementation": {
+    "canonical": "cicd",
+    "confidence": 0.98
+  },
+  "Market Data Processing": {
+    "canonical": "market data processing",
+    "confidence": 0.98
+  },
+  "Data Structures and Algorithms": {
+    "canonical": "algorithms",
+    "confidence": 0.6612458229064941
+  },
+  "Communication and Rationale": {
+    "canonical": "communication and rationale",
+    "confidence": 0.98
+  },
+  "ETL Processes": {
+    "canonical": "etl process",
+    "confidence": 0.9622867703437805
+  },
+  "Real-time Operating Systems": {
+    "canonical": "real-time operating systems",
+    "confidence": 0.98
+  },
+  "Data Security Best Practices": {
+    "canonical": "security practices",
+    "confidence": 0.7459101676940918
+  },
+  "Technical Skill in Flink": {
+    "canonical": "technical skill in flink",
+    "confidence": 0.98
+  },
+  "Data Accuracy Verification": {
+    "canonical": "data accuracy verification",
+    "confidence": 0.98
+  },
+  "Intent Detection": {
+    "canonical": "intent detection",
+    "confidence": 0.98
+  },
+  "ORM": {
+    "canonical": "orm",
+    "confidence": 0.98
+  },
+  "Spark": {
+    "canonical": "spark",
+    "confidence": 0.98
+  },
+  "Job Queue Management": {
+    "canonical": "queue system",
+    "confidence": 0.7523930072784424
+  },
+  "Indexing": {
+    "canonical": "indexing",
+    "confidence": 1.000000238418579
+  },
+  "Failure Recovery": {
+    "canonical": "error logging",
+    "confidence": 0.5026508569717407
+  },
+  "Project Management and Deployment": {
+    "canonical": "project management and deployment",
+    "confidence": 0.98
+  },
+  "Data Protection Best Practices": {
+    "canonical": "data protection best practices",
+    "confidence": 0.98
+  },
+  "Backend Optimization": {
+    "canonical": "backend optimization",
+    "confidence": 1.0
+  },
+  "Retry Mechanism": {
+    "canonical": "retry logic",
+    "confidence": 0.8654181957244873
+  },
+  "Image Enhancement": {
+    "canonical": "image enhancement",
+    "confidence": 0.98
+  },
+  "Testing and Validation": {
+    "canonical": "testing and validation",
+    "confidence": 0.9999997615814209
+  },
+  "Prompt Engineering": {
+    "canonical": "prompt engineering",
+    "confidence": 0.98
+  },
+  "Frontend Development Skills": {
+    "canonical": "frontend",
+    "confidence": 0.98
+  },
+  "Versioning Strategy": {
+    "canonical": "versioning strategy",
+    "confidence": 1.0
+  },
+  "Middleware": {
+    "canonical": "middleware",
+    "confidence": 0.98
+  },
+  "Testing Strategy": {
+    "canonical": "testing strategy",
+    "confidence": 1.0
+  },
+  ".NET": {
+    "canonical": ".net",
+    "confidence": 0.98
+  },
+  "API Design and Implementation": {
+    "canonical": "api design",
+    "confidence": 0.9280474781990051
+  },
+  "System Architecture": {
+    "canonical": "system design",
+    "confidence": 0.8147590756416321
+  },
+  "Cache Consistency": {
+    "canonical": "caching",
+    "confidence": 0.6454482078552246
+  },
+  "JWT": {
+    "canonical": "jwt",
+    "confidence": 0.9999998211860657
+  },
+  "Caching Strategies": {
+    "canonical": "caching",
+    "confidence": 0.7379950284957886
+  },
+  "Data Structures": {
+    "canonical": "algorithms",
+    "confidence": 0.5386908054351807
+  },
+  "Data Abstraction": {
+    "canonical": "data abstraction",
+    "confidence": 0.98
+  },
+  "Sandboxing": {
+    "canonical": "sandboxing",
+    "confidence": 0.98
+  },
+  "Synchronous and Asynchronous Processing Design": {
+    "canonical": "asynchronous processing",
+    "confidence": 0.8539307117462158
+  },
+  "Compliance Solutions": {
+    "canonical": "compliance solutions",
+    "confidence": 0.98
+  },
+  "Machine Learning Model Implementation": {
+    "canonical": "machine learning model implementation",
+    "confidence": 1.000000238418579
+  },
+  "Technical Skill in YOLO": {
+    "canonical": "technical skill in yolo",
+    "confidence": 0.98
+  },
+  "Security": {
+    "canonical": "security",
+    "confidence": 0.98
+  },
+  "Traffic Prediction": {
+    "canonical": "traffic patterns",
+    "confidence": 0.6616995334625244
+  },
+  "Database Schema Versioning": {
+    "canonical": "database schema versioning",
+    "confidence": 0.98
+  },
+  "OpenAPI Specification": {
+    "canonical": "openapi specification",
+    "confidence": 0.98
+  },
+  "Token Validation": {
+    "canonical": "token handling",
+    "confidence": 0.6848040819168091
+  },
+  "Deduplication Store": {
+    "canonical": "deduplication",
+    "confidence": 0.7960810661315918
+  },
+  "Error Handling and Resiliency": {
+    "canonical": "error logging",
+    "confidence": 0.5255392789840698
+  },
+  "Technical Skill in Redis": {
+    "canonical": "technical skill in redis",
+    "confidence": 0.98
+  },
+  "API Design Skills": {
+    "canonical": "api design",
+    "confidence": 1.0000001192092896
+  },
+  "Observability and Monitoring": {
+    "canonical": "observability",
+    "confidence": 0.8214254379272461
+  },
+  "Data Synchronization": {
+    "canonical": "data synchronization",
+    "confidence": 0.98
+  },
+  "Technical Skill in Data Structures": {
+    "canonical": "technical skill in data structures",
+    "confidence": 0.98
+  },
+  "Component Composition": {
+    "canonical": "component design",
+    "confidence": 0.7030719518661499
+  },
+  "Service Communication Management": {
+    "canonical": "service interaction",
+    "confidence": 0.7382895350456238
+  },
+  "Simulation Testing": {
+    "canonical": "simulation testing",
+    "confidence": 0.98
+  },
+  "Cloud Security Practices": {
+    "canonical": "cloud security practices",
+    "confidence": 0.98
+  },
+  "Semantic Chunking Implementation": {
+    "canonical": "document chunking",
+    "confidence": 0.6511226892471313
+  },
+  "Alerting": {
+    "canonical": "alerting",
+    "confidence": 0.98
+  },
+  "Kubernetes": {
+    "canonical": "kubernetes",
+    "confidence": 0.98
+  },
+  "Hardware Constraints": {
+    "canonical": "hardware constraints",
+    "confidence": 0.9999999403953552
+  },
+  "Networking Software": {
+    "canonical": "networking software",
+    "confidence": 0.98
+  },
+  "Data Integrity and Validation": {
+    "canonical": "data integrity",
+    "confidence": 0.8642714619636536
+  },
+  "API design": {
+    "canonical": "api design",
+    "confidence": 1.0000001192092896
+  },
+  "Error Management": {
+    "canonical": "error logging",
+    "confidence": 0.6789464950561523
+  },
+  "Context Management": {
+    "canonical": "context management",
+    "confidence": 0.98
+  },
+  "Database Logic Testing": {
+    "canonical": "database logic testing",
+    "confidence": 0.98
+  },
+  "Scalable AI Architecture": {
+    "canonical": "scalable ai architecture",
+    "confidence": 0.98
+  },
+  "Data Pipeline Engineering": {
+    "canonical": "data pipeline",
+    "confidence": 0.8885555267333984
+  },
+  "API Reliability Assumptions": {
+    "canonical": "api reliability assumptions",
+    "confidence": 0.98
+  },
+  "Session Management": {
+    "canonical": "session management",
+    "confidence": 0.98
+  },
+  "Software Integration": {
+    "canonical": "software integration",
+    "confidence": 0.98
+  },
+  "AWS SQS": {
+    "canonical": "aws sqs",
+    "confidence": 0.98
+  },
+  "Hibernate": {
+    "canonical": "hibernate",
+    "confidence": 0.98
+  },
+  "Mathematical Optimization Techniques": {
+    "canonical": "optimization",
+    "confidence": 0.7420743703842163
+  },
+  "Data Ingestion": {
+    "canonical": "data ingestion",
+    "confidence": 1.0000001192092896
+  },
+  "Vector Database Management": {
+    "canonical": "vector database",
+    "confidence": 0.8387538194656372
+  },
+  "Debugging Techniques": {
+    "canonical": "debugging",
+    "confidence": 0.8549687266349792
+  },
+  "System Performance Optimization": {
+    "canonical": "system performance optimization",
+    "confidence": 0.98
+  },
+  "Technical Skills": {
+    "canonical": "technical skills",
+    "confidence": 1.0000001192092896
+  },
+  "Token Signing and Cryptography": {
+    "canonical": "token signing and cryptography",
+    "confidence": 0.98
+  },
+  "Rust": {
+    "canonical": "rust",
+    "confidence": 0.98
+  },
+  "AI Integration": {
+    "canonical": "ai",
+    "confidence": 0.7634357810020447
+  },
+  "OCR": {
+    "canonical": "ocr",
+    "confidence": 1.0000001192092896
+  },
+  "MySQL": {
+    "canonical": "mysql",
+    "confidence": 0.98
+  },
+  "API Gateway": {
+    "canonical": "api gateway",
+    "confidence": 0.9999998807907104
+  },
+  "Responsive Design Implementation": {
+    "canonical": "responsive design implementation",
+    "confidence": 0.98
+  },
+  "Framework Selection": {
+    "canonical": "frameworks",
+    "confidence": 0.7992157936096191
+  },
+  "Fraud Detection": {
+    "canonical": "fraud detection",
+    "confidence": 0.98
+  },
+  "Event Processing Pipeline Architecture": {
+    "canonical": "event processing",
+    "confidence": 0.7686625719070435
+  },
+  "Transaction Outbox Pattern": {
+    "canonical": "transaction outbox pattern",
+    "confidence": 1.0000001192092896
+  },
+  "Windows Services": {
+    "canonical": "windows services",
+    "confidence": 0.98
+  },
+  "Database": {
+    "canonical": "database",
+    "confidence": 0.98
+  },
+  "Validation": {
+    "canonical": "validation",
+    "confidence": 0.98
+  },
+  "Robot Integration": {
+    "canonical": "robot integration",
+    "confidence": 0.98
+  },
+  "Traffic Management and Load Balancing": {
+    "canonical": "traffic routing",
+    "confidence": 0.628852128982544
+  },
+  "Real-Time Communication": {
+    "canonical": "real-time communication",
+    "confidence": 0.98
+  },
+  "Technical Skill in Facial Recognition": {
+    "canonical": "technical skill in facial recognition",
+    "confidence": 0.98
+  },
+  "Multi-Region Deployment": {
+    "canonical": "multi-region deployment",
+    "confidence": 0.98
+  },
+  "Scalability": {
+    "canonical": "scalability",
+    "confidence": 1.0
+  },
+  "Database Integration": {
+    "canonical": "database interaction",
+    "confidence": 0.7311717867851257
+  },
+  "Fallback Mechanisms": {
+    "canonical": "fallback logic",
+    "confidence": 0.7914189696311951
+  },
+  "Data Processing": {
+    "canonical": "data processing",
+    "confidence": 1.000000238418579
+  },
+  "Convergence Techniques": {
+    "canonical": "convergence techniques",
+    "confidence": 0.98
+  },
+  "Versioning": {
+    "canonical": "versioning",
+    "confidence": 1.000000238418579
+  },
+  "JSON": {
+    "canonical": "json",
+    "confidence": 0.98
+  },
+  "Jenkins": {
+    "canonical": "jenkins",
+    "confidence": 0.98
+  },
+  "Preprocessing Techniques": {
+    "canonical": "data normalization",
+    "confidence": 0.3204568028450012
+  },
+  "High Availability": {
+    "canonical": "high availability",
+    "confidence": 0.98
+  },
+  "Database Optimization": {
+    "canonical": "sql optimization",
+    "confidence": 0.8172340393066406
+  },
+  "Error Handling and Recovery": {
+    "canonical": "error logging",
+    "confidence": 0.5608837008476257
+  },
+  "Stateless Authentication": {
+    "canonical": "stateless authentication",
+    "confidence": 0.98
+  },
+  "Data Integration": {
+    "canonical": "data integration",
+    "confidence": 0.98
+  },
+  "Container Orchestration": {
+    "canonical": "containerization",
+    "confidence": 0.6932641267776489
+  },
+  "Numerical Computation Skills": {
+    "canonical": "numerical computation skills",
+    "confidence": 0.98
+  },
+  "Technical Skill in FastAPI": {
+    "canonical": "technical skill in fastapi",
+    "confidence": 0.98
+  },
+  "API Development Proficiency": {
+    "canonical": "api development proficiency",
+    "confidence": 0.98
+  },
+  "Event-driven Architecture": {
+    "canonical": "event processing",
+    "confidence": 0.6543717980384827
+  },
+  "Metrics Collection": {
+    "canonical": "metrics",
+    "confidence": 0.7943881750106812
+  },
+  "Containerization": {
+    "canonical": "containerization",
+    "confidence": 1.0000001192092896
+  },
+  "Incremental Update Logic": {
+    "canonical": "incremental update logic",
+    "confidence": 0.98
+  },
+  "Version Control": {
+    "canonical": "versioning",
+    "confidence": 0.8019419312477112
+  },
+  "Automation Tools": {
+    "canonical": "data automation",
+    "confidence": 0.724755585193634
+  },
+  "Multi-language Development": {
+    "canonical": "multi-language development",
+    "confidence": 0.98
+  },
+  "Programming Proficiency": {
+    "canonical": "programming skills",
+    "confidence": 0.8552736043930054
+  },
+  "Orchestration Tools Knowledge": {
+    "canonical": "orchestration tools knowledge",
+    "confidence": 0.98
+  },
+  "Gradient Computation": {
+    "canonical": "gradient computation",
+    "confidence": 0.98
+  },
+  "Token-based Authentication": {
+    "canonical": "token-based authentication",
+    "confidence": 0.98
+  },
+  "Elasticsearch": {
+    "canonical": "elasticsearch",
+    "confidence": 0.98
+  },
+  "Saga pattern": {
+    "canonical": "saga pattern",
+    "confidence": 0.98
+  },
+  "Database Normalization": {
+    "canonical": "database normalization",
+    "confidence": 0.98
+  },
+  "PostgreSQL": {
+    "canonical": "postgresql",
+    "confidence": 0.98
+  },
+  "Data Flow Management": {
+    "canonical": "data flow",
+    "confidence": 0.8481130599975586
+  },
+  "Technical Skill with GitHub Copilot": {
+    "canonical": "technical skill with github copilot",
+    "confidence": 0.98
+  },
+  "Data Quality Management": {
+    "canonical": "data quality",
+    "confidence": 0.9143375158309937
+  },
+  "Database Indexing": {
+    "canonical": "indexing",
+    "confidence": 0.8305481672286987
+  },
+  "Erlang": {
+    "canonical": "erlang",
+    "confidence": 0.98
+  },
+  "Metrics": {
+    "canonical": "metrics",
+    "confidence": 1.000000238418579
+  },
+  "OAuth": {
+    "canonical": "oauth",
+    "confidence": 0.98
+  },
+  "Data Partitioning": {
+    "canonical": "partitioning",
+    "confidence": 0.8743876218795776
+  },
+  "API Development": {
+    "canonical": "api development",
+    "confidence": 0.98
+  },
+  "System Health Monitoring": {
+    "canonical": "system health monitoring",
+    "confidence": 0.98
+  },
+  "Testing Methodology": {
+    "canonical": "testing strategy",
+    "confidence": 0.8464720845222473
+  },
+  "CICD": {
+    "canonical": "cicd",
+    "confidence": 0.98
+  },
+  "Serverless Architecture": {
+    "canonical": "serverless architecture",
+    "confidence": 0.98
+  },
+  "Large Language Models": {
+    "canonical": "large language models",
+    "confidence": 1.0
+  },
+  "Framework and Tool Utilization": {
+    "canonical": "frameworks",
+    "confidence": 0.7671805620193481
+  },
+  "CSS": {
+    "canonical": "css",
+    "confidence": 0.98
+  },
+  "CI/CD Pipeline Design": {
+    "canonical": "ci/cd practices",
+    "confidence": 0.7281125783920288
+  },
+  "Technical Skill in Embedding Generation": {
+    "canonical": "embedding generation",
+    "confidence": 0.838624119758606
+  },
+  "Functional Testing": {
+    "canonical": "functional testing",
+    "confidence": 0.98
+  },
+  "Cloud-Based Solutions Awareness": {
+    "canonical": "cloud-based solutions awareness",
+    "confidence": 0.98
+  },
+  "Software Engineering": {
+    "canonical": "software engineering",
+    "confidence": 0.98
+  },
+  "Apache Kafka": {
+    "canonical": "kafka",
+    "confidence": 0.6585785746574402
+  },
+  "Redshift": {
+    "canonical": "redshift",
+    "confidence": 0.98
+  },
+  "Embedded Systems Architecture": {
+    "canonical": "embedded systems architecture",
+    "confidence": 0.98
+  },
+  "Deduplication Logic": {
+    "canonical": "deduplication",
+    "confidence": 0.9014708399772644
+  },
+  "Security Management": {
+    "canonical": "security management",
+    "confidence": 0.98
+  },
+  "Stripe Payment Integration": {
+    "canonical": "stripe payment integration",
+    "confidence": 0.98
+  },
+  "Certificate Management": {
+    "canonical": "key management",
+    "confidence": 0.5957101583480835
+  },
+  "Data Migration": {
+    "canonical": "data migration",
+    "confidence": 1.0
+  },
+  "PySpark": {
+    "canonical": "pyspark",
+    "confidence": 0.98
+  },
+  "Frameworks and Tools": {
+    "canonical": "frameworks",
+    "confidence": 0.8339055776596069
+  },
+  "Debugging": {
+    "canonical": "debugging",
+    "confidence": 0.9999997615814209
+  },
+  "Protocol Implementation": {
+    "canonical": "networking",
+    "confidence": 0.47234049439430237
+  },
+  "Cloud and Infrastructure Skills": {
+    "canonical": "aws",
+    "confidence": 0.42388641834259033
+  },
+  "Database Relationships": {
+    "canonical": "database relationships",
+    "confidence": 0.98
+  },
+  "Geospatial Algorithms": {
+    "canonical": "geospatial queries",
+    "confidence": 0.688147783279419
+  },
+  "Rendering Performance Optimization": {
+    "canonical": "rendering performance optimization",
+    "confidence": 0.98
+  },
+  "Kafka Design and Management": {
+    "canonical": "kafka",
+    "confidence": 0.5244574546813965
+  },
+  "Cloud Automation": {
+    "canonical": "cloud automation",
+    "confidence": 1.0
+  },
+  "Scheduling": {
+    "canonical": "scheduling",
+    "confidence": 0.98
+  },
+  "Throughput Optimization": {
+    "canonical": "latency",
+    "confidence": 0.5182349681854248
+  },
+  "State Management": {
+    "canonical": "state management",
+    "confidence": 0.98
+  },
+  "Kafka": {
+    "canonical": "kafka",
+    "confidence": 1.0000001192092896
+  },
+  "Data Architecture": {
+    "canonical": "schema design",
+    "confidence": 0.6252793669700623
+  },
+  "Data Reporting": {
+    "canonical": "data reporting",
+    "confidence": 0.98
+  },
+  "JUnit": {
+    "canonical": "junit",
+    "confidence": 0.98
+  },
+  "Parallel Processing": {
+    "canonical": "parallel processing",
+    "confidence": 0.98
+  },
+  "C and C++": {
+    "canonical": "c++",
+    "confidence": 0.7615369558334351
+  },
+  "Data Models": {
+    "canonical": "data models",
+    "confidence": 1.000000238418579
+  },
+  "Observer Pattern": {
+    "canonical": "observer pattern",
+    "confidence": 0.98
+  },
+  "Document Processing": {
+    "canonical": "document processing",
+    "confidence": 0.98
+  },
+  "State Machine Implementation": {
+    "canonical": "state machine implementation",
+    "confidence": 0.98
+  },
+  "Retries": {
+    "canonical": "retries",
+    "confidence": 0.98
+  },
+  "Re-ranking": {
+    "canonical": "re-ranking",
+    "confidence": 1.000000238418579
+  },
+  "Deployment Environments": {
+    "canonical": "deployment environments",
+    "confidence": 0.98
+  },
+  "Technologies Used": {
+    "canonical": "technologies used",
+    "confidence": 0.98
+  },
+  "Framework and Tooling Knowledge": {
+    "canonical": "frameworks",
+    "confidence": 0.7412219047546387
+  },
+  "Thymeleaf": {
+    "canonical": "thymeleaf",
+    "confidence": 0.98
+  },
+  "Tailwind CSS": {
+    "canonical": "tailwind css",
+    "confidence": 0.98
+  },
+  "API Communication": {
+    "canonical": "api communication",
+    "confidence": 0.98
+  },
+  "Real-time Communication": {
+    "canonical": "real-time communication",
+    "confidence": 0.98
+  },
+  "Schema Validation": {
+    "canonical": "schema validation",
+    "confidence": 0.98
+  },
+  "Anomaly Detection": {
+    "canonical": "anomaly detection",
+    "confidence": 1.0000001192092896
+  },
+  "Compliance with Healthcare Standards": {
+    "canonical": "compliance with healthcare standards",
+    "confidence": 0.98
+  },
+  "Data Cleaning": {
+    "canonical": "data cleaning",
+    "confidence": 0.98
+  },
+  "Data Handling and Processing": {
+    "canonical": "data processing",
+    "confidence": 0.8912419080734253
+  },
+  "Failure recovery": {
+    "canonical": "error logging",
+    "confidence": 0.5026508569717407
+  },
+  "Service Discovery and Load Balancing": {
+    "canonical": "load balancing",
+    "confidence": 0.6646400094032288
+  },
+  "Monitoring and Traceability": {
+    "canonical": "monitoring and traceability",
+    "confidence": 0.98
+  },
+  "Camera Integration": {
+    "canonical": "camera integration",
+    "confidence": 0.98
+  },
+  "Deduplication": {
+    "canonical": "deduplication",
+    "confidence": 1.0
+  },
+  "Payment Processing": {
+    "canonical": "payment processing",
+    "confidence": 0.98
+  },
+  "Logging": {
+    "canonical": "logging",
+    "confidence": 0.98
+  },
+  "GraphQL": {
+    "canonical": "graphql",
+    "confidence": 0.98
+  },
+  "Airflow": {
+    "canonical": "airflow",
+    "confidence": 0.98
+  },
+  "Automatic Differentiation": {
+    "canonical": "automatic differentiation",
+    "confidence": 0.98
+  },
+  "Exponential Back-off": {
+    "canonical": "exponential back-off",
+    "confidence": 0.98
+  },
+  "Infrastructure Management": {
+    "canonical": "infrastructure as code",
+    "confidence": 0.6924108266830444
+  },
+  "Data Processing Automation": {
+    "canonical": "data processing automation",
+    "confidence": 0.98
+  },
+  "Code Refactoring": {
+    "canonical": "code refactoring",
+    "confidence": 0.98
+  },
+  "Model Fine-Tuning": {
+    "canonical": "model fine-tuning",
+    "confidence": 0.98
+  },
+  "ETL/ELT Processes": {
+    "canonical": "etl process",
+    "confidence": 0.853303849697113
+  },
+  "Cross-Browser Compatibility": {
+    "canonical": "cross-browser compatibility",
+    "confidence": 0.98
+  },
+  "Search Technologies": {
+    "canonical": "search technologies",
+    "confidence": 0.98
+  },
+  "Data Architecture Skills": {
+    "canonical": "data architecture skills",
+    "confidence": 0.98
+  },
+  "Monitoring and Alerting": {
+    "canonical": "alerting system",
+    "confidence": 0.8292189836502075
+  },
+  "ServiceNow": {
+    "canonical": "servicenow",
+    "confidence": 0.98
+  },
+  "Technical Skills - PyQt": {
+    "canonical": "python programming",
+    "confidence": 0.4957049489021301
+  },
+  "Data integrity": {
+    "canonical": "data integrity",
+    "confidence": 0.9999997615814209
+  },
+  "Content Delivery Networks": {
+    "canonical": "content delivery networks",
+    "confidence": 0.98
+  },
+  "Monitoring and Alerting System Design": {
+    "canonical": "alerting system",
+    "confidence": 0.8271348476409912
+  },
+  "Component architecture": {
+    "canonical": "component design",
+    "confidence": 0.8365537524223328
+  },
+  "Azure Event Hub Proficiency": {
+    "canonical": "azure iot hub",
+    "confidence": 0.5857484340667725
+  },
+  "Data Aggregation": {
+    "canonical": "data aggregation",
+    "confidence": 0.98
+  },
+  "Schema Management": {
+    "canonical": "schema design",
+    "confidence": 0.85130774974823
+  },
+  "Model Selection": {
+    "canonical": "model selection",
+    "confidence": 0.98
+  },
+  "Role-based Access Control (RBAC)": {
+    "canonical": "access control",
+    "confidence": 0.7176810503005981
+  },
+  "PostgreSQL Foreign Key Constraints": {
+    "canonical": "postgresql foreign key constraints",
+    "confidence": 0.98
+  },
+  "Framework Proficiency": {
+    "canonical": "framework proficiency",
+    "confidence": 0.98
+  },
+  "Cloud-Native Architecture": {
+    "canonical": "cloud-native architecture",
+    "confidence": 0.98
+  },
+  "Loose Coupling": {
+    "canonical": "loose coupling",
+    "confidence": 0.98
+  },
+  "API Framework Knowledge": {
+    "canonical": "api framework knowledge",
+    "confidence": 0.98
+  },
+  "Container Management": {
+    "canonical": "containerization",
+    "confidence": 0.847255527973175
+  },
+  "Machine Learning Proficiency": {
+    "canonical": "ai & machine learning",
+    "confidence": 0.6048187613487244
+  },
+  "Data Retrieval": {
+    "canonical": "data retrieval",
+    "confidence": 0.98
+  },
+  "Data Validation and Enrichment": {
+    "canonical": "data validation and enrichment",
+    "confidence": 0.98
+  },
+  "Custom Networking": {
+    "canonical": "custom networking",
+    "confidence": 0.98
+  },
+  "Patch Validation": {
+    "canonical": "patch validation",
+    "confidence": 0.98
+  },
+  "Multi-threading": {
+    "canonical": "multithreading",
+    "confidence": 0.9245973825454712
+  },
+  "Throughput": {
+    "canonical": "latency",
+    "confidence": 0.5906090140342712
+  },
+  "Algorithms": {
+    "canonical": "algorithms",
+    "confidence": 1.0000001192092896
+  },
+  "Authentication and Authorization": {
+    "canonical": "authentication",
+    "confidence": 0.834952175617218
+  },
+  "Database Query Optimization": {
+    "canonical": "sql optimization",
+    "confidence": 0.8927510976791382
+  },
+  "Inter-Service Communication": {
+    "canonical": "service interaction",
+    "confidence": 0.7495267391204834
+  },
+  "Architecture and Design": {
+    "canonical": "architecture",
+    "confidence": 0.8108043670654297
+  },
+  "Referential Integrity": {
+    "canonical": "referential integrity",
+    "confidence": 0.98
+  },
+  "Algorithm Development": {
+    "canonical": "algorithms",
+    "confidence": 0.7608904242515564
+  },
+  "Integration of AI Models": {
+    "canonical": "ai",
+    "confidence": 0.617315411567688
+  },
+  "Deployment": {
+    "canonical": "deployment",
+    "confidence": 0.98
+  },
+  "Technical Skill in Node.js": {
+    "canonical": "nodejs",
+    "confidence": 0.7357277870178223
+  },
+  "Cloud Deployment and Orchestration": {
+    "canonical": "cloud deployment and orchestration",
+    "confidence": 0.98
+  },
+  "Monitoring and Alerting Configuration": {
+    "canonical": "alerting system",
+    "confidence": 0.7459768056869507
+  },
+  "Deployment and Scalability": {
+    "canonical": "deployment strategy",
+    "confidence": 0.7496858835220337
+  },
+  "Model Inference": {
+    "canonical": "model inference",
+    "confidence": 0.98
+  },
+  "Custom Networking Plugins": {
+    "canonical": "custom networking plugins",
+    "confidence": 0.98
+  },
+  "ARIA Compliance": {
+    "canonical": "aria compliance",
+    "confidence": 0.98
+  },
+  "Separation of Concerns": {
+    "canonical": "separation of concerns",
+    "confidence": 0.98
+  },
+  "API Development and Performance": {
+    "canonical": "api performance",
+    "confidence": 0.8499405384063721
+  },
+  "Cloud Services Knowledge": {
+    "canonical": "aws",
+    "confidence": 0.4425720274448395
+  },
+  "CI/CD": {
+    "canonical": "ci/cd",
+    "confidence": 0.98
+  },
+  "Code Splitting": {
+    "canonical": "code splitting",
+    "confidence": 0.98
+  },
+  "Integration with Third-Party APIs": {
+    "canonical": "integration with third-party apis",
+    "confidence": 0.98
+  },
+  "AWS Cloud Architecture": {
+    "canonical": "aws",
+    "confidence": 0.6015453338623047
+  },
+  "Token Renewal": {
+    "canonical": "token renewal",
+    "confidence": 0.98
+  },
+  "Cloud Computing": {
+    "canonical": "aws",
+    "confidence": 0.5412698984146118
+  },
+  "Idempotency": {
+    "canonical": "idempotency",
+    "confidence": 0.98
+  },
+  "Security Measures": {
+    "canonical": "security measures",
+    "confidence": 0.98
+  },
+  "High-load Testing": {
+    "canonical": "load testing",
+    "confidence": 0.8551501631736755
+  },
+  "JMeter": {
+    "canonical": "jmeter",
+    "confidence": 0.98
+  },
+  "Cloud Engineering": {
+    "canonical": "aws",
+    "confidence": 0.4975086748600006
+  },
+  "JWT Authentication": {
+    "canonical": "jwt",
+    "confidence": 0.9121848940849304
+  },
+  "Data Preprocessing": {
+    "canonical": "data normalization",
+    "confidence": 0.6219484806060791
+  },
+  "Transformer Models": {
+    "canonical": "transformer models",
+    "confidence": 0.98
+  },
+  "Java 17": {
+    "canonical": "java 17",
+    "confidence": 0.98
+  },
+  "Java": {
+    "canonical": "java",
+    "confidence": 0.98
+  },
+  "Data Validation Techniques": {
+    "canonical": "data validation",
+    "confidence": 0.8198977112770081
+  },
+  "Concurrency Management": {
+    "canonical": "concurrency",
+    "confidence": 0.8133492469787598
+  },
+  "Error Correction": {
+    "canonical": "error correction",
+    "confidence": 0.98
+  },
+  "CI/CD Pipeline": {
+    "canonical": "cicd",
+    "confidence": 0.98
+  },
+  "Infrastructure as code": {
+    "canonical": "infrastructure as code",
+    "confidence": 1.000000238418579
+  },
+  "Socket Programming": {
+    "canonical": "socket programming",
+    "confidence": 0.98
+  },
+  "Monitoring and Logging": {
+    "canonical": "monitoring and logging",
+    "confidence": 0.98
+  },
+  "Email Processing System": {
+    "canonical": "email processing system",
+    "confidence": 0.98
+  },
+  "RabbitMQ": {
+    "canonical": "rabbitmq",
+    "confidence": 0.98
+  },
+  "Telemetry Logs": {
+    "canonical": "telemetry logs",
+    "confidence": 0.98
+  },
+  "API Reliability": {
+    "canonical": "api reliability",
+    "confidence": 0.98
+  },
+  "Java 8 Proficiency": {
+    "canonical": "java 8 proficiency",
+    "confidence": 0.98
+  },
+  "Entity Resolution": {
+    "canonical": "entity resolution",
+    "confidence": 0.98
+  },
+  "Input Sanitization": {
+    "canonical": "input sanitization",
+    "confidence": 0.98
+  },
+  "Middleware Implementation": {
+    "canonical": "middleware implementation",
+    "confidence": 0.98
+  },
+  "Stripe": {
+    "canonical": "stripe",
+    "confidence": 0.98
+  },
+  "Chaos Engineering": {
+    "canonical": "chaos engineering",
+    "confidence": 0.98
+  },
+  "Compliance Management": {
+    "canonical": "security compliance",
+    "confidence": 0.717983067035675
+  },
+  "Spring Framework": {
+    "canonical": "spring boot",
+    "confidence": 0.732149600982666
+  },
+  "Vector Databases": {
+    "canonical": "vector database",
+    "confidence": 0.9525067210197449
+  },
+  "Component Structure": {
+    "canonical": "component design",
+    "confidence": 0.7613962292671204
+  },
+  "Scalability Design": {
+    "canonical": "scalability",
+    "confidence": 0.8111646175384521
+  },
+  "Data Estimation": {
+    "canonical": "data estimation",
+    "confidence": 0.98
+  },
+  "Latency Minimization": {
+    "canonical": "latency",
+    "confidence": 0.7794021368026733
+  },
+  "Backend Framework Evaluation": {
+    "canonical": "backend framework evaluation",
+    "confidence": 0.98
+  },
+  "JNI Optimization": {
+    "canonical": "jni management",
+    "confidence": 0.7129321694374084
+  },
+  "Statistical Analysis": {
+    "canonical": "statistical analysis",
+    "confidence": 0.98
+  },
+  "RAG Architecture": {
+    "canonical": "rag architecture",
+    "confidence": 0.98
+  },
+  "Distributed transactions": {
+    "canonical": "distributed transactions",
+    "confidence": 0.98
+  },
+  "Frontend Performance Optimization": {
+    "canonical": "backend optimization",
+    "confidence": 0.8088008165359497
+  },
+  "Cloud Platform Knowledge": {
+    "canonical": "aws",
+    "confidence": 0.4365144371986389
+  },
+  "Cloud Platforms": {
+    "canonical": "aws",
+    "confidence": 0.5653092861175537
+  },
+  "Machine Learning and Model Management": {
+    "canonical": "machine learning model implementation",
+    "confidence": 0.6765544414520264
+  },
+  "SQL Performance Tuning": {
+    "canonical": "sql performance tuning",
+    "confidence": 0.98
+  },
+  "Database Querying": {
+    "canonical": "database querying",
+    "confidence": 0.98
+  },
+  "Cloud Infrastructure Provisioning": {
+    "canonical": "aws",
+    "confidence": 0.4754730761051178
+  },
+  "Metadata Structure": {
+    "canonical": "metadata structure",
+    "confidence": 0.98
+  },
+  "REST API Design": {
+    "canonical": "rest api design",
+    "confidence": 0.98
+  },
+  "Regulatory Compliance": {
+    "canonical": "regulatory compliance",
+    "confidence": 0.98
+  },
+  "Scalability Strategies": {
+    "canonical": "scalability",
+    "confidence": 0.776328444480896
+  },
+  "Go": {
+    "canonical": "go",
+    "confidence": 0.98
+  },
+  "Database Selection": {
+    "canonical": "database selection",
+    "confidence": 0.98
+  },
+  "Memory Management and Safety": {
+    "canonical": "memory management",
+    "confidence": 0.8335705399513245
+  },
+  "Frontend Technologies": {
+    "canonical": "frontend technologies",
+    "confidence": 0.98
+  },
+  "Big Data Processing": {
+    "canonical": "big data processing",
+    "confidence": 0.98
+  },
+  "Triggers": {
+    "canonical": "triggers",
+    "confidence": 0.98
+  },
+  "Token Handling": {
+    "canonical": "token handling",
+    "confidence": 1.0000001192092896
+  },
+  "Networking Knowledge": {
+    "canonical": "networking",
+    "confidence": 0.748100221157074
+  },
+  "AWS SageMaker": {
+    "canonical": "aws sagemaker",
+    "confidence": 0.98
+  },
+  "Technical Skill in Kafka": {
+    "canonical": "kafka",
+    "confidence": 0.6333476305007935
+  },
+  "Fault Tolerance Strategies": {
+    "canonical": "error logging",
+    "confidence": 0.2869911193847656
+  },
+  "Networking Protocols": {
+    "canonical": "networking",
+    "confidence": 0.7148521542549133
+  },
+  "Testing Techniques": {
+    "canonical": "testing strategy",
+    "confidence": 0.8220078945159912
+  },
+  "Google Cloud Functions": {
+    "canonical": "google cloud functions",
+    "confidence": 0.98
+  },
+  "Token Renewal Mechanisms": {
+    "canonical": "token handling",
+    "confidence": 0.4997253715991974
+  },
+  "Stress Testing": {
+    "canonical": "stress testing",
+    "confidence": 0.98
+  },
+  "Image Processing": {
+    "canonical": "image processing",
+    "confidence": 0.98
+  },
+  "Integration Testing": {
+    "canonical": "integration testing",
+    "confidence": 0.98
+  },
+  "Data Transfer Protocols": {
+    "canonical": "networking",
+    "confidence": 0.5150716304779053
+  },
+  "Scalability and Asynchronous Processing": {
+    "canonical": "asynchronous processing",
+    "confidence": 0.8137136697769165
+  },
+  "Programming": {
+    "canonical": "c++",
+    "confidence": 0.648638904094696
+  },
+  "Responsive design": {
+    "canonical": "responsive design",
+    "confidence": 0.98
+  },
+  "Schema Design": {
+    "canonical": "schema design",
+    "confidence": 1.0000001192092896
+  },
+  "Partitioning": {
+    "canonical": "partitioning",
+    "confidence": 0.9999997615814209
+  },
+  "Vector Database": {
+    "canonical": "vector database",
+    "confidence": 0.9999997019767761
+  },
+  "Event Stream Management": {
+    "canonical": "event stream management",
+    "confidence": 0.98
+  },
+  "End-to-End Testing": {
+    "canonical": "end-to-end testing",
+    "confidence": 0.98
+  },
+  "Use of Development Tools": {
+    "canonical": "use of development tools",
+    "confidence": 0.98
+  },
+  "GitHub Actions": {
+    "canonical": "github actions",
+    "confidence": 0.98
+  },
+  "CORS Policy Implementation": {
+    "canonical": "cors policy implementation",
+    "confidence": 0.98
+  },
+  "API Management Skills": {
+    "canonical": "api management skills",
+    "confidence": 0.98
+  },
+  "Latency": {
+    "canonical": "latency",
+    "confidence": 1.0
+  },
+  "Dashboard Configuration": {
+    "canonical": "dashboard configuration",
+    "confidence": 0.98
+  },
+  "Security Best Practices": {
+    "canonical": "security practices",
+    "confidence": 0.9295554161071777
+  },
+  "Golang": {
+    "canonical": "golang",
+    "confidence": 0.98
+  },
+  "Java Native Interface (JNI)": {
+    "canonical": "java native interface (jni)",
+    "confidence": 0.98
+  },
+  "Software Development": {
+    "canonical": "testing",
+    "confidence": 0.485964298248291
+  },
+  "API Understanding": {
+    "canonical": "api understanding",
+    "confidence": 0.98
+  },
+  "Message Queues": {
+    "canonical": "queue system",
+    "confidence": 0.77155601978302
+  },
+  "Evaluation Metrics": {
+    "canonical": "evaluation metrics",
+    "confidence": 1.000000238418579
+  },
+  "Event-Driven Architecture": {
+    "canonical": "event processing",
+    "confidence": 0.6543717980384827
+  },
+  "LLM Inference Optimization": {
+    "canonical": "llm inference optimization",
+    "confidence": 0.98
+  },
+  "Technology Transition Understanding": {
+    "canonical": "technology transition understanding",
+    "confidence": 0.98
+  },
+  "Mathematical Modeling": {
+    "canonical": "mathematical modeling",
+    "confidence": 0.98
+  },
+  "Build Tools": {
+    "canonical": "build tools",
+    "confidence": 0.98
+  },
+  "Decision-Making and Rationale": {
+    "canonical": "decision-making and rationale",
+    "confidence": 0.98
+  },
+  "Architectural Design": {
+    "canonical": "architecture",
+    "confidence": 0.7932884693145752
+  },
+  "C Programming": {
+    "canonical": "c++",
+    "confidence": 0.7477853298187256
+  },
+  "Service Mesh": {
+    "canonical": "service mesh",
+    "confidence": 0.98
+  },
+  "Cryptographic Key Management": {
+    "canonical": "key management",
+    "confidence": 0.8422365784645081
+  },
+  "Containerization and Deployment": {
+    "canonical": "containerization",
+    "confidence": 0.8185080289840698
+  },
+  "Testing Strategies": {
+    "canonical": "testing strategy",
+    "confidence": 0.9494615793228149
+  },
+  "OAuth 2.0": {
+    "canonical": "oauth",
+    "confidence": 0.98
+  },
+  "Data consistency": {
+    "canonical": "data integrity",
+    "confidence": 0.6775063276290894
+  },
+  "Response Generation": {
+    "canonical": "response generation",
+    "confidence": 0.98
+  },
+  "AI Orchestration": {
+    "canonical": "ai orchestration",
+    "confidence": 0.98
+  },
+  "Low-latency processing": {
+    "canonical": "latency",
+    "confidence": 0.6694621443748474
+  },
+  "Cloud Task Management": {
+    "canonical": "cloud task management",
+    "confidence": 0.98
+  },
+  "Chunking Strategy": {
+    "canonical": "document chunking",
+    "confidence": 0.7285341024398804
+  },
+  "Backend engineering": {
+    "canonical": "backend",
+    "confidence": 0.98
+  },
+  "MPI": {
+    "canonical": "mpi",
+    "confidence": 0.98
+  },
+  "Linux": {
+    "canonical": "linux",
+    "confidence": 0.98
+  },
+  "Workflow Integration": {
+    "canonical": "workflow integration",
+    "confidence": 0.98
+  },
+  "Cloud and Messaging Technologies": {
+    "canonical": "cloud and messaging technologies",
+    "confidence": 0.98
+  },
+  "API Design and Management": {
+    "canonical": "api design",
+    "confidence": 0.914824366569519
+  },
+  "Large Language Models (LLM)": {
+    "canonical": "large language models",
+    "confidence": 0.8894625902175903
+  },
+  "API Development Skills": {
+    "canonical": "api development",
+    "confidence": 0.98
+  },
+  "Throttling": {
+    "canonical": "throttling",
+    "confidence": 0.98
+  },
+  "API and Service Architecture": {
+    "canonical": "api and service architecture",
+    "confidence": 0.98
+  },
+  "Security Implementation": {
+    "canonical": "security implementation",
+    "confidence": 0.98
+  },
+  "Service Orchestration": {
+    "canonical": "orchestration",
+    "confidence": 0.6143907308578491
+  },
+  "Custom Algorithms": {
+    "canonical": "algorithms",
+    "confidence": 0.6539487242698669
+  },
+  "ETL Processing": {
+    "canonical": "etl process",
+    "confidence": 0.9247950315475464
+  },
+  "FastAPI": {
+    "canonical": "fastapi",
+    "confidence": 0.98
+  },
+  "Technical Skill in Rust": {
+    "canonical": "technical skill in rust",
+    "confidence": 0.98
+  },
+  "Image Storage": {
+    "canonical": "image storage",
+    "confidence": 0.98
+  },
+  "Architecture": {
+    "canonical": "architecture",
+    "confidence": 1.0
+  },
+  "Database Management": {
+    "canonical": "database management",
+    "confidence": 0.98
+  },
+  "Fraud Detection Logic Design": {
+    "canonical": "fraud detection logic design",
+    "confidence": 0.98
+  },
+  "File Upload Management": {
+    "canonical": "file upload management",
+    "confidence": 0.98
+  },
+  "Framework Knowledge": {
+    "canonical": "frameworks",
+    "confidence": 0.7729062438011169
+  },
+  "Backend Architecture": {
+    "canonical": "frontend frameworks",
+    "confidence": 0.5453548431396484
+  },
+  "Responsive Design": {
+    "canonical": "responsive design",
+    "confidence": 0.98
+  },
+  "Feature Engineering": {
+    "canonical": "feature engineering",
+    "confidence": 0.98
+  },
+  "Data Evaluation": {
+    "canonical": "data evaluation",
+    "confidence": 0.98
+  },
+  "Cloud Architecture": {
+    "canonical": "aws",
+    "confidence": 0.4478490948677063
+  },
+  "Database Knowledge": {
+    "canonical": "database knowledge",
+    "confidence": 1.0
+  },
+  "Data Drift Detection": {
+    "canonical": "data drift detection",
+    "confidence": 0.98
+  },
+  "A/B Testing": {
+    "canonical": "a/b testing",
+    "confidence": 0.98
+  },
+  "Convergence": {
+    "canonical": "convergence",
+    "confidence": 0.98
+  },
+  "Terraform": {
+    "canonical": "terraform",
+    "confidence": 0.98
+  },
+  "Model View Controller": {
+    "canonical": "model view controller",
+    "confidence": 0.98
+  },
+  "Data Management and Processing": {
+    "canonical": "data processing",
+    "confidence": 0.8298013210296631
+  },
+  "Programming Language Proficiency": {
+    "canonical": "programming skills",
+    "confidence": 0.7342824339866638
+  },
+  "Auto Scaling": {
+    "canonical": "scaling",
+    "confidence": 0.6389431953430176
+  },
+  "Image Preprocessing": {
+    "canonical": "image preprocessing",
+    "confidence": 0.98
+  },
+  "Metric Design": {
+    "canonical": "metric design",
+    "confidence": 0.98
+  },
+  "Security Vulnerabilities": {
+    "canonical": "security vulnerabilities",
+    "confidence": 0.98
+  },
+  "Frontend Backend Interaction": {
+    "canonical": "frontend backend interaction",
+    "confidence": 0.98
+  },
+  "Protocol Management": {
+    "canonical": "networking",
+    "confidence": 0.49133744835853577
+  },
+  "Data Filtering": {
+    "canonical": "data filtering",
+    "confidence": 0.98
+  },
+  "Domain-Driven Design": {
+    "canonical": "domain-driven design",
+    "confidence": 0.98
+  },
+  "Observability Tools": {
+    "canonical": "observability",
+    "confidence": 0.7267483472824097
+  },
+  "Technical Skills - Python": {
+    "canonical": "python programming",
+    "confidence": 0.7291918992996216
+  },
+  "Token Acquisition Flow Architecture": {
+    "canonical": "token handling",
+    "confidence": 0.57408207654953
+  },
+  "SQL Skills": {
+    "canonical": "sql skills",
+    "confidence": 0.98
+  },
+  "Azure Event Hub": {
+    "canonical": "azure iot hub",
+    "confidence": 0.7051767706871033
+  },
+  "Distributed Systems": {
+    "canonical": "distributed systems",
+    "confidence": 0.9999999403953552
+  },
+  "Computer Vision": {
+    "canonical": "computer vision",
+    "confidence": 0.98
+  },
+  "Messaging Systems Knowledge": {
+    "canonical": "message broker",
+    "confidence": 0.6763556599617004
+  },
+  "Machine Learning Lifecycle Management": {
+    "canonical": "lifecycle management",
+    "confidence": 0.6208980679512024
+  },
+  "Anomaly Detection Models": {
+    "canonical": "anomaly detection",
+    "confidence": 0.830633819103241
+  },
+  "Low Latency": {
+    "canonical": "latency",
+    "confidence": 0.8494199514389038
+  },
+  "Full-Stack Development": {
+    "canonical": "full stack development",
+    "confidence": 0.9712644219398499
+  },
+  "Hardware Specifications": {
+    "canonical": "hardware constraints",
+    "confidence": 0.6741999387741089
+  },
+  "Resilience Testing": {
+    "canonical": "model robustness",
+    "confidence": 0.3541155755519867
+  },
+  "Latency optimization": {
+    "canonical": "latency",
+    "confidence": 0.7946462631225586
+  },
+  "Microservices Design": {
+    "canonical": "microservices",
+    "confidence": 0.892991840839386
+  },
+  "Saga Pattern": {
+    "canonical": "saga pattern",
+    "confidence": 0.98
+  },
+  "Data Security": {
+    "canonical": "data security",
+    "confidence": 1.0000001192092896
+  },
+  "Retry Mechanisms": {
+    "canonical": "retry logic",
+    "confidence": 0.8236716985702515
+  },
+  "Auto-scaling": {
+    "canonical": "scaling",
+    "confidence": 0.668201744556427
+  },
+  "Worker System": {
+    "canonical": "worker system",
+    "confidence": 0.98
+  },
+  "Backend Development Skills": {
+    "canonical": "backend",
+    "confidence": 0.98
+  },
+  "Performance Profiling": {
+    "canonical": "performance profiling",
+    "confidence": 1.0
+  },
+  "Data Engineering": {
+    "canonical": "data engineering",
+    "confidence": 0.98
+  },
+  "Framework Understanding": {
+    "canonical": "frameworks",
+    "confidence": 0.7864573001861572
+  },
+  "Algorithm Design and Development": {
+    "canonical": "algorithms",
+    "confidence": 0.6850528717041016
+  },
+  "Java Spring Boot": {
+    "canonical": "spring boot",
+    "confidence": 0.8795793056488037
+  },
+  "Validation Logic Design": {
+    "canonical": "validation logic",
+    "confidence": 0.8530155420303345
+  },
+  "Event-driven architecture": {
+    "canonical": "event processing",
+    "confidence": 0.6543717980384827
+  },
+  "Client-Server Architecture": {
+    "canonical": "client-server architecture",
+    "confidence": 0.98
+  },
+  "Database Interaction": {
+    "canonical": "database interaction",
+    "confidence": 1.000000238418579
+  },
+  "Memory Management": {
+    "canonical": "memory management",
+    "confidence": 1.0
+  },
+  "Cloud Technologies": {
+    "canonical": "aws",
+    "confidence": 0.510355532169342
+  },
+  "Technology Stack Evaluation": {
+    "canonical": "technology stack evaluation",
+    "confidence": 0.98
+  },
+  "System Monitoring": {
+    "canonical": "system monitoring",
+    "confidence": 0.9999996423721313
+  },
+  "Metadata Framework Design": {
+    "canonical": "metadata framework design",
+    "confidence": 0.98
+  },
+  "Convolutional Neural Network": {
+    "canonical": "convolutional neural network",
+    "confidence": 0.98
+  },
+  "Deployment and CI/CD Practices": {
+    "canonical": "deployment and ci/cd practices",
+    "confidence": 1.0000001192092896
+  },
+  "Architectural Skills": {
+    "canonical": "architecture skills",
+    "confidence": 0.9534652233123779
+  },
+  "Signal Processing": {
+    "canonical": "signal processing",
+    "confidence": 0.98
+  },
+  "Outbox Pattern Implementation": {
+    "canonical": "transaction outbox pattern",
+    "confidence": 0.7648509740829468
+  },
+  "Kafka Knowledge": {
+    "canonical": "kafka",
+    "confidence": 0.8202911615371704
+  },
+  "Authentication": {
+    "canonical": "authentication",
+    "confidence": 1.0000003576278687
+  },
+  "Monitoring": {
+    "canonical": "monitoring",
+    "confidence": 0.98
+  },
+  "Embedded Systems": {
+    "canonical": "embedded systems",
+    "confidence": 0.98
+  },
+  "Backend Development": {
+    "canonical": "backend",
+    "confidence": 0.98
+  },
+  "Code Review Skills": {
+    "canonical": "code review",
+    "confidence": 0.7704547047615051
+  },
+  "Asynchronous Communication": {
+    "canonical": "asynchronous processing",
+    "confidence": 0.7253228425979614
+  },
+  "Transaction Management": {
+    "canonical": "transaction management",
+    "confidence": 0.98
+  },
+  "Role Specification": {
+    "canonical": "access control",
+    "confidence": 0.5054512619972229
+  },
+  "Model Generation": {
+    "canonical": "model generation",
+    "confidence": 0.98
+  },
+  "Cloud Services Integration": {
+    "canonical": "cloud integration",
+    "confidence": 0.9075970649719238
+  },
+  "Token Management": {
+    "canonical": "token handling",
+    "confidence": 0.8144011497497559
+  },
+  "Embedding and Vector Search": {
+    "canonical": "embedding generation",
+    "confidence": 0.6312263607978821
+  },
+  "Encryption Techniques": {
+    "canonical": "encryption techniques",
+    "confidence": 0.98
+  },
+  "AWS": {
+    "canonical": "aws",
+    "confidence": 0.9999997615814209
+  },
+  "Data Preparation": {
+    "canonical": "data preparation",
+    "confidence": 0.98
+  },
+  "C#": {
+    "canonical": "c#",
+    "confidence": 0.98
+  },
+  "Service Interaction": {
+    "canonical": "service interaction",
+    "confidence": 1.0000001192092896
+  },
+  "Service Architecture Understanding": {
+    "canonical": "service architecture understanding",
+    "confidence": 0.98
+  },
+  "Distributed systems": {
+    "canonical": "distributed systems",
+    "confidence": 0.9999999403953552
+  },
+  "Lambda": {
+    "canonical": "lambda",
+    "confidence": 0.98
+  },
+  "Resilience": {
+    "canonical": "resilience",
+    "confidence": 0.98
+  },
+  "Model Validation": {
+    "canonical": "model validation",
+    "confidence": 0.98
+  },
+  "SQLAlchemy": {
+    "canonical": "sqlalchemy",
+    "confidence": 0.98
+  },
+  "Geospatial Data Handling": {
+    "canonical": "geospatial queries",
+    "confidence": 0.7145805954933167
+  },
+  "Node.js Proficiency": {
+    "canonical": "nodejs",
+    "confidence": 0.7402207851409912
+  },
+  "Relational Database Skills": {
+    "canonical": "database knowledge",
+    "confidence": 0.7702283263206482
+  },
+  "DNS Configuration": {
+    "canonical": "dns configuration",
+    "confidence": 0.98
+  },
+  "Accessibility Standards": {
+    "canonical": "accessibility standards",
+    "confidence": 0.98
+  },
+  "Monitoring and Anomaly Detection": {
+    "canonical": "anomaly detection",
+    "confidence": 0.8383479714393616
+  },
+  "Validation Logic Implementation": {
+    "canonical": "validation logic",
+    "confidence": 0.8723949790000916
+  },
+  "Network Access Control Lists (NACLs)": {
+    "canonical": "network access control lists (nacls)",
+    "confidence": 0.98
+  },
+  "Frameworks": {
+    "canonical": "frameworks",
+    "confidence": 0.9999997615814209
+  },
+  "Metric Tracking": {
+    "canonical": "metric tracking",
+    "confidence": 0.98
+  },
+  "Dead Letter Queue Implementation": {
+    "canonical": "dead letter queue implementation",
+    "confidence": 0.98
+  },
+  "Redundancy": {
+    "canonical": "redundancy",
+    "confidence": 0.98
+  },
+  "UI Integration": {
+    "canonical": "ui integration",
+    "confidence": 0.98
+  },
+  "Data Mapping": {
+    "canonical": "data mapping",
+    "confidence": 0.98
+  },
+  "Memory Allocation": {
+    "canonical": "memory management",
+    "confidence": 0.8117520213127136
+  },
+  "ORM Proficiency": {
+    "canonical": "orm proficiency",
+    "confidence": 0.98
+  },
+  "Web3 Wallet Integration": {
+    "canonical": "web3 wallet integration",
+    "confidence": 0.98
+  },
+  "Horizontal Scaling": {
+    "canonical": "scaling",
+    "confidence": 0.7245679497718811
+  },
+  "Security Awareness": {
+    "canonical": "security awareness",
+    "confidence": 0.98
+  },
+  "Technical Skill in React": {
+    "canonical": "react expertise",
+    "confidence": 0.8792340159416199
+  },
+  "RBAC Enforcement": {
+    "canonical": "access control",
+    "confidence": 0.40505677461624146
+  },
+  "Data Scraping": {
+    "canonical": "data scraping",
+    "confidence": 0.98
+  },
+  "Data Management and Security": {
+    "canonical": "data security",
+    "confidence": 0.8608531355857849
+  },
+  "Testing Frameworks": {
+    "canonical": "testing frameworks",
+    "confidence": 0.98
+  },
+  "Grafana": {
+    "canonical": "grafana",
+    "confidence": 1.0000003576278687
+  },
+  "API Design and Development": {
+    "canonical": "api design",
+    "confidence": 1.0000001192092896
+  },
+  "Inter-Process Communication": {
+    "canonical": "inter-process communication",
+    "confidence": 0.98
+  },
+  "Security Compliance": {
+    "canonical": "security compliance",
+    "confidence": 0.9999999403953552
+  },
+  "Token Acquisition Flow": {
+    "canonical": "token acquisition flow",
+    "confidence": 0.98
+  },
+  "Database Architecture": {
+    "canonical": "schema design",
+    "confidence": 0.6487081050872803
+  },
+  "Software Engineering Skills": {
+    "canonical": "software engineering skills",
+    "confidence": 0.98
+  },
+  "Compliance": {
+    "canonical": "compliance",
+    "confidence": 1.0000001192092896
+  },
+  "SageMaker": {
+    "canonical": "sagemaker",
+    "confidence": 0.98
+  },
+  "Incident Response": {
+    "canonical": "incident response",
+    "confidence": 0.98
+  },
+  "Machine Learning": {
+    "canonical": "machine learning",
+    "confidence": 1.000000238418579
+  },
+  "Core Java": {
+    "canonical": "core java",
+    "confidence": 0.98
+  },
+  "Technical Knowledge of Kafka": {
+    "canonical": "kafka",
+    "confidence": 0.675808310508728
+  },
+  "Data Processing Techniques": {
+    "canonical": "data processing techniques",
+    "confidence": 0.98
+  },
+  "ASP.NET": {
+    "canonical": "asp.net",
+    "confidence": 0.98
+  },
+  "Email Processing": {
+    "canonical": "email processing",
+    "confidence": 0.98
+  },
+  "Workflow Automation": {
+    "canonical": "workflow automation",
+    "confidence": 0.98
+  },
+  "Responsiveness": {
+    "canonical": "responsiveness",
+    "confidence": 0.98
+  },
+  "Automated Testing Skills": {
+    "canonical": "automated testing",
+    "confidence": 0.98
+  },
+  "Performance Testing": {
+    "canonical": "performance testing",
+    "confidence": 0.98
+  },
+  "Cloud Run": {
+    "canonical": "cloud run",
+    "confidence": 0.98
+  },
+  "Algorithm Design and Implementation": {
+    "canonical": "algorithms",
+    "confidence": 0.6544894576072693
+  },
+  "Hybrid Retrieval Strategy": {
+    "canonical": "caching",
+    "confidence": 0.2923929989337921
+  },
+  "Next.js": {
+    "canonical": "next.js",
+    "confidence": 0.98
+  },
+  "Data Architecture Design": {
+    "canonical": "schema design",
+    "confidence": 0.6506564617156982
+  },
+  "JWT Validation": {
+    "canonical": "jwt",
+    "confidence": 0.7682974338531494
+  },
+  "Hardware Design Constraints": {
+    "canonical": "hardware constraints",
+    "confidence": 0.8705185651779175
+  },
+  "API and Data Management": {
+    "canonical": "api and data management",
+    "confidence": 0.98
+  },
+  "Fallback Logic": {
+    "canonical": "fallback logic",
+    "confidence": 0.9999998211860657
+  },
+  "Data Quality Testing": {
+    "canonical": "data quality",
+    "confidence": 0.8646162748336792
+  },
+  "Scalability Techniques": {
+    "canonical": "scalability",
+    "confidence": 0.8036172389984131
+  },
+  "XML Parsing": {
+    "canonical": "xml parsing",
+    "confidence": 0.98
+  },
+  "Thread Management": {
+    "canonical": "multithreading",
+    "confidence": 0.7505373358726501
+  },
+  "Flink": {
+    "canonical": "flink",
+    "confidence": 0.98
+  },
+  "Error Handling and Monitoring": {
+    "canonical": "error logging",
+    "confidence": 0.7031182050704956
+  },
+  "Dynamic Payload Generation": {
+    "canonical": "dynamic payload generation",
+    "confidence": 0.98
+  },
+  "Model Evaluation Criteria": {
+    "canonical": "model evaluation",
+    "confidence": 0.8877030611038208
+  },
+  "Technical Skill - Cocos Creator": {
+    "canonical": "technical skill - cocos creator",
+    "confidence": 0.98
+  },
+  "CI/CD Pipelines": {
+    "canonical": "ci/cd practices",
+    "confidence": 0.8185321688652039
+  },
+  "Node.js": {
+    "canonical": "nodejs",
+    "confidence": 1.0
+  },
+  "Data Caching": {
+    "canonical": "caching",
+    "confidence": 0.8174659013748169
+  },
+  "Model Deployment": {
+    "canonical": "model deployment",
+    "confidence": 0.98
+  },
+  "Resource Management": {
+    "canonical": "resource management",
+    "confidence": 1.0
+  },
+  "Search and Indexing": {
+    "canonical": "indexing",
+    "confidence": 0.8486524820327759
+  },
+  "Cloud-native architecture": {
+    "canonical": "cloud-native architecture",
+    "confidence": 0.98
+  },
+  "Reliability": {
+    "canonical": "reliability",
+    "confidence": 1.000000238418579
+  },
+  "Data Privacy Compliance": {
+    "canonical": "data privacy compliance",
+    "confidence": 0.98
+  },
+  "Data Cleanup": {
+    "canonical": "data cleanup",
+    "confidence": 0.98
+  },
+  "Transaction Handling": {
+    "canonical": "transaction handling",
+    "confidence": 0.98
+  },
+  "Asynchronous Architecture": {
+    "canonical": "asynchronous processing",
+    "confidence": 0.7551398277282715
+  },
+  "Entity Extraction": {
+    "canonical": "text extraction",
+    "confidence": 0.6389292478561401
+  },
+  "Memory Analysis Tools": {
+    "canonical": "memory analysis tools",
+    "confidence": 0.98
+  },
+  "AJAX": {
+    "canonical": "ajax",
+    "confidence": 0.98
+  },
+  "Data Storage Solutions": {
+    "canonical": "data storage solutions",
+    "confidence": 0.98
+  },
+  "Prometheus": {
+    "canonical": "prometheus",
+    "confidence": 0.98
+  },
+  "Data Analysis": {
+    "canonical": "data analysis",
+    "confidence": 0.98
+  },
+  "SQL": {
+    "canonical": "sql",
+    "confidence": 0.98
+  },
+  "Text Extraction": {
+    "canonical": "text extraction",
+    "confidence": 1.0000001192092896
+  },
+  "Message Routing": {
+    "canonical": "message routing",
+    "confidence": 0.98
+  },
+  "Event Dispatching": {
+    "canonical": "event dispatching",
+    "confidence": 1.0000001192092896
+  },
+  "Spring Boot": {
+    "canonical": "spring boot",
+    "confidence": 1.0
+  },
+  "Data Flow Architecture": {
+    "canonical": "data flow",
+    "confidence": 0.8636898398399353
+  },
+  "Decision-Making Skills": {
+    "canonical": "decision-making skills",
+    "confidence": 0.98
+  },
+  "Signal Completion": {
+    "canonical": "signal completion",
+    "confidence": 0.98
+  },
+  "Modularity": {
+    "canonical": "modularity",
+    "confidence": 0.98
+  },
+  "Fault Injection": {
+    "canonical": "fault injection",
+    "confidence": 0.98
+  },
+  "Extensibility": {
+    "canonical": "extensibility",
+    "confidence": 0.98
+  },
+  "Caching Mechanisms": {
+    "canonical": "caching",
+    "confidence": 0.8287644386291504
+  },
+  "JNI Management": {
+    "canonical": "jni management",
+    "confidence": 0.9999997019767761
+  },
+  "Cloud Solutions": {
+    "canonical": "aws",
+    "confidence": 0.5371120572090149
+  },
+  "Rendering Performance": {
+    "canonical": "rendering performance",
+    "confidence": 0.98
+  },
+  "Secrets Management": {
+    "canonical": "key management",
+    "confidence": 0.6531258225440979
+  },
+  "Load Testing": {
+    "canonical": "load testing",
+    "confidence": 1.0
+  },
+  "Data Model Evolution": {
+    "canonical": "data model evolution",
+    "confidence": 0.98
+  },
+  "Azure DevOps": {
+    "canonical": "azure devops",
+    "confidence": 0.98
+  },
+  "Project Architecture Understanding": {
+    "canonical": "project architecture understanding",
+    "confidence": 0.98
+  },
+  "Automated Testing": {
+    "canonical": "automated testing",
+    "confidence": 0.98
+  },
+  "JavaScript Proficiency": {
+    "canonical": "nodejs",
+    "confidence": 0.46718302369117737
+  },
+  "Data Consistency Management": {
+    "canonical": "data integrity",
+    "confidence": 0.6730054616928101
+  },
+  "Thread Safety and Synchronization": {
+    "canonical": "multithreading",
+    "confidence": 0.6391749382019043
+  },
+  "Orchestration": {
+    "canonical": "orchestration",
+    "confidence": 1.0
+  },
+  "Model Training": {
+    "canonical": "model training",
+    "confidence": 0.98
+  },
+  "Spatial Data Types": {
+    "canonical": "spatial data types",
+    "confidence": 0.98
+  },
+  "SQL Server Spatial Functions": {
+    "canonical": "sql server spatial functions",
+    "confidence": 0.98
+  },
+  "Data Extraction": {
+    "canonical": "data extraction",
+    "confidence": 0.98
+  },
+  "Sockets": {
+    "canonical": "sockets",
+    "confidence": 0.98
+  },
+  "Architectural Knowledge": {
+    "canonical": "architecture skills",
+    "confidence": 0.7488625645637512
+  },
+  "Data Ingestion Framework": {
+    "canonical": "data ingestion framework",
+    "confidence": 0.98
+  },
+  "Deep Learning": {
+    "canonical": "deep learning",
+    "confidence": 0.98
+  },
+  "Technology-Specific Knowledge": {
+    "canonical": "technology-specific knowledge",
+    "confidence": 0.98
+  },
+  "Voice Processing": {
+    "canonical": "voice processing",
+    "confidence": 0.98
+  },
+  "Re-indexing": {
+    "canonical": "re-indexing",
+    "confidence": 0.98
+  },
+  "Vector Database Evaluation": {
+    "canonical": "vector database",
+    "confidence": 0.834938645362854
+  },
+  "Kubernetes Proficiency": {
+    "canonical": "kubernetes proficiency",
+    "confidence": 0.98
+  },
+  "Technical Skill Application": {
+    "canonical": "technical skills",
+    "confidence": 0.829896092414856
+  },
+  "Express": {
+    "canonical": "express",
+    "confidence": 0.98
+  },
+  "Machine Learning Optimization": {
+    "canonical": "machine learning optimization",
+    "confidence": 0.98
+  },
+  "AWS Architecture Design": {
+    "canonical": "aws",
+    "confidence": 0.6015608310699463
+  },
+  "ETL Pipeline Orchestration": {
+    "canonical": "etl pipelines",
+    "confidence": 0.8653222322463989
+  },
+  "Checkpointing": {
+    "canonical": "checkpointing",
+    "confidence": 0.98
+  },
+  "Inter-process communication": {
+    "canonical": "inter-process communication",
+    "confidence": 0.98
+  },
+  "Hugging Face Transformers": {
+    "canonical": "hugging face transformers",
+    "confidence": 0.98
+  },
+  "Notification Systems": {
+    "canonical": "notification systems",
+    "confidence": 0.98
+  },
+  "ETL Pipelines": {
+    "canonical": "etl pipelines",
+    "confidence": 0.9999996423721313
+  },
+  "Mobile Architecture": {
+    "canonical": "mobile architecture",
+    "confidence": 0.98
+  },
+  "Reactive Architecture": {
+    "canonical": "reactive architecture",
+    "confidence": 0.98
+  },
+  "CloudWatch": {
+    "canonical": "cloudwatch",
+    "confidence": 0.98
+  },
+  "Performance": {
+    "canonical": "performance",
+    "confidence": 0.98
+  },
+  "Dropwizard": {
+    "canonical": "dropwizard",
+    "confidence": 0.98
+  },
+  "Security Testing": {
+    "canonical": "security testing",
+    "confidence": 0.98
+  },
+  "Database Layers": {
+    "canonical": "database layers",
+    "confidence": 0.98
+  },
+  "MongoDB": {
+    "canonical": "mongodb",
+    "confidence": 0.98
+  },
+  "Cache Management": {
+    "canonical": "caching",
+    "confidence": 0.681047260761261
+  },
+  "Failure Recovery Strategies": {
+    "canonical": "error logging",
+    "confidence": 0.31966179609298706
+  },
+  "OCR Technology Utilization": {
+    "canonical": "ocr",
+    "confidence": 0.7664918899536133
+  },
+  "Asynchronous Operations": {
+    "canonical": "asynchronous processing",
+    "confidence": 0.8380728960037231
+  },
+  "Alerting System": {
+    "canonical": "alerting system",
+    "confidence": 1.0
+  },
+  "MySQL Technical Skills": {
+    "canonical": "mysql technical skills",
+    "confidence": 0.98
+  },
+  "Machine Learning Model Evaluation": {
+    "canonical": "machine learning model evaluation",
+    "confidence": 0.98
+  },
+  "Caching": {
+    "canonical": "caching",
+    "confidence": 0.9999998807907104
+  },
+  "Django REST Framework": {
+    "canonical": "django rest framework",
+    "confidence": 0.98
+  },
+  "Automation Frameworks": {
+    "canonical": "automation frameworks",
+    "confidence": 0.98
+  },
+  "SQL Optimization": {
+    "canonical": "sql optimization",
+    "confidence": 1.000000238418579
+  },
+  "Redux": {
+    "canonical": "redux",
+    "confidence": 0.98
+  },
+  "Foreign Key Constraints": {
+    "canonical": "foreign key constraints",
+    "confidence": 0.98
+  },
+  "Caching Mechanism": {
+    "canonical": "caching",
+    "confidence": 0.8146929740905762
+  },
+  "Performance Optimization": {
+    "canonical": "resource management",
+    "confidence": 0.47696757316589355
+  },
+  "AWS Step Functions": {
+    "canonical": "aws step functions",
+    "confidence": 0.98
+  },
+  "Monitoring and Observability": {
+    "canonical": "observability",
+    "confidence": 0.7739310264587402
+  },
+  "Security and Compliance": {
+    "canonical": "security compliance",
+    "confidence": 0.9371527433395386
+  },
+  "Cloud Storage Management": {
+    "canonical": "cloud storage management",
+    "confidence": 0.98
+  },
+  "Algorithm Design": {
+    "canonical": "algorithms",
+    "confidence": 0.7245703339576721
+  },
+  "REST API Principles": {
+    "canonical": "rest api knowledge",
+    "confidence": 0.8604313135147095
+  },
+  "Transactional Integrity": {
+    "canonical": "transactional integrity",
+    "confidence": 0.98
+  },
+  "Claims Management": {
+    "canonical": "claims management",
+    "confidence": 0.98
+  },
+  "Authorization": {
+    "canonical": "authorization",
+    "confidence": 0.98
+  },
+  "WebSocket Communication": {
+    "canonical": "websocket communication",
+    "confidence": 0.98
+  },
+  "Encryption": {
+    "canonical": "encryption",
+    "confidence": 1.000000238418579
+  },
+  "Caching Mechanism Understanding": {
+    "canonical": "caching",
+    "confidence": 0.7088092565536499
+  },
+  "Network Environment Considerations": {
+    "canonical": "network environment considerations",
+    "confidence": 0.98
+  },
+  "Error Logging": {
+    "canonical": "error logging",
+    "confidence": 1.000000238418579
+  },
+  "Framework and Database Knowledge": {
+    "canonical": "frameworks",
+    "confidence": 0.6692530512809753
+  },
+  "Failover Testing": {
+    "canonical": "failover testing",
+    "confidence": 0.98
+  },
+  "Microservices architecture": {
+    "canonical": "microservices",
+    "confidence": 1.0
+  },
+  "Data Pipeline Testing": {
+    "canonical": "data pipeline testing",
+    "confidence": 0.98
+  },
+  "Asynchronous Communication Skills": {
+    "canonical": "asynchronous communication skills",
+    "confidence": 0.98
+  },
+  "Integration Tests": {
+    "canonical": "integration tests",
+    "confidence": 0.98
+  },
+  "Project Management and CI/CD": {
+    "canonical": "project management and ci/cd",
+    "confidence": 0.98
+  },
+  "React Native Bridge": {
+    "canonical": "react native bridge",
+    "confidence": 0.98
+  },
+  "Bias Mitigation": {
+    "canonical": "bias mitigation",
+    "confidence": 0.98
+  },
+  "Failure Detection": {
+    "canonical": "error logging",
+    "confidence": 0.5188949704170227
+  },
+  "Streamlit": {
+    "canonical": "streamlit",
+    "confidence": 0.98
+  },
+  "Spring Security": {
+    "canonical": "spring boot",
+    "confidence": 0.552345871925354
+  },
+  "Technical Skill in Machine Learning": {
+    "canonical": "ai & machine learning",
+    "confidence": 0.6286319494247437
+  },
+  "Component Hierarchy": {
+    "canonical": "component design",
+    "confidence": 0.7057322263717651
+  },
+  "Eviction Policies": {
+    "canonical": "eviction policies",
+    "confidence": 0.98
+  },
+  "Testing Tools": {
+    "canonical": "testing tools",
+    "confidence": 0.98
+  },
+  "ETL": {
+    "canonical": "etl",
+    "confidence": 0.98
+  },
+  "Model Monitoring": {
+    "canonical": "model monitoring",
+    "confidence": 0.98
+  },
+  "Reproducibility": {
+    "canonical": "reproducibility",
+    "confidence": 0.98
+  },
+  "Integration": {
+    "canonical": "integration",
+    "confidence": 0.98
+  },
+  "Game Design": {
+    "canonical": "game design",
+    "confidence": 0.98
+  },
+  "Infrastructure Automation": {
+    "canonical": "cloud automation",
+    "confidence": 0.7151831388473511
+  },
+  "Data Streaming and Messaging Skills": {
+    "canonical": "data streaming and messaging skills",
+    "confidence": 0.98
+  },
+  "Data Pipeline": {
+    "canonical": "data pipeline",
+    "confidence": 0.9999998807907104
+  },
+  "Fault tolerance": {
+    "canonical": "fault tolerance",
+    "confidence": 0.98
+  },
+  "REST API Understanding": {
+    "canonical": "rest api understanding",
+    "confidence": 0.98
+  },
+  "Troubleshooting": {
+    "canonical": "debugging",
+    "confidence": 0.7047053575515747
+  },
+  "PySpark Knowledge": {
+    "canonical": "pyspark knowledge",
+    "confidence": 0.98
+  },
+  "Framework and Tool Selection": {
+    "canonical": "frameworks",
+    "confidence": 0.731852114200592
+  },
+  "Technical Skills - React": {
+    "canonical": "react expertise",
+    "confidence": 0.7370036244392395
+  },
+  "Cross-browser Compatibility": {
+    "canonical": "cross-browser compatibility",
+    "confidence": 0.98
+  },
+  "User Feedback Analysis": {
+    "canonical": "user feedback analysis",
+    "confidence": 0.98
+  },
+  "Real-time Data Processing": {
+    "canonical": "real-time processing",
+    "confidence": 0.923027515411377
+  },
+  "Bottleneck Identification": {
+    "canonical": "bottleneck identification",
+    "confidence": 0.98
+  },
+  "CI/CD Practices": {
+    "canonical": "ci/cd practices",
+    "confidence": 1.0000001192092896
+  },
+  "Step Functions": {
+    "canonical": "step functions",
+    "confidence": 0.98
+  },
+  "Deployment Strategies": {
+    "canonical": "deployment strategy",
+    "confidence": 0.9739454984664917
+  },
+  "AI Model Proficiency": {
+    "canonical": "ai model proficiency",
+    "confidence": 0.98
+  },
+  "Microservices communication": {
+    "canonical": "microservices",
+    "confidence": 0.8231971859931946
+  },
+  "Containerization and Orchestration": {
+    "canonical": "containerization",
+    "confidence": 0.7720429301261902
+  },
+  "Avro": {
+    "canonical": "avro",
+    "confidence": 1.0000001192092896
+  },
+  "Data Lineage": {
+    "canonical": "data lineage",
+    "confidence": 0.98
+  },
+  "Real-time Processing": {
+    "canonical": "real-time processing",
+    "confidence": 0.9999998807907104
+  },
+  "ARIA Implementation": {
+    "canonical": "aria implementation",
+    "confidence": 0.98
+  },
+  "Cache management": {
+    "canonical": "caching",
+    "confidence": 0.681047260761261
+  },
+  "COBOL": {
+    "canonical": "cobol",
+    "confidence": 0.98
+  },
+  "RBAC": {
+    "canonical": "rbac",
+    "confidence": 0.98
+  },
+  "Load Testing and Observability": {
+    "canonical": "load testing and observability",
+    "confidence": 0.98
+  },
+  "Crawling and Data Extraction": {
+    "canonical": "crawling and data extraction",
+    "confidence": 0.98
+  },
+  "Metric Analysis": {
+    "canonical": "metrics",
+    "confidence": 0.8683216571807861
+  },
+  "REST": {
+    "canonical": "rest",
+    "confidence": 0.98
+  },
+  "Geospatial Indexing": {
+    "canonical": "geospatial queries",
+    "confidence": 0.7930556535720825
+  },
+  "Security Standards": {
+    "canonical": "security standards",
+    "confidence": 0.98
+  },
+  "NLP": {
+    "canonical": "nlp",
+    "confidence": 0.98
+  },
+  "Real-time Data Handling": {
+    "canonical": "real-time processing",
+    "confidence": 0.8337039351463318
+  },
+  "Orchestration Tools": {
+    "canonical": "orchestration tools",
+    "confidence": 0.98
+  },
+  "Azure IoT Hub": {
+    "canonical": "azure iot hub",
+    "confidence": 1.0000004768371582
+  },
+  "Vision LLMs": {
+    "canonical": "vision llms",
+    "confidence": 0.98
+  },
+  "Intermediate Output Management": {
+    "canonical": "intermediate output management",
+    "confidence": 0.98
+  },
+  "jQuery": {
+    "canonical": "jquery",
+    "confidence": 0.98
+  },
+  "Data Streaming and Messaging": {
+    "canonical": "data pipeline",
+    "confidence": 0.3466077744960785
+  },
+  "Django": {
+    "canonical": "django",
+    "confidence": 0.98
+  },
+  "Model Integration": {
+    "canonical": "model integration",
+    "confidence": 0.98
+  },
+  "Technical Knowledge": {
+    "canonical": "technical skills",
+    "confidence": 0.793927013874054
+  },
+  "Rule Engine Implementation": {
+    "canonical": "rule engine implementation",
+    "confidence": 0.98
+  },
+  "LLM Automation Design": {
+    "canonical": "llm integration",
+    "confidence": 0.5921143293380737
+  },
+  "Monitoring and Testing": {
+    "canonical": "monitoring and testing",
+    "confidence": 1.000000238418579
+  },
+  "Consumer Groups": {
+    "canonical": "consumer groups",
+    "confidence": 0.98
+  },
+  "Inter-process Communication": {
+    "canonical": "inter-process communication",
+    "confidence": 0.98
+  },
+  "Web3": {
+    "canonical": "web3",
+    "confidence": 0.98
+  },
+  "Statistical Models": {
+    "canonical": "statistical models",
+    "confidence": 0.98
+  },
+  "Containerization Skills": {
+    "canonical": "containerization",
+    "confidence": 0.7552832961082458
+  },
+  "Messaging System Knowledge": {
+    "canonical": "message broker",
+    "confidence": 0.6982736587524414
+  },
+  "Search and Analytics": {
+    "canonical": "search and analytics",
+    "confidence": 0.98
+  },
+  "Vue": {
+    "canonical": "vue",
+    "confidence": 0.98
+  },
+  "PostgreSQL Technical Skills": {
+    "canonical": "postgresql technical skills",
+    "confidence": 0.98
+  },
+  "Performance Evaluation": {
+    "canonical": "evaluation metrics",
+    "confidence": 0.7953872680664062
+  },
+  "ORM Tools Knowledge": {
+    "canonical": "orm tools knowledge",
+    "confidence": 0.98
+  },
+  "API Gateway Implementation": {
+    "canonical": "api gateway",
+    "confidence": 0.9374116659164429
+  },
+  "Lazy Loading": {
+    "canonical": "lazy loading",
+    "confidence": 0.98
+  },
+  "React Expertise": {
+    "canonical": "react expertise",
+    "confidence": 0.9999998211860657
+  },
+  "Software Testing": {
+    "canonical": "testing",
+    "confidence": 0.7706723213195801
+  },
+  "Edge Hardware Optimization": {
+    "canonical": "edge hardware optimization",
+    "confidence": 0.98
+  },
+  "Technical Skill in Transaction Outbox Pattern": {
+    "canonical": "transaction outbox pattern",
+    "confidence": 0.8351283073425293
+  },
+  "Testing Methodologies": {
+    "canonical": "testing strategy",
+    "confidence": 0.7189366221427917
+  },
+  "Python": {
+    "canonical": "python",
+    "confidence": 0.98
+  },
+  "Cache Invalidation Policies": {
+    "canonical": "caching",
+    "confidence": 0.49776792526245117
+  },
+  "Profiling": {
+    "canonical": "profiling",
+    "confidence": 0.98
+  },
+  "Data Security Compliance": {
+    "canonical": "security compliance",
+    "confidence": 0.8123875856399536
+  },
+  "User Authentication": {
+    "canonical": "authentication",
+    "confidence": 0.8600209951400757
+  },
+  "Experiment Tracking": {
+    "canonical": "experiment tracking",
+    "confidence": 0.98
+  },
+  "gRPC": {
+    "canonical": "grpc",
+    "confidence": 0.98
+  },
+  "API Performance": {
+    "canonical": "api performance",
+    "confidence": 1.0000001192092896
+  },
+  "Web Components": {
+    "canonical": "web components",
+    "confidence": 0.98
+  },
+  "Hashing": {
+    "canonical": "hashing",
+    "confidence": 0.98
+  },
+  "Performance Measurement": {
+    "canonical": "evaluation metrics",
+    "confidence": 0.7910236120223999
+  },
+  "Data Retrieval Quality Improvement": {
+    "canonical": "data retrieval quality improvement",
+    "confidence": 0.98
+  },
+  "Model Evaluation": {
+    "canonical": "model evaluation",
+    "confidence": 1.0
+  },
+  "Text-to-Speech Model Evaluation": {
+    "canonical": "speech-to-text model selection",
+    "confidence": 0.8118445873260498
+  },
+  "Device Connectivity": {
+    "canonical": "device connectivity",
+    "confidence": 0.98
+  },
+  "Multithreading": {
+    "canonical": "multithreading",
+    "confidence": 0.9999999403953552
+  },
+  "Version Control in Data Management": {
+    "canonical": "versioning strategy",
+    "confidence": 0.7261463403701782
+  },
+  "React": {
+    "canonical": "react",
+    "confidence": 0.98
+  },
+  "Data Management Skills": {
+    "canonical": "data management skills",
+    "confidence": 0.98
+  },
+  "System Design and Architecture": {
+    "canonical": "system design",
+    "confidence": 0.8693949580192566
+  },
+  "OpenAI APIs": {
+    "canonical": "openai apis",
+    "confidence": 0.98
+  },
+  "Integration Skills": {
+    "canonical": "llm integration",
+    "confidence": 0.42606619000434875
+  },
+  "Technology Proficiency": {
+    "canonical": "technology proficiency",
+    "confidence": 0.98
+  },
+  "Event Handling Logic": {
+    "canonical": "event dispatching",
+    "confidence": 0.729034423828125
+  },
+  "Frontend Frameworks": {
+    "canonical": "frontend frameworks",
+    "confidence": 0.9999998807907104
+  },
+  "Monitoring and Alerting System": {
+    "canonical": "alerting system",
+    "confidence": 0.8924332857131958
+  },
+  "MongoDB Proficiency": {
+    "canonical": "mongodb proficiency",
+    "confidence": 0.98
+  },
+  "Blue-Green Deployment": {
+    "canonical": "blue-green deployment",
+    "confidence": 0.98
+  },
+  "AWS Lambda": {
+    "canonical": "aws lambda",
+    "confidence": 0.98
+  },
+  "Offline Simulation Testing": {
+    "canonical": "offline simulation testing",
+    "confidence": 0.98
+  },
+  "Message broker": {
+    "canonical": "message broker",
+    "confidence": 1.0
+  },
+  "React Native Proficiency": {
+    "canonical": "react expertise",
+    "confidence": 0.6876459121704102
+  },
+  "Integration and Architecture": {
+    "canonical": "integration and architecture",
+    "confidence": 0.98
+  },
+  "Recovery": {
+    "canonical": "recovery",
+    "confidence": 0.98
+  },
+  "AI Architecture": {
+    "canonical": "ai architecture",
+    "confidence": 0.98
+  },
+  "Orchestration Design": {
+    "canonical": "orchestration",
+    "confidence": 0.8089483976364136
+  },
+  "Data Integrity Management": {
+    "canonical": "data integrity",
+    "confidence": 0.8845940232276917
+  },
+  "Reliability and Observability": {
+    "canonical": "observability",
+    "confidence": 0.7760039567947388
+  },
+  "Frontend Development": {
+    "canonical": "frontend",
+    "confidence": 0.98
+  },
+  "Redis": {
+    "canonical": "redis",
+    "confidence": 0.98
+  },
+  "CI/CD Automation": {
+    "canonical": "cicd",
+    "confidence": 0.98
+  },
+  "Loss Function Understanding": {
+    "canonical": "loss function understanding",
+    "confidence": 0.98
+  },
+  "Automation Scripting": {
+    "canonical": "automation scripting",
+    "confidence": 0.98
+  },
+  "API Compatibility": {
+    "canonical": "api compatibility",
+    "confidence": 0.98
+  },
+  "Error Handling": {
+    "canonical": "error logging",
+    "confidence": 0.6203515529632568
+  },
+  "Audio Quality Management": {
+    "canonical": "audio quality management",
+    "confidence": 0.98
+  },
+  "Connection Management": {
+    "canonical": "connection management",
+    "confidence": 0.98
+  },
+  "Security Compliance Awareness": {
+    "canonical": "security compliance",
+    "confidence": 0.8318800330162048
+  },
+  "Framework Evaluation": {
+    "canonical": "framework evaluation",
+    "confidence": 0.98
+  },
+  "Docker Proficiency": {
+    "canonical": "docker proficiency",
+    "confidence": 0.98
+  },
+  "Architecture Design": {
+    "canonical": "architecture",
+    "confidence": 0.7871312499046326
+  },
+  "ZK framework": {
+    "canonical": "zk framework",
+    "confidence": 0.98
+  },
+  "Programming Skills": {
+    "canonical": "programming skills",
+    "confidence": 0.9999998807907104
+  },
+  "Model Optimization": {
+    "canonical": "model optimization",
+    "confidence": 0.98
+  },
+  "REST APIs": {
+    "canonical": "rest api",
+    "confidence": 0.9084565043449402
+  },
+  "Concurrency Handling": {
+    "canonical": "concurrency",
+    "confidence": 0.8140183091163635
+  },
+  "Econometrics Knowledge": {
+    "canonical": "econometrics knowledge",
+    "confidence": 0.98
+  },
+  "Cloud Services": {
+    "canonical": "aws",
+    "confidence": 0.6089347004890442
+  },
+  "Embedding Generation": {
+    "canonical": "embedding generation",
+    "confidence": 1.000000238418579
+  },
+  "C/C++ Programming": {
+    "canonical": "c++",
+    "confidence": 0.815231442451477
+  },
+  "Embedding Model Selection": {
+    "canonical": "embedding generation",
+    "confidence": 0.6664330959320068
+  },
+  "Technical Skill in Terraform": {
+    "canonical": "technical skill in terraform",
+    "confidence": 0.98
+  },
+  "SQL Server": {
+    "canonical": "sql server",
+    "confidence": 1.000000238418579
+  },
+  "Cloud Data Solutions": {
+    "canonical": "aws",
+    "confidence": 0.4289177656173706
+  },
+  "Backend Engineering": {
+    "canonical": "backend",
+    "confidence": 0.98
+  },
+  "Query Processing": {
+    "canonical": "query processing",
+    "confidence": 0.98
+  },
+  "Data flow management": {
+    "canonical": "data flow",
+    "confidence": 0.8481130599975586
+  },
+  "CICD Pipeline Design": {
+    "canonical": "cicd pipeline design",
+    "confidence": 0.98
+  },
+  "Technology Choice and Rationale": {
+    "canonical": "technology selection",
+    "confidence": 0.7867148518562317
+  },
+  "Cloud Infrastructure Utilization": {
+    "canonical": "aws",
+    "confidence": 0.4501277208328247
+  },
+  "Error Handling Strategies": {
+    "canonical": "error logging",
+    "confidence": 0.5677362680435181
+  },
+  "Scalability Optimization": {
+    "canonical": "scalability",
+    "confidence": 0.765595555305481
+  },
+  "Trigger Implementation": {
+    "canonical": "trigger implementation",
+    "confidence": 0.98
+  },
+  "Technical Decision-Making": {
+    "canonical": "technical decision-making",
+    "confidence": 0.98
+  },
+  "Agent Orchestration": {
+    "canonical": "agent orchestration",
+    "confidence": 0.98
+  },
+  "Cloud/DevOps": {
+    "canonical": "aws",
+    "confidence": 0.49559253454208374
+  },
+  "Streaming Data Pipeline": {
+    "canonical": "data pipeline",
+    "confidence": 0.8459017276763916
+  },
+  "Java EE": {
+    "canonical": "java ee",
+    "confidence": 0.98
+  },
+  "Real-time Presence Tracking": {
+    "canonical": "real-time presence tracking",
+    "confidence": 0.98
+  },
+  "ETL Pipeline Development": {
+    "canonical": "etl pipelines",
+    "confidence": 0.9382625818252563
+  },
+  "Data Encryption": {
+    "canonical": "encryption",
+    "confidence": 0.8424802422523499
+  },
+  "Elixir": {
+    "canonical": "elixir",
+    "confidence": 0.98
+  },
+  "Cloud and Container Management": {
+    "canonical": "containerization",
+    "confidence": 0.7371951341629028
+  },
+  "Technical Skills - Scala": {
+    "canonical": "technical skills - scala",
+    "confidence": 0.98
+  },
+  "Frontend-Backend Consistency": {
+    "canonical": "frontend-backend consistency",
+    "confidence": 0.98
+  },
+  "Consumer Groups Management": {
+    "canonical": "consumer groups management",
+    "confidence": 0.98
+  },
+  "Cross-platform Development": {
+    "canonical": "full stack development",
+    "confidence": 0.5930142402648926
+  },
+  "Testing and Quality Assurance": {
+    "canonical": "testing and quality assurance",
+    "confidence": 0.98
+  },
+  "FAISS": {
+    "canonical": "faiss",
+    "confidence": 0.98
+  },
+  "Oracle API": {
+    "canonical": "oracle api",
+    "confidence": 0.98
+  },
+  "Python Programming": {
+    "canonical": "python programming",
+    "confidence": 0.9999997615814209
+  },
+  "Microservices Communication": {
+    "canonical": "microservices",
+    "confidence": 0.8231971859931946
+  },
+  "DB2": {
+    "canonical": "db2",
+    "confidence": 0.98
+  },
+  "Versatility in Programming": {
+    "canonical": "versatility in programming",
+    "confidence": 0.98
+  },
+  "Performance Engineering": {
+    "canonical": "performance engineering",
+    "confidence": 0.98
+  },
+  "Testing & CI/CD": {
+    "canonical": "testing & ci/cd",
+    "confidence": 0.98
+  },
+  "Data Persistence": {
+    "canonical": "data persistence",
+    "confidence": 0.98
+  },
+  "S3": {
+    "canonical": "s3",
+    "confidence": 0.98
+  },
+  "Cucumber Proficiency": {
+    "canonical": "cucumber proficiency",
+    "confidence": 0.98
+  },
+  "Real-Time Agent Interaction": {
+    "canonical": "real-time agent interaction",
+    "confidence": 0.98
+  },
+  "Fallback Strategies": {
+    "canonical": "fallback logic",
+    "confidence": 0.7281963229179382
+  },
+  "Logging and Monitoring": {
+    "canonical": "logging and monitoring",
+    "confidence": 0.98
+  },
+  "Preprocessing": {
+    "canonical": "preprocessing",
+    "confidence": 0.98
+  },
+  "Data Streaming and Processing": {
+    "canonical": "data pipeline",
+    "confidence": 0.58473140001297
+  },
+  "Performance Benchmarking": {
+    "canonical": "performance profiling",
+    "confidence": 0.7884167432785034
+  },
+  "Overfitting": {
+    "canonical": "overfitting",
+    "confidence": 0.98
+  },
+  "Queue System": {
+    "canonical": "queue system",
+    "confidence": 1.0
+  },
+  "AI": {
+    "canonical": "ai",
+    "confidence": 1.0
+  },
+  "Reasoning for Technology Selection": {
+    "canonical": "technology selection",
+    "confidence": 0.8380994200706482
+  },
+  "DevOps Practices": {
+    "canonical": "devops practices",
+    "confidence": 0.98
+  },
+  "API Integration": {
+    "canonical": "api integration",
+    "confidence": 0.98
+  },
+  "Backend Framework Knowledge": {
+    "canonical": "frontend frameworks",
+    "confidence": 0.6952085494995117
+  },
+  "Data Integrity": {
+    "canonical": "data integrity",
+    "confidence": 0.9999997615814209
+  },
+  "ETL Pipeline Architecture": {
+    "canonical": "etl pipelines",
+    "confidence": 0.932543158531189
+  },
+  "Statistical Algorithms": {
+    "canonical": "statistical algorithms",
+    "confidence": 0.98
+  },
+  "Secure Coding Practices": {
+    "canonical": "secure coding practices",
+    "confidence": 0.98
+  },
+  "Guardrails Implementation": {
+    "canonical": "guardrails implementation",
+    "confidence": 0.98
+  },
+  "Re-ranking Layer Implementation": {
+    "canonical": "re-ranking",
+    "confidence": 0.7651749849319458
+  },
+  "User Behavior Analysis": {
+    "canonical": "user behavior analysis",
+    "confidence": 0.98
+  },
+  "Microsoft Stack Familiarity": {
+    "canonical": "microsoft stack familiarity",
+    "confidence": 0.98
+  },
+  "Testing": {
+    "canonical": "testing",
+    "confidence": 1.000000238418579
+  },
+  "Data Privacy": {
+    "canonical": "data privacy",
+    "confidence": 0.98
+  },
+  "Performance Tuning": {
+    "canonical": "resource management",
+    "confidence": 0.47696757316589355
+  },
+  "Natural Language Processing": {
+    "canonical": "natural language processing",
+    "confidence": 0.98
+  },
+  "Cloud Infrastructure": {
+    "canonical": "aws",
+    "confidence": 0.5824602842330933
+  },
+  "Flask": {
+    "canonical": "flask",
+    "confidence": 0.98
+  },
+  "Model Versioning": {
+    "canonical": "model versioning",
+    "confidence": 0.98
+  },
+  "Pagination": {
+    "canonical": "pagination",
+    "confidence": 0.98
+  },
+  "Data Pipeline Management": {
+    "canonical": "data pipeline",
+    "confidence": 0.8978049755096436
+  },
+  "C# Proficiency": {
+    "canonical": "c# proficiency",
+    "confidence": 0.98
+  },
+  "Cloud Infrastructure Management": {
+    "canonical": "aws",
+    "confidence": 0.4206732511520386
+  },
+  "Database Schema Management": {
+    "canonical": "database schema management",
+    "confidence": 0.98
+  },
+  "Celery": {
+    "canonical": "celery",
+    "confidence": 0.98
+  },
+  "AI and Machine Learning Skills": {
+    "canonical": "ai & machine learning",
+    "confidence": 0.8018225431442261
+  },
+  "MLOps": {
+    "canonical": "mlops",
+    "confidence": 0.98
+  },
+  "Azure Monitoring Tools": {
+    "canonical": "azure monitoring tools",
+    "confidence": 0.98
+  },
+  "Service Architecture": {
+    "canonical": "service architecture",
+    "confidence": 0.98
+  },
+  "Node JS": {
+    "canonical": "nodejs",
+    "confidence": 0.9039732217788696
+  },
+  "Architecture Skills": {
+    "canonical": "architecture skills",
+    "confidence": 0.9999998807907104
+  },
+  "Validation Techniques": {
+    "canonical": "validation techniques",
+    "confidence": 0.98
+  },
+  "Asynchronous Job Management": {
+    "canonical": "queue system",
+    "confidence": 0.4131976366043091
+  },
+  "Systems Architecture": {
+    "canonical": "system design",
+    "confidence": 0.8036231994628906
+  },
+  "Chaos Testing": {
+    "canonical": "chaos testing",
+    "confidence": 0.98
+  },
+  "End-to-end Testing": {
+    "canonical": "end-to-end testing",
+    "confidence": 0.98
+  },
+  "VPC Design": {
+    "canonical": "vpc design",
+    "confidence": 0.98
+  },
+  "Data Storage": {
+    "canonical": "data storage",
+    "confidence": 0.98
+  },
+  "Unit Testing": {
+    "canonical": "testing",
+    "confidence": 0.7496022582054138
+  },
+  "Asynchronous Workflows": {
+    "canonical": "asynchronous workflows",
+    "confidence": 0.98
+  },
+  "API Design and Integration": {
+    "canonical": "api design",
+    "confidence": 0.8975119590759277
+  },
+  "Batch Processing": {
+    "canonical": "batch processing",
+    "confidence": 0.98
+  },
+  "Compensation Logic": {
+    "canonical": "compensation logic",
+    "confidence": 0.98
+  },
+  "Device Provisioning": {
+    "canonical": "device provisioning",
+    "confidence": 0.98
+  },
+  "Machine Learning Frameworks": {
+    "canonical": "machine learning frameworks",
+    "confidence": 0.98
+  },
+  "Pipeline Design": {
+    "canonical": "data pipeline",
+    "confidence": 0.6901854276657104
+  },
+  "API Performance Tuning": {
+    "canonical": "api performance",
+    "confidence": 0.884573221206665
+  },
+  "Auditing": {
+    "canonical": "auditing",
+    "confidence": 0.98
+  },
+  "Performance Monitoring": {
+    "canonical": "performance monitoring",
+    "confidence": 0.98
+  },
+  "Rollback": {
+    "canonical": "rollback",
+    "confidence": 1.0
+  },
+  "RESTful APIs": {
+    "canonical": "rest api",
+    "confidence": 0.7883843779563904
+  },
+  "Lightweight Solution Design": {
+    "canonical": "lightweight solution design",
+    "confidence": 0.98
+  },
+  "Spring Boot Expertise": {
+    "canonical": "spring boot",
+    "confidence": 0.8754924535751343
+  },
+  "AI Tools": {
+    "canonical": "ai tools",
+    "confidence": 0.98
+  },
+  "Rollback Management": {
+    "canonical": "rollback",
+    "confidence": 0.7046127319335938
+  },
+  "Retrieval Optimization": {
+    "canonical": "re-ranking",
+    "confidence": 0.42485511302948
+  },
+  "Data Automation": {
+    "canonical": "data automation",
+    "confidence": 1.000000238418579
+  },
+  "CI/CD Pipeline Management": {
+    "canonical": "ci/cd practices",
+    "confidence": 0.7540988922119141
+  },
+  "Specific Tools": {
+    "canonical": "specific tools",
+    "confidence": 0.98
+  },
+  "Cloud Services and Infrastructure": {
+    "canonical": "aws",
+    "confidence": 0.4958069324493408
+  },
+  "Implementation": {
+    "canonical": "implementation",
+    "confidence": 0.98
+  },
+  "Asynchronous Processing": {
+    "canonical": "asynchronous processing",
+    "confidence": 0.9999998807907104
+  },
+  "System Architecture Design": {
+    "canonical": "system design",
+    "confidence": 0.8589029312133789
+  },
+  "Data Quality Assurance": {
+    "canonical": "data quality",
+    "confidence": 0.8972487449645996
+  },
+  "PostgreSQL Optimization": {
+    "canonical": "postgresql optimization",
+    "confidence": 0.98
+  },
+  "Machine Learning Models": {
+    "canonical": "machine learning",
+    "confidence": 0.744848370552063
+  },
+  "Database Management and SQL Server": {
+    "canonical": "sql server",
+    "confidence": 0.7216566801071167
+  },
+  "Model Orchestration": {
+    "canonical": "model orchestration",
+    "confidence": 0.98
+  },
+  "WebSocket": {
+    "canonical": "websocket",
+    "confidence": 0.98
+  },
+  "Maintainability": {
+    "canonical": "maintainability",
+    "confidence": 0.98
+  },
+  "Cloud and Infrastructure Knowledge": {
+    "canonical": "aws",
+    "confidence": 0.4635987877845764
+  },
+  "Retrieval-Augmented Generation": {
+    "canonical": "retrieval-augmented generation",
+    "confidence": 0.98
+  },
+  "Database Design": {
+    "canonical": "schema design",
+    "confidence": 0.727444052696228
+  },
+  "Data Model Structuring": {
+    "canonical": "data models",
+    "confidence": 0.7196494936943054
+  },
+  "AWS Services Utilization": {
+    "canonical": "aws",
+    "confidence": 0.6108992099761963
+  },
+  "DevOps": {
+    "canonical": "devops",
+    "confidence": 0.98
+  },
+  "Query Orchestration": {
+    "canonical": "query orchestration",
+    "confidence": 0.98
+  },
+  "Key Management": {
+    "canonical": "key management",
+    "confidence": 1.000000238418579
+  },
+  "Backend System Design": {
+    "canonical": "frontend frameworks",
+    "confidence": 0.4969707429409027
+  },
+  "API Monitoring": {
+    "canonical": "api monitoring",
+    "confidence": 0.98
+  },
+  "State Persistence": {
+    "canonical": "state persistence",
+    "confidence": 0.98
+  },
+  "Cloud-native": {
+    "canonical": "cloud-native",
+    "confidence": 0.98
+  },
+  "Frontend Framework Knowledge": {
+    "canonical": "frontend frameworks",
+    "confidence": 0.8682945966720581
+  },
+  "Full Stack Development": {
+    "canonical": "full stack development",
+    "confidence": 0.9999999403953552
+  },
+  "Continuous Integration and Continuous Deployment (CICD)": {
+    "canonical": "continuous integration and continuous deployment (cicd)",
+    "confidence": 0.98
+  },
+  "Caching and Data Retrieval": {
+    "canonical": "caching",
+    "confidence": 0.7087593078613281
+  },
+  "Caching Implementation": {
+    "canonical": "caching",
+    "confidence": 0.6998692154884338
+  },
+  "Data Consistency": {
+    "canonical": "data integrity",
+    "confidence": 0.6775063276290894
+  },
+  "Cross-browser compatibility": {
+    "canonical": "cross-browser compatibility",
+    "confidence": 0.98
+  },
+  "Backward Compatibility": {
+    "canonical": "backward compatibility",
+    "confidence": 0.98
+  },
+  "Embedding Techniques": {
+    "canonical": "embedding generation",
+    "confidence": 0.7338312864303589
+  },
+  "Data Pipeline Architecture": {
+    "canonical": "data pipeline",
+    "confidence": 0.9087245464324951
+  },
+  "Microservices Architecture": {
+    "canonical": "microservices",
+    "confidence": 1.0
+  },
+  "Data Flow Design": {
+    "canonical": "data flow",
+    "confidence": 0.8804741501808167
+  },
+  "Synthetic Data Generation": {
+    "canonical": "synthetic data generation",
+    "confidence": 0.98
+  },
+  "Analytics and Monitoring": {
+    "canonical": "analytics and monitoring",
+    "confidence": 0.98
+  },
+  "Scheduling Tools": {
+    "canonical": "scheduling tools",
+    "confidence": 0.98
+  },
+  "Cross-platform development": {
+    "canonical": "full stack development",
+    "confidence": 0.5930142402648926
+  },
+  "Optimization Techniques": {
+    "canonical": "optimization",
+    "confidence": 0.8115410804748535
+  },
+  "Depth Map Estimation": {
+    "canonical": "depth map estimation",
+    "confidence": 0.98
+  },
+  "Geospatial Data Processing": {
+    "canonical": "geospatial queries",
+    "confidence": 0.7202378511428833
+  },
+  "Infrastructure as Code": {
+    "canonical": "infrastructure as code",
+    "confidence": 1.000000238418579
+  },
+  "AI Framework Evaluation Skills": {
+    "canonical": "ai framework evaluation skills",
+    "confidence": 0.98
+  },
+  "Data Privacy Management": {
+    "canonical": "data privacy management",
+    "confidence": 0.98
+  },
+  "Machine Learning Pipeline": {
+    "canonical": "machine learning pipeline",
+    "confidence": 0.98
+  },
+  "Technical Skill Assessment": {
+    "canonical": "technical skills",
+    "confidence": 0.7683274745941162
+  },
+  "Event-Driven Systems": {
+    "canonical": "event processing",
+    "confidence": 0.6793869733810425
+  },
+  "LLM Integration Expertise": {
+    "canonical": "llm integration",
+    "confidence": 0.7662564516067505
+  },
+  "Messaging Systems": {
+    "canonical": "message broker",
+    "confidence": 0.7499066591262817
+  },
+  "UML": {
+    "canonical": "uml",
+    "confidence": 0.98
+  },
+  "AI/ML Development": {
+    "canonical": "ai/ml development",
+    "confidence": 0.98
+  },
+  "AI/ML Integration": {
+    "canonical": "ai",
+    "confidence": 0.6361797451972961
+  },
+  "Analytics": {
+    "canonical": "analytics",
+    "confidence": 0.98
+  },
+  "Framework and Architecture Understanding": {
+    "canonical": "framework and architecture understanding",
+    "confidence": 0.98
+  },
+  "Concurrency": {
+    "canonical": "concurrency",
+    "confidence": 0.9999998211860657
+  },
+  "Geospatial Queries": {
+    "canonical": "geospatial queries",
+    "confidence": 0.9999996423721313
+  },
+  "API Management": {
+    "canonical": "api management",
+    "confidence": 0.98
+  },
+  "Secure Authentication": {
+    "canonical": "secure authentication",
+    "confidence": 0.98
+  },
+  "Dependency Management": {
+    "canonical": "dependency management",
+    "confidence": 0.98
+  },
+  "ETL Process Understanding": {
+    "canonical": "etl process",
+    "confidence": 0.9230241775512695
+  },
+  "Data Modeling": {
+    "canonical": "data modeling",
+    "confidence": 0.98
+  },
+  "Data Normalization and Preprocessing": {
+    "canonical": "data normalization",
+    "confidence": 0.8905463814735413
+  },
+  "Link Failure Detection": {
+    "canonical": "link failure detection",
+    "confidence": 0.98
+  },
+  "Claims Construction and Security": {
+    "canonical": "claims construction and security",
+    "confidence": 0.98
+  },
+  "Large Language Model Integration": {
+    "canonical": "large language models",
+    "confidence": 0.778043270111084
+  },
+  "Interrupt Handling": {
+    "canonical": "interrupt handling",
+    "confidence": 0.98
+  },
+  "Schema Evolution": {
+    "canonical": "schema evolution",
+    "confidence": 0.98
+  },
+  "Security Practices": {
+    "canonical": "security practices",
+    "confidence": 0.9999998807907104
+  },
+  "ASP.NET Core": {
+    "canonical": "asp.net core",
+    "confidence": 0.98
+  },
+  "API Scalability": {
+    "canonical": "api scalability",
+    "confidence": 0.98
+  },
+  "Thread Safety": {
+    "canonical": "thread safety",
+    "confidence": 0.98
+  },
+  "Queue Management": {
+    "canonical": "queue system",
+    "confidence": 0.9255651235580444
+  },
+  "Technical Skill in PyQt": {
+    "canonical": "technical skill in pyqt",
+    "confidence": 0.98
+  },
+  "Docker": {
+    "canonical": "docker",
+    "confidence": 0.98
+  },
+  "Response to Issues": {
+    "canonical": "response to issues",
+    "confidence": 0.98
+  },
+  "Security Testing Strategies": {
+    "canonical": "testing strategy",
+    "confidence": 0.7521488666534424
+  },
+  "LLM Understanding": {
+    "canonical": "llm understanding",
+    "confidence": 0.98
+  },
+  "Component Design": {
+    "canonical": "component design",
+    "confidence": 0.9999996423721313
+  },
+  "Cloud Computing and Architecture": {
+    "canonical": "aws",
+    "confidence": 0.4075379967689514
+  },
+  "Retrieval and Re-ranking": {
+    "canonical": "re-ranking",
+    "confidence": 0.779880166053772
+  },
+  "Full-stack Development": {
+    "canonical": "full stack development",
+    "confidence": 0.9712644219398499
+  },
+  "Auditability": {
+    "canonical": "auditability",
+    "confidence": 0.98
+  },
+  "Asynchronous Programming": {
+    "canonical": "asynchronous processing",
+    "confidence": 0.8137332201004028
+  },
+  "Distributed Transactions": {
+    "canonical": "distributed transactions",
+    "confidence": 0.98
+  },
+  "Back-end Engineering": {
+    "canonical": "back-end engineering",
+    "confidence": 0.98
+  },
+  "Python Proficiency": {
+    "canonical": "python proficiency",
+    "confidence": 0.98
+  },
+  "OCR Proficiency": {
+    "canonical": "ocr",
+    "confidence": 0.821678876876831
+  },
+  "Data Validation": {
+    "canonical": "data validation",
+    "confidence": 1.000000238418579
+  },
+  "Angular": {
+    "canonical": "angular",
+    "confidence": 0.98
+  },
+  "Automation": {
+    "canonical": "automation",
+    "confidence": 0.98
+  },
+  "Cloud Security": {
+    "canonical": "cloud security",
+    "confidence": 0.98
+  },
+  "Framework and Technology Choice": {
+    "canonical": "framework and technology choice",
+    "confidence": 0.98
+  },
+  "Data Serialization": {
+    "canonical": "data serialization",
+    "confidence": 0.98
+  },
+  "API Performance Monitoring": {
+    "canonical": "api performance",
+    "confidence": 0.7696579098701477
+  },
+  "API Migration": {
+    "canonical": "api migration",
+    "confidence": 0.98
+  },
+  "Google Cloud": {
+    "canonical": "google cloud",
+    "confidence": 0.98
+  },
+  "Compute Solutions Knowledge": {
+    "canonical": "compute solutions knowledge",
+    "confidence": 0.98
+  },
+  "Machine Learning Integration": {
+    "canonical": "machine learning integration",
+    "confidence": 0.98
+  },
+  "SQL Injection": {
+    "canonical": "sql injection",
+    "confidence": 0.98
+  },
+  "Datadog": {
+    "canonical": "datadog",
+    "confidence": 0.98
+  },
+  "Failure Simulation": {
+    "canonical": "failure simulation",
+    "confidence": 0.98
+  },
+  "Cloud Infrastructure Knowledge": {
+    "canonical": "aws",
+    "confidence": 0.46648329496383667
+  },
+  "React Proficiency": {
+    "canonical": "react expertise",
+    "confidence": 0.8005512952804565
+  },
+  "Continuous Integration and Deployment": {
+    "canonical": "deployment and ci/cd practices",
+    "confidence": 0.7582823038101196
+  },
+  "Project Understanding": {
+    "canonical": "project understanding",
+    "confidence": 0.98
+  },
+  "Resource Optimization": {
+    "canonical": "resource management",
+    "confidence": 0.7776313424110413
+  },
+  "Programming Languages": {
+    "canonical": "c++",
+    "confidence": 0.6755337119102478
+  },
+  "Security Group Management": {
+    "canonical": "security group management",
+    "confidence": 0.98
+  },
+  "CORS": {
+    "canonical": "cors",
+    "confidence": 0.98
+  },
+  "Lifecycle Management": {
+    "canonical": "lifecycle management",
+    "confidence": 1.0000001192092896
+  },
+  "Artificial Intelligence": {
+    "canonical": "machine learning",
+    "confidence": 0.7204510569572449
+  },
+  "MCP Knowledge": {
+    "canonical": "mcp knowledge",
+    "confidence": 0.98
+  },
+  "Monitoring and Validation": {
+    "canonical": "monitoring and testing",
+    "confidence": 0.8630632162094116
+  },
+  "Compliance Standards": {
+    "canonical": "compliance",
+    "confidence": 0.7486857175827026
+  },
+  "Data Management": {
+    "canonical": "data processing",
+    "confidence": 0.6790350079536438
+  },
+  "Real-Time Data Processing Knowledge": {
+    "canonical": "real-time processing",
+    "confidence": 0.7254781723022461
+  },
+  "Testing Skills": {
+    "canonical": "testing skills",
+    "confidence": 0.98
+  },
+  "Scripting Skills": {
+    "canonical": "scripting skills",
+    "confidence": 0.98
+  },
+  "Systematic Testing": {
+    "canonical": "systematic testing",
+    "confidence": 0.98
+  },
+  "Eventual Consistency": {
+    "canonical": "eventual consistency",
+    "confidence": 0.98
+  },
+  "Backend Software Engineering": {
+    "canonical": "frontend frameworks",
+    "confidence": 0.5224927663803101
+  },
+  "NoSQL Database": {
+    "canonical": "nosql database",
+    "confidence": 0.98
+  },
+  "CQRS": {
+    "canonical": "cqrs",
+    "confidence": 0.98
+  },
+  "Event Processing": {
+    "canonical": "event processing",
+    "confidence": 1.000000238418579
+  },
+  "JMeter Technical Proficiency": {
+    "canonical": "jmeter technical proficiency",
+    "confidence": 0.98
+  },
+  "Vector Database Selection": {
+    "canonical": "vector database",
+    "confidence": 0.8660215735435486
+  },
+  "RESTful API": {
+    "canonical": "rest api",
+    "confidence": 0.886486291885376
+  },
+  "Automated Alerts": {
+    "canonical": "automated alerts",
+    "confidence": 0.98
+  },
+  "Root Cause Analysis": {
+    "canonical": "root cause analysis",
+    "confidence": 0.98
+  },
+  "Cache Invalidation": {
+    "canonical": "caching",
+    "confidence": 0.6406508684158325
+  },
+  "Frontend Development and User Experience": {
+    "canonical": "frontend development and user experience",
+    "confidence": 0.98
+  },
+  "Oracle": {
+    "canonical": "oracle",
+    "confidence": 0.98
+  },
+  "System Design": {
+    "canonical": "system design",
+    "confidence": 1.000000238418579
+  },
+  "Azure": {
+    "canonical": "azure",
+    "confidence": 0.98
+  },
+  "Deployment Strategy": {
+    "canonical": "deployment strategy",
+    "confidence": 0.9999998807907104
+  },
+  "JavaScript": {
+    "canonical": "javascript",
+    "confidence": 0.98
+  },
+  "Prompt Construction": {
+    "canonical": "prompt construction",
+    "confidence": 0.98
+  },
+  "Authentication and Security Practices": {
+    "canonical": "authentication and security practices",
+    "confidence": 0.98
+  },
+  "Salesforce": {
+    "canonical": "salesforce",
+    "confidence": 0.98
+  },
+  "Trie Data Structure": {
+    "canonical": "trie data structure",
+    "confidence": 0.98
+  },
+  "Error Analysis": {
+    "canonical": "error analysis",
+    "confidence": 0.98
+  },
+  "Fault Tolerance": {
+    "canonical": "fault tolerance",
+    "confidence": 0.98
+  },
+  "Data Generation": {
+    "canonical": "data generation",
+    "confidence": 0.98
+  },
+  "Multi-language Integration": {
+    "canonical": "large language models",
+    "confidence": 0.41200339794158936
+  },
+  "AI Expertise": {
+    "canonical": "ai",
+    "confidence": 0.7317686080932617
+  },
+  "Messaging systems": {
+    "canonical": "message broker",
+    "confidence": 0.7499066591262817
+  },
+  "API Architecture": {
+    "canonical": "api design",
+    "confidence": 0.8748760223388672
+  },
+  "API Design": {
+    "canonical": "api design",
+    "confidence": 1.0000001192092896
+  },
+  "Distributed System Architecture": {
+    "canonical": "distributed systems",
+    "confidence": 0.8342304825782776
+  },
+  "Partitioning Strategy": {
+    "canonical": "partitioning",
+    "confidence": 0.8557138442993164
+  },
+  "C++ Proficiency": {
+    "canonical": "c++ proficiency",
+    "confidence": 0.98
+  },
+  "Embedding Pipeline Design": {
+    "canonical": "embedding pipeline design",
+    "confidence": 0.98
+  },
+  "Database Integrity": {
+    "canonical": "database integrity",
+    "confidence": 0.98
+  },
+  "Machine Learning Algorithms": {
+    "canonical": "machine learning",
+    "confidence": 0.7820701003074646
+  },
+  "Monitoring Tools": {
+    "canonical": "monitoring tools",
+    "confidence": 0.98
+  },
+  "Model Robustness": {
+    "canonical": "model robustness",
+    "confidence": 1.0
+  },
+  "HBase": {
+    "canonical": "hbase",
+    "confidence": 0.98
+  },
+  "ETL Process Management": {
+    "canonical": "etl process",
+    "confidence": 0.8697086572647095
+  },
+  "Streaming Data Pipeline Design": {
+    "canonical": "data pipeline",
+    "confidence": 0.7784082293510437
+  },
+  "LLM Provider Evaluation": {
+    "canonical": "llm integration",
+    "confidence": 0.4774276614189148
+  },
+  "API Performance Optimization": {
+    "canonical": "api performance",
+    "confidence": 0.9187804460525513
+  },
+  "Idempotency Implementation": {
+    "canonical": "idempotency implementation",
+    "confidence": 0.98
+  },
+  "Data Analysis and Handling": {
+    "canonical": "data analysis and handling",
+    "confidence": 0.98
+  },
+  "Microservices Understanding": {
+    "canonical": "microservices",
+    "confidence": 0.8274275064468384
+  },
+  "Cloud Storage Solutions": {
+    "canonical": "aws",
+    "confidence": 0.3914768099784851
+  },
+  "Model Stability": {
+    "canonical": "model stability",
+    "confidence": 0.98
+  },
+  "Parameter Initialization": {
+    "canonical": "parameter initialization",
+    "confidence": 0.98
+  },
+  "Data Lifecycle Management": {
+    "canonical": "data lifecycle management",
+    "confidence": 0.98
+  },
+  "Low Latency Techniques": {
+    "canonical": "latency",
+    "confidence": 0.7140170335769653
+  },
+  "Predictive Modeling": {
+    "canonical": "predictive modeling",
+    "confidence": 0.98
+  },
+  "Code Quality": {
+    "canonical": "code quality",
+    "confidence": 0.98
+  },
+  "Network Latency Optimization": {
+    "canonical": "latency",
+    "confidence": 0.6889755725860596
+  },
+  "Azure Functions": {
+    "canonical": "azure functions",
+    "confidence": 0.98
+  },
+  "Access Control": {
+    "canonical": "access control",
+    "confidence": 1.0
+  },
+  "Loading Indicators": {
+    "canonical": "loading indicators",
+    "confidence": 0.98
+  },
+  "Testing and Monitoring": {
+    "canonical": "monitoring and testing",
+    "confidence": 0.9878950119018555
+  },
+  "Rollback Strategies": {
+    "canonical": "rollback",
+    "confidence": 0.7082722187042236
+  },
+  "API Security": {
+    "canonical": "api security",
+    "confidence": 0.98
+  },
+  "Security Protocols": {
+    "canonical": "networking",
+    "confidence": 0.4411986172199249
+  },
+  "Microservices Architecture Understanding": {
+    "canonical": "microservices",
+    "confidence": 0.7913174033164978
+  },
+  "ETL Process": {
+    "canonical": "etl process",
+    "confidence": 1.0000001192092896
+  },
+  "Traffic Patterns": {
+    "canonical": "traffic patterns",
+    "confidence": 1.0000001192092896
+  },
+  "Asynchronous Job Pipeline": {
+    "canonical": "asynchronous job pipeline",
+    "confidence": 0.98
+  },
+  "Data Correlation": {
+    "canonical": "data correlation",
+    "confidence": 0.98
+  },
+  "Data Flow": {
+    "canonical": "data flow",
+    "confidence": 1.0000001192092896
+  },
+  "Failure Handling": {
+    "canonical": "error logging",
+    "confidence": 0.5454959273338318
+  },
+  "EventBridge": {
+    "canonical": "eventbridge",
+    "confidence": 0.98
+  },
+  "Cloud Services (AWS)": {
+    "canonical": "aws",
+    "confidence": 0.8066031336784363
+  },
+  "Reactive Framework": {
+    "canonical": "reactive framework",
+    "confidence": 0.98
+  },
+  "AWS S3": {
+    "canonical": "aws s3",
+    "confidence": 0.98
+  },
+  "Model Evaluation Metrics": {
+    "canonical": "model evaluation",
+    "confidence": 0.7600843906402588
+  },
+  "Technology Selection": {
+    "canonical": "technology selection",
+    "confidence": 1.000000238418579
+  },
+  "Parameter Optimization": {
+    "canonical": "optimization",
+    "confidence": 0.7616955637931824
+  },
+  "ETL Pipeline Management": {
+    "canonical": "etl pipelines",
+    "confidence": 0.9267038106918335
+  },
+  "REST API": {
+    "canonical": "rest api",
+    "confidence": 0.9999996423721313
+  },
+  "AI & Machine Learning": {
+    "canonical": "ai & machine learning",
+    "confidence": 1.0
+  },
+  "Database Migrations": {
+    "canonical": "data migration",
+    "confidence": 0.7672709226608276
+  },
+  "Data Annotation": {
+    "canonical": "data annotation",
+    "confidence": 0.98
+  },
+  "AWS ECS": {
+    "canonical": "aws ecs",
+    "confidence": 0.98
+  },
+  "Resilience Strategies": {
+    "canonical": "model robustness",
+    "confidence": 0.2366093397140503
+  },
+  "LLM Integration": {
+    "canonical": "llm integration",
+    "confidence": 1.0
+  },
+  "HTML": {
+    "canonical": "html",
+    "confidence": 0.98
+  },
+  "Application Performance Monitoring (APM)": {
+    "canonical": "application performance monitoring (apm)",
+    "confidence": 0.98
+  },
+  "Two-Phase Locking": {
+    "canonical": "two-phase locking",
+    "confidence": 0.98
+  },
+  "Normalization": {
+    "canonical": "normalization",
+    "confidence": 0.98
+  },
+  "Re-ranking Algorithms": {
+    "canonical": "re-ranking",
+    "confidence": 0.8349186182022095
+  },
+  "Cloud & DevOps": {
+    "canonical": "aws",
+    "confidence": 0.426298588514328
+  },
+  "Error handling": {
+    "canonical": "error logging",
+    "confidence": 0.6203515529632568
+  },
+  "Document Chunking": {
+    "canonical": "document chunking",
+    "confidence": 1.000000238418579
+  },
+  "Performance Metrics": {
+    "canonical": "evaluation metrics",
+    "confidence": 0.8336402773857117
+  },
+  "Software Architecture": {
+    "canonical": "system design",
+    "confidence": 0.6174701452255249
+  },
+  "Cloud Development": {
+    "canonical": "aws",
+    "confidence": 0.47705304622650146
+  },
+  "Automated Pipeline Management": {
+    "canonical": "automated pipeline management",
+    "confidence": 0.98
+  },
+  "Documentation": {
+    "canonical": "documentation",
+    "confidence": 0.98
+  },
+  "Monitoring Systems": {
+    "canonical": "system monitoring",
+    "confidence": 0.8158778548240662
+  },
+  "Caching Strategy": {
+    "canonical": "caching",
+    "confidence": 0.746151864528656
+  },
+  "Validation Logic": {
+    "canonical": "validation logic",
+    "confidence": 0.9999998807907104
+  },
+  "C++": {
+    "canonical": "c++",
+    "confidence": 1.0
+  },
+  "Speech-to-Text Model Selection": {
+    "canonical": "speech-to-text model selection",
+    "confidence": 1.0
+  },
+  "Cosine Distance": {
+    "canonical": "cosine distance",
+    "confidence": 0.98
+  },
+  "Cross-Platform Development": {
+    "canonical": "full stack development",
+    "confidence": 0.5930142402648926
+  },
+  "Hyperparameter Tuning": {
+    "canonical": "hyperparameter tuning",
+    "confidence": 0.98
+  },
+  "Role in Project": {
+    "canonical": "access control",
+    "confidence": 0.24816417694091797
+  },
+  "Vector Search": {
+    "canonical": "vector search",
+    "confidence": 0.98
+  },
+  "Code-Based Language Models": {
+    "canonical": "code-based language models",
+    "confidence": 0.98
+  },
+  "Message delivery guarantees": {
+    "canonical": "message delivery guarantees",
+    "confidence": 0.98
+  },
+  "Backend Technology Proficiency": {
+    "canonical": "backend technology proficiency",
+    "confidence": 0.98
+  },
+  "LangChain": {
+    "canonical": "langchain",
+    "confidence": 0.98
+  },
+  "Cloud Services Utilization": {
+    "canonical": "aws",
+    "confidence": 0.4244488775730133
+  },
+  "Robustness Testing": {
+    "canonical": "model robustness",
+    "confidence": 0.7040995955467224
+  },
+  "Subnet Configuration": {
+    "canonical": "subnet configuration",
+    "confidence": 0.98
+  },
+  "Cypress": {
+    "canonical": "cypress",
+    "confidence": 0.98
+  },
+  "C++ Programming": {
+    "canonical": "c++",
+    "confidence": 0.850448727607727
+  },
+  "AI Tools Integration": {
+    "canonical": "ai",
+    "confidence": 0.5546718835830688
+  },
+  "Synchronization": {
+    "canonical": "synchronization",
+    "confidence": 0.98
+  },
+  "Frontend Engineering": {
+    "canonical": "frontend",
+    "confidence": 0.98
+  },
+  "Game Development": {
+    "canonical": "game development",
+    "confidence": 0.98
+  },
+  "Reliability Engineering": {
+    "canonical": "reliability engineering",
+    "confidence": 0.98
+  },
+  "API Gateway Optimization": {
+    "canonical": "api gateway",
+    "confidence": 0.7754232287406921
+  },
+  "Database Technology Knowledge": {
+    "canonical": "database knowledge",
+    "confidence": 0.8861687183380127
+  },
+  "Performance Analysis": {
+    "canonical": "evaluation metrics",
+    "confidence": 0.6387450098991394
+  },
+  "Latency Management": {
+    "canonical": "latency",
+    "confidence": 0.8147205710411072
+  },
+  "Cloud Environment Integration": {
+    "canonical": "cloud integration",
+    "confidence": 0.8812726140022278
+  },
+  "SQL Alchemy": {
+    "canonical": "sql alchemy",
+    "confidence": 0.98
+  },
+  "Regularization": {
+    "canonical": "regularization",
+    "confidence": 0.98
+  },
+  "Cost Optimization": {
+    "canonical": "cost optimization",
+    "confidence": 0.98
+  },
+  "Microservices": {
+    "canonical": "microservices",
+    "confidence": 1.0
+  },
+  "PHP": {
+    "canonical": "php",
+    "confidence": 0.98
+  },
+  "Traffic Estimation": {
+    "canonical": "traffic patterns",
+    "confidence": 0.6253259181976318
+  },
+  "Cloud and Database Skills": {
+    "canonical": "cloud and database skills",
+    "confidence": 0.98
+  },
+  "Communication Reliability": {
+    "canonical": "communication reliability",
+    "confidence": 0.98
+  },
+  "Database Schema Design": {
+    "canonical": "schema design",
+    "confidence": 0.8863007426261902
+  },
+  "Failure Modes": {
+    "canonical": "failure modes",
+    "confidence": 0.98
+  },
+  "Environment-Specific Configuration": {
+    "canonical": "environment-specific configuration",
+    "confidence": 0.98
+  },
+  "Cloud Services Proficiency": {
+    "canonical": "cloud services proficiency",
+    "confidence": 0.98
+  },
+  "Validation Service Design": {
+    "canonical": "validation service design",
+    "confidence": 0.98
+  },
+  "Database Management Skills": {
+    "canonical": "database management",
+    "confidence": 0.98
+  },
+  "SaaS Management": {
+    "canonical": "saas management",
+    "confidence": 0.98
+  },
+  "Data Protection": {
+    "canonical": "data security",
+    "confidence": 0.9004407525062561
+  },
+  "Distributed Systems Architecture": {
+    "canonical": "distributed systems",
+    "confidence": 0.8490808010101318
+  },
+  "Load Balancing": {
+    "canonical": "load balancing",
+    "confidence": 1.000000238418579
+  },
+  "Asynchronous Event-Driven Architecture": {
+    "canonical": "event processing",
+    "confidence": 0.6013493537902832
+  },
+  "Observability": {
+    "canonical": "observability",
+    "confidence": 1.0000003576278687
+  },
+  "API Testing": {
+    "canonical": "api testing",
+    "confidence": 0.98
+  },
+  "Cloud Architecture Design": {
+    "canonical": "aws",
+    "confidence": 0.38429492712020874
+  },
+  "High-throughput distributed systems": {
+    "canonical": "high-throughput distributed systems",
+    "confidence": 0.98
+  },
+  "Data Handling": {
+    "canonical": "data handling",
+    "confidence": 0.98
+  },
+  "React Native": {
+    "canonical": "react native",
+    "confidence": 0.98
+  },
+  "ECS Fargate": {
+    "canonical": "ecs fargate",
+    "confidence": 0.98
+  },
+  "Operating System Proficiency": {
+    "canonical": "operating system proficiency",
+    "confidence": 0.98
+  },
+  "Code Review": {
+    "canonical": "code review",
+    "confidence": 1.0
+  },
+  "Data Quality": {
+    "canonical": "data quality",
+    "confidence": 1.000000238418579
+  },
+  "Delivery": {
+    "canonical": "delivery",
+    "confidence": 0.98
+  },
+  "Tool Utilization": {
+    "canonical": "tool utilization",
+    "confidence": 0.98
+  },
+  "Data Reliability": {
+    "canonical": "data quality",
+    "confidence": 0.7491862773895264
+  },
+  "Test Automation Skills": {
+    "canonical": "test automation skills",
+    "confidence": 0.98
+  },
+  "Data Ingestion and ETL Processes": {
+    "canonical": "data ingestion",
+    "confidence": 0.7579531073570251
+  },
+  "Database Technologies": {
+    "canonical": "database technologies",
+    "confidence": 0.98
+  },
+  "Subnet Segmentation": {
+    "canonical": "subnet segmentation",
+    "confidence": 0.98
+  },
+  "System Reliability": {
+    "canonical": "reliability",
+    "confidence": 0.7636381983757019
+  },
+  "Frontend Optimization": {
+    "canonical": "backend optimization",
+    "confidence": 0.8210673928260803
+  },
+  "Network Reliability": {
+    "canonical": "network reliability",
+    "confidence": 0.98
+  }
+}

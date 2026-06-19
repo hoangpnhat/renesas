@@ -1,0 +1,9678 @@
+/************************************************************************
+ *  FILENAME RX200apg.c
+ *
+ *  CONTENTS: This is a 64Kbyte flash application program
+ *    for the V3300 test system.
+ *
+ *  COPYRIGHT 1997 HITACHI LTD. ALL RIGHTS RESERVED.
+ *
+ *  2008/11/01  rev.0  H.Kobori
+ ************************************************************************/
+#include "RC04EX_man.h"
+#include "RC04EX_def.h"
+#include "RC04EX.hpg"
+#include "RC04EX_CGR.h"
+#include "RC04EX_cyc.h"
+#include "compat.h"
+#include "RC04EX_apg.h"
+#include "RC04EX_tst.h"
+#include "RC04EX_fnc.h"
+
+
+
+/************************************************************************
+ * Select Tester Function
+ ************************************************************************/
+int TesterTypeSelect(char *str)
+{
+#ifdef V5KONLY
+  strcpy(str,"V5000"); /* V5000 */
+#endif
+  return(PASS);
+}
+
+/******************************************************************************/
+/* Ecr setup 8bit mode Function                                               */
+/******************************************************************************/
+int Ecrsetup8(int ecrmode)
+{
+  comp_set_bmecr_8bit();                       /* ECR/BM 8bit mode set */
+  comp_set_bm_address_mask(0,0xffc00000,0);     /* for 32Mbit only      */
+  comp_set_ecr_address_mask(0,0xffc00000,0);    /* for 32Mbit only      */
+
+  comp_set_ecr_write_mask(0xff);                /* enable write mask:0xff => 8bit write */
+  set_ecr_data_mask(0);                         /* set overwrite mode   */
+  comp_set_ecr_postdecode_mask(0xff00);         /* set D0-D7 care mode  */
+  set_ecr_count_mask(1);                        /* setcounter           */
+
+  comp_set_ecr_mode(ecrmode);                   /* set ecr mode         */
+
+  return(PASS);
+}
+
+
+/************************************************************************
+ * DeviceSpecificPowerDown Function
+ ************************************************************************/
+void DeviceSpecificPowerDown(void)
+{
+  set_vhh(0);
+  set_vcom(0);
+  set_vil1(0);
+  set_vil2(0);
+  set_voh(0);
+  set_vol(0);
+  set_pmu_range(UA2500);
+  comp_set_ilimit(2500000);
+  set_vih2(0);
+  set_vih1(0);
+  set_vlimit(0);
+  comp_set_v1(0);
+  comp_set_v2(0);
+  comp_set_v3(0);
+  comp_set_v4(0);
+  disconnect_pin(all_pins);
+  set_invert_mask(no_pin);
+  set_vih1_mask(all_pins);
+  set_vil1_mask(all_pins);
+  reconnect_pin(v1_pin);
+  reconnect_pin(v2_pin);
+  reconnect_pin(v3_pin);
+  reconnect_pin(v4_pin);
+#ifdef V5KONLY
+  set_pe_resource( all_pins, PE_VTT, 0 );
+  set_vtt_mask( no_pin );
+#endif
+
+  return;
+}
+
+/************************************************************************
+ * DeviceLevelsPowerDown Function
+ ************************************************************************/
+int DeviceLevelsPowerDown(void)
+{
+
+  set_vih1(0);
+  set_vil2(0);
+  set_vhh(0);
+  comp_set_v4(0);
+  comp_set_v3(0);
+  comp_set_v2(0);
+  comp_set_v1(0);
+
+  set_vlimit(0);
+  comp_set_ilimit(1);
+  reconnect_pin(v4_pin);
+
+  set_invert_mask(no_pin);
+#ifdef V5KONLY
+  set_pe_resource( all_pins, PE_VTT, 0 );
+  set_vtt_mask( no_pin );
+#endif
+  run_apg(_RELAY_ALL_OFF);
+
+  return(PASS);
+}
+
+/************************************************************************
+ * DeviceLevelsPowerUp Function
+ ************************************************************************/
+int DeviceLevelsPowerUp(int vcc0,int vcc1,int vcc2,int relay)
+{
+  int err_flag;
+  err_flag = PASS;
+  
+   /*** Power level check ***/
+  if( ((vcc0 <=WAR_MAX_VCC ) & (vcc0 >=WAR_MIN_VCC ))               ); else err_flag |= 0x0002;
+  if( ((vcc1 <=WAR_MAX_VDDH) & (vcc1 >=WAR_MIN_VDDH)) | (vcc1 == 0 )); else err_flag |= 0x0004;
+  if( ((vcc2 <=WAR_MAX_VDD ) & (vcc2 >=WAR_MIN_VDD )) | (vcc2 == 0 )); else err_flag |= 0x0008;
+  if( CheckFK(FK_DISP_DEBUG) ){
+    sprintf(outbuf,"Power Setting  Vcc[0]=%d, vcc[1]=%d, vcc[2]=%d\n", vcc0,vcc1,vcc2 );
+    DataOut(Ffpt,outbuf);
+  }
+
+  if( PASS!=err_flag ){ printf("-- FAIL -- vcc, ext_vrefH, ext_vref level over limit Error[0x%X]\n", err_flag ); return( err_flag ); }
+
+    /*** current control?? ***/
+#ifdef V5KONLY
+      comp_set_i1limit( 400000000 );
+#else
+  if( comp_set_i1limit( 400000000 ) ) err_flag |= 0x0020; /* V4000 500mA / V5000 PPS12 200mA(100mA?) / V5000 PPS12E 400mA */
+#endif
+  if( comp_set_i2limit( 200000000 ) ) err_flag |= 0x0040;
+  if( comp_set_i3limit( 200000000 ) ) err_flag |= 0x0080;
+  if( comp_set_i4limit( 200000000 ) ) err_flag |= 0x0100;
+    
+    /*** Power Setting ***/
+  if( comp_set_v1(vcc0)  ){ err_flag |= 0x0200; DeviceLevelsPowerDown(); } //Vcc setting
+  if( comp_set_v3(vcc2)  ){ err_flag |= 0x0400; DeviceLevelsPowerDown(); } //ext_vref setting
+  if( set_vih2(vcc1)     ){ err_flag |= 0x1000; DeviceLevelsPowerDown(); } //ext_vrefh setting
+  disconnect_pin(monitor_vdd_pin);
+  disconnect_pin(monitor_vddh_pin);
+
+  delay_timer(30*1000);    /* 100ms = 100*1000us Wait*/
+  if( PASS!=err_flag ){ printf("-- FAIL -- Vcc Set Error[0x%X]\n", err_flag ); return( err_flag ); }
+
+    /*** LogicPin Setting ***/
+  if( set_vih1(vcc0) )   { err_flag |= 0x0800; DeviceLevelsPowerDown(); } //Logic pin VCC setting
+  if( PASS!=err_flag   )   { printf("-- FAIL -- vih1&2,vhh Set Error[0x%X]\n", err_flag ); return( err_flag ); }
+
+     /*** voh,vol Setting ***/
+  if( set_voh(vcc0*1/2) ){ err_flag |= 0x4000; DeviceLevelsPowerDown(); }
+  if( set_vol(vcc0*1/2) ){ err_flag |= 0x8000; DeviceLevelsPowerDown(); }
+  if( PASS!=err_flag )  { printf("-- FAIL -- Voh Vol Set Error[0x%X]\n", err_flag );}
+
+  /*** Relay Setting ***/
+  if( set_vhh( INIT_RELAY ) ) err_flag |= 0x0001;
+
+  /* Relay Status print */
+  if( CheckFK(FK_DISP_DEBUG) ){
+    if(relay & 0x01) DataOut( Ffpt, " LB0 = ON  ");else DataOut( Ffpt, " LB0 = OFF  ");
+    if(relay & 0x02) DataOut( Ffpt, " LB1 = ON\n");else DataOut( Ffpt, " LB1 = OFF\n");
+    if(relay & 0x04) DataOut( Ffpt, " LB2 = ON  ");else DataOut( Ffpt, " LB2 = OFF  ");
+    if(relay & 0x08) DataOut( Ffpt, " LB3 = ON\n");else DataOut( Ffpt, " LB3 = OFF\n");
+  }
+
+  /* Relay Set */
+  comp_write_lbreg_pe(relay);
+  reconnect_pin(all_pins);
+  disconnect_pin(monitor_vdd_pin);
+  disconnect_pin(monitor_vddh_pin);
+
+  run_apg(_RELAY_SET);
+  if( CheckFK(FK_DISP_DEBUG) ){
+    DataOut(Ffpt,"Relay Set\n");
+  }
+
+  return( err_flag );
+}
+
+/************************************************************************
+ * DeviceSpecificPowerUp Function
+ ************************************************************************/
+int DeviceSpecificPowerUp(void)
+{
+  select_vector_mode(all_pins,_PE_VEC_ON_THE_FLY);
+  
+  set_vector_mode(control_pins);    /* set vector mode control pin, not select data pin */
+  set_vih1_mask(all_pins);          /* set vih1 mask : all_pin  */
+  set_vih2_mask(ext_vrefh_pin);          /* set vih2 mask : ext_Vrefh */
+  //set_vhh_mask(lb_all_pins);          /* set vhh  mask : relay_pin */
+
+  set_drive_time(all_pins,0,0,100); /* set drive time V3300 2ch */
+  reconnect_pin(all_pins);          /* PPMUSEL=0,TRISTATE=1 */
+  
+  select_vector_mode(vec_fly_pin,_PE_VEC_ON_THE_FLY); /* APG mode select */
+  select_vector_mode(data_pins,_PE_APG_MODE);       /* APG mode select */
+  //select_vector_mode(data_pins,_PE_VECTOR_MODE);    /* APG mode select */
+
+  return(PASS);
+}
+
+/*================================================================================================*/
+int SetTimming_NS(int rate)
+/*================================================================================================*/
+{
+  int tim_1,tim_2,tim_3;
+  int err_flag;
+
+  tim_1 = 0;
+  tim_2 = (rate/4)+1;
+  tim_3 = (rate/2)+1;
+
+  if( CheckFK(FK_DISP_DEBUG) ){
+    sprintf(outbuf,"Change speed = %2dns\n",rate);
+    DataOut(Ffpt,outbuf);
+  }
+
+  err_flag = PASS;
+  if( set_cycle_time( EXTCYLM, rate ) )                  { err_flag |= 0x01; };
+  if( comp_set_io_time_ns( all_pins, 0, 0, rate ) )      { err_flag |= 0x02; };
+  if( set_drive_time_ns( all_pins, 0, tim_1, rate ) )    { err_flag |= 0x04; };
+  if( set_drive_time_ns( clk_pin, 0, tim_1, tim_3 ) )    { err_flag |= 0x08; };
+  if( set_strobe_time_ns( all_pins, 0, rate-2, rate ) ){ err_flag |= 0x10; };
+  set_drive_time_ns( debug_pin, 0, rate-2, rate );
+  if( PASS!=err_flag ){
+    printf( "\nSetTimming_NS Error [0x%X]\n", err_flag );
+    //DeviceLevelsPowerDown();
+  }
+  return( err_flag );
+}
+
+/*================================================================================================*/
+int SetTimming_PS(int rate)
+/*================================================================================================*/
+{
+  int tim_1,tim_2,tim_3;
+  int err_flag;
+
+  tim_1 = 0;
+  tim_2 = (rate/4)+1000;
+  tim_3 = (rate/2)+1000;
+
+  if( CheckFK(FK_DISP_DEBUG) ){
+    sprintf(outbuf,"Change speed = %2dps\n",rate);
+    DataOut(Ffpt,outbuf);
+  }
+
+  err_flag = PASS;
+  if( set_cycle_time_ps( EXTCYLM, rate ) )                { err_flag |= 0x01; }
+  if( set_io_time_ps( all_pins, 0, 0, rate ) )            { err_flag |= 0x02; };
+  if( set_drive_time_ps( all_pins, 0, tim_1, rate ) )     { err_flag |= 0x04; };
+  if( set_drive_time_ps( clk_pin, 0, tim_1, tim_3 ) )     { err_flag |= 0x08; };
+  if( set_strobe_time_ps( all_pins, 0, rate-2000, rate ) ){ err_flag |= 0x10; };
+  set_drive_time_ps( debug_pin, 0, rate-2000, rate );
+  if( PASS!=err_flag ){
+    printf( "\nSetTimming_PS Error [0x%X]\n", err_flag );
+    DeviceLevelsPowerDown();
+  }
+  return( err_flag );
+}
+
+/************************************************************************
+ *  Set Voh Vol Vih2 V5000( Vtt Vtt}XN )
+ ************************************************************************/
+int SetVohVolVtt( int voh, int vol, int vtt, int *vttmaskpin ){
+  int err_flag;
+  err_flag = 0;
+  if( set_voh( voh ) ){ printf("-- FAIL -- Voh level err\n"); DeviceLevelsPowerDown(); err_flag |= 0x01; }
+  if( set_vol( vol ) ){ printf("-- FAIL -- Vol level err\n"); DeviceLevelsPowerDown(); err_flag |= 0x02; }
+#ifdef V5KONLY
+  //if( set_pe_resource( vttmaskpin, PE_VTT, vtt ) ){ printf("-- FAIL -- Vtt level err\n"); DeviceLevelsPowerDown(); err_flag |= 0x20; }
+  //if( set_vtt_mask( vttmaskpin ) ){ printf("-- FAIL -- Vtt mask err\n"); DeviceLevelsPowerDown(); err_flag |= 0x40; }
+#endif
+  return( err_flag );
+}
+
+
+/************************************************************************
+ * SelectPowerSupply Function
+ ************************************************************************/
+int SelectPowerSupply(int mode,int vcc[NUM_POWERSUPPLY])
+{
+  int relay;
+  /*--------------------------------------------------------------------------*/
+  /* Initialyze                                                               */
+  /*--------------------------------------------------------------------------*/
+  relay = 0;
+  
+  // --- Relay Set ---//  
+  if((CRYSTAL_MODE & 0x10000) == (mode & 0x10000)){
+    //if((MNORMAL_CRS & 0xFF) == (mode & 0xFF))          relay = RNORMAL_CRS;    //0xfff0
+    if((MNORMAL_CRS & 0xFF) == (mode & 0xFF))          relay = RVSSMON_20_CRS; //0xfff5
+    else if((MVSSMON_CRS & 0xFF) == (mode & 0xFF))     relay = RVSSMON_CRS;    //0xfff1
+    else if((MVSSMON_20_CRS & 0xFF) == (mode & 0xFF))  relay = RVSSMON_20_CRS; //0xfff5
+    else if((MVCCMON_CRS & 0xFF) == (mode & 0xFF))     relay = RVCCMON_CRS;    //0xfff0
+    else if((MVRSGMON_CRS & 0xFF) == (mode & 0xFF))    relay = RVRSGMON_CRS;   //0xfff2
+    else if((MVSSMON_CH_CRS & 0xFF) == (mode & 0xFF))  relay = RVSSMON_CH_CRS; //0xfff0
+    else printf("-- FAIL -- mode set err\n");
+    }
+  else{
+    //if(MNORMAL & mode)              relay = RNORMAL;        //0xfff8
+    if(MNORMAL & mode)              relay = RVSSMON_20;     //0xfffd /* SW�ؑւ�������VCCMON,VSSMON���j�^�\�Ȃ悤�Ƀf�t�H���g�ύX�{SB��20k����R����O��Floating */
+    else if(MVSSMON & mode)         relay = RVSSMON;        //0xfff9
+    else if(MVSSMON_20 & mode)      relay = RVSSMON_20;     //0xfffd
+    else if(MVCCMON & mode)         relay = RVCCMON;        //0xfff8
+    else if(MVRSGMON & mode)        relay = RVRSGMON;       //0xfffa
+    else if(MVSSMON_CH & mode)      relay = RVSSMON_CH;     //0xfff8
+    else if(MVCLMON & mode)         relay = RVCLMON;
+    else printf("-- FAIL -- mode set err\n");  
+}
+  if(DeviceLevelsPowerUp(vcc[0],vcc[1],vcc[2],relay)) return(FAIL);
+  return(PASS);
+}
+
+/************************************************************************
+ * Open/Short Function
+ ************************************************************************/
+int OpensShorts(void)
+{
+int status;
+
+  printf("TEST:%d Opens/Shorts ",test);
+  read_adc(0x11,0); /*connect PMU(IMEAS)*/
+  DeviceSpecificPowerDown();
+  run_apg(_OPENS_SHORTS);
+  reconnect_pin(os_pins); /*set PPMUSEL=0,TRISTATE=1*/
+
+  pmu_delay(1000); /*wait=100usec*/
+                   /* need wait 1ms for settling */
+  set_pmu_range(UA25);  /*max=25uA*/
+  set_vlimit(-1500);  /* set input voltage = -1.5V *//* 2005/08/01 change vol(>-2V) */
+  comp_set_ilimit(10000);  /* I-Limit = 10000nA(10uA) */
+
+//  comp_set_cvpar (-1000);
+/*D*/  comp_set_cvpar (-1300);
+
+  status = seq_pmu_test_vlog(os_pins,0x10);
+  if(status) {
+    comp_set_cvpar (0);
+    DeviceSpecificPowerDown();
+    disp_pinvlog(0x03,0x03,0x01, os_pins,"-- open --");
+    printf("-- FAIL(open) --\n");
+    return(0x01);
+  }
+
+  comp_set_cvpar (20);
+
+  status = seq_pmu_test_vlog(os_pins,0x20);
+  set_vlimit(0);
+
+  comp_set_cvpar (0);
+
+  run_apg(_OPENS_SHORTS_END);
+
+  DeviceSpecificPowerDown();
+  if(status) {
+    disp_pinvlog(0x03,0x03,0x01,os_pins,"-- short --");
+    printf("-- FAIL(short) --\n");
+    return(0x02);
+  }
+  printf("** PASS **\n");
+  return(PASS);
+}
+
+
+/************************************************************************
+ * Internal CPU use 2ndFunction
+ ************************************************************************/
+int CpuModeFunc(int mode,int mode_sram,int vcc[NUM_POWERSUPPLY],int waittime,interface_t* param,char *pat,char *mess)
+{
+  /*--------------------------------------------------------------------------*/
+  /* Values                                                                   */
+  /*--------------------------------------------------------------------------*/
+  int i, cnt, cpuerr, datasize, patsize, vs0, vs1, vs2, speed, temp,vtemp[NUM_POWERSUPPLY];
+  int result, start_time,old_reg,tempo1,bm_data,ecr_data;
+  char mat_str[20];
+  char disp_addres[256];
+
+  /*--------------------------------------------------------------------------*/
+  /* Initialyze                                                               */
+  /*--------------------------------------------------------------------------*/
+  cnt = cpuerr = datasize = patsize = vs0 = vs1 = vs2 = speed = tempo1 = 0;
+  DispAddres(param,"",disp_addres);
+
+
+/******* GET PARAMETER *******/
+  speed=GetValue(IN_EXTAL1,param);
+
+/******* DISP TAITOL *******/
+  //Vref��VrefH�̋L�q�ɕύX�K�v�H
+  sprintf(outbuf,"TEST:%d [ %s ] vcc=%dmV ext_Vrefh=%dmV ext_Vref=%dmV F=%2dns PLL=%d(X%d)\n ",
+    test++,mess,vcc[0],vcc[1],vcc[2],speed,GetValue(IN_PLLON,param),GetValue(IN_PLL_MULT,param));
+  DataOut(Ffpt,outbuf);
+  sprintf(outbuf,"Module:%s\n%s\n",
+          DispMatName(mat_str,param),disp_addres);
+  DataOut(Ffpt,outbuf);
+  //Ldata�̌����ɕύX����K�v�L
+  sprintf(outbuf,"BDATA00:%08X, LDATA0:%08X\n"
+    ,GetValue(IN_BDATA00,param),GetValue(IN_LDATA0,param));
+  DataOut(Ffpt,outbuf);
+  
+/******** BGR Code Check *********/
+  BGR_REG_CHECK(vcc[0],param);  
+
+/******* SETUP ECR/BM *******/
+  Ecrsetup8(ECR_OVERL);
+
+/******** RATE SetUp *********/
+  SetTimming_NS( daxs_trans.write_rate );
+
+/******** PowerUp *********/
+  vs0=vcc[0];
+  vs1=vcc[1];
+  vs2=vcc[2];
+  
+  vcc[0]=daxs_trans.vcc;
+  vcc[1]=daxs_trans.vrefh;
+  vcc[2]=daxs_trans.vref;
+  
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if((vcc[1] != 0) && (vcc[2] != 0)){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    sprintf(outbuf," Ext_Vref  ON  \n");
+    DataOut(Ffpt,outbuf);
+  }else{
+    sprintf(outbuf," Ext_Vref  OFF \n");
+    DataOut(Ffpt,outbuf);
+  }
+  
+
+  load_vlf_offset(_SUB_MODEENTRY_DAXS,4,tempo1);
+  
+  if(SelectPowerSupply(mode,vcc)) {//�e�d���̋�����Level�̐ݒ�(DAXS�]���p)
+    vcc[0]=vs0;
+    vcc[1]=vs1;
+    vcc[2]=vs2;
+    return(HWFAIL);
+  }
+  SetVohVolVtt( daxs_trans.voh, daxs_trans.vol, daxs_trans.vtt, daxs_datao_pin );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+  vcc[0]=vs0;
+  vcc[1]=vs1;
+  vcc[2]=vs2;
+
+  for( cnt=RAM_TOP; cnt<=(RAM_TOP+0x100); cnt=cnt+4 ){
+//      WriteBmMode8( cnt, 0xFFFFFFFF, SIZE_L );
+      WriteEcrMode8( cnt, 0xFFFFFFFF, SIZE_L );
+  }
+
+
+/******************************************************************************/
+/*                                 Write BM                                   */
+/******************************************************************************/
+
+/******* MAKE ASM PATH *******/
+  strcpy( binpat, glob_cdp ); strcat( binpat, glob_binpat_at );
+  strcat( binpat, pat );
+
+  patsize = CheckPatLength(binpat) - PAT_FILE_HEADER_SIZE;
+
+/******** FILE BM WRITE **********/
+  datasize = comp_load_bm (binpat);   /* comp_load_bm:file pattern => BM */
+
+
+  if(FAIL==datasize) {  /* path/fail check */
+    sprintf(outbuf," !!! NOT OPEN FILE PATH -> %s (checksum:H'%X) !!!\n",binpat,datasize);
+    DataOut(Ffpt,outbuf);
+    DeviceLevelsPowerDown();
+    return(NOPATFAIL);
+  }else{
+    sprintf(outbuf," LOAD FILE PATH -> %s (checksum:H'%X)\n",binpat,datasize);
+    DataOut(Ffpt,outbuf);
+  }
+
+
+  /******** Parameter BM Write *********/
+  result = ParamTransBM(param);
+
+
+  /*** Trans Check ***/
+  if(PASS!=result){
+    sprintf(outbuf,"  TRANS ERROR!!  (param => BM) \n");
+    DataOut(Ffpt,outbuf);
+    return(RAMFAIL);
+  }else{
+    sprintf(outbuf,"  TRANS CHECK OK (param => BM) \n");
+    DataOut(Ffpt,outbuf);
+  }
+
+  
+
+  strcpy( binpat, glob_cdp ); strcat( binpat, glob_binpat_at );
+
+/*  
+  if(strcmp(pat,"devicefunction_at.pat")==0) strcat( binpat, "RC04EX_WT1_P1060_V000100.pat" );
+  else if(strcmp(pat,"readall_code_at.pat")==0) strcat( binpat, "RC04EX_WT1_P3011_V000100.pat" );
+  else if(strcmp(pat,"erase_code_at.pat")==0) strcat( binpat, "RC04EX_WT1_P2000_V000100.pat" );
+  else if(strcmp(pat,"programall_code_at.pat")==0) strcat( binpat, "RC04EX_WT1_P1920_V000100.pat" );
+  else if(strcmp(pat,"program55AA_code_at.pat")==0) strcat( binpat, "RC04EX_WT1_P1920_V000100.pat" );
+  else if(strcmp(pat,"readcount_code_at.pat")==0) strcat( binpat, "RC04EX_WT1_P3011_V000100.pat" );
+  else if(strcmp(pat,"settrimingdata_code_at.pat")==0) strcat( binpat, "RC04EX_WT1_P1100_V000100.pat" );
+  else if(strcmp(pat,"readdump_code_at.pat")==0) strcat( binpat, "RC04EX_WT1_P3011_V000100.pat" );
+  else {
+    printf("parameter file nothing!!\n");
+    return(FAIL);
+  }
+  CheckPatLength(binpat);
+  comp_load_bm (binpat);
+*/
+
+  WriteBmMode8( 0x3C00 , 0x00100000, SIZE_L );    /* Dummy Data 18/04/11 Aoki */  
+
+
+/******************************************************************************/
+/*                                 DAXS Transport                             */
+/******************************************************************************/
+  sprintf(outbuf," ----- RAM transfer Start -----");DataOut(Ffpt,outbuf); 
+
+  ParamConditionDisp(PDIN_ALL,0,param); //���͗pIF�̏o��
+
+  /******** Start tests *********/
+  sprintf(outbuf,"Write RAM \n");
+  DataOut(Ffpt,outbuf);
+
+    result = RAMRunApg( 0, RAM_TOP, RAM_END );   /* DAXS transport 0=write command */
+
+  if(PASS!=result){
+    return(RAMFAIL);
+  }
+  
+  
+  sprintf(outbuf,"Read RAM \n");
+  DataOut(Ffpt,outbuf);
+
+  SetTimming_NS( daxs_trans.read_rate );
+  
+  set_strobe_mask(daxs_datao_pin);  //Compare Setting command
+
+    result = RAMRunApg( 2, RAM_TOP, OUTPUTIF_END );   // DAXS transport 0=write command //
+
+  for(i=RAM_TOP;i<=(RAM_TOP+0x100);i=i+4){
+    bm_data=ReadBmMode8(i,SIZE_L);
+    ecr_data=ReadEcrMode8(i,SIZE_L);
+    if(bm_data!=ecr_data){
+      if(result != FAIL)printf("BM <=> ECR Comp ERROR!!! Addr = %X, BM = %X, ECR = %X \n",i,bm_data,ecr_data);
+      result = FAIL;
+    }
+  }
+
+  if(PASS!=result){
+    printf("\n ------ BM <=> ECR Comp ERROR!!! -------\n\n");
+    return(RAMFAIL);
+  }
+
+  sprintf(outbuf," <<<<< EXTRAM transfer OK >>>>>\n\n");
+  DataOut(Ffpt,outbuf); //CommentOut for RAMBOOT Check
+
+/******************************************************************************/
+/*                                 DAXS RAMBOOT                               */
+/******************************************************************************/
+  sprintf(outbuf," ----- RAMBOOT Start -----\n");
+  DataOut(Ffpt,outbuf); 
+
+  /*** Power Change ***/
+  vs0 = vcc[0];
+  vcc[0] = 3300;
+  if(SelectPowerSupply(mode,vcc)) {//�e�d���̋�����Level�̐ݒ�(RAMBoot�]���p)
+    return(HWFAIL);
+  }
+
+  if(VccSlow(vs0,vcc[0])){
+    return(HWFAIL);
+  }
+  vcc[0] = vs0;
+
+  /*** Comp Pin SetUp ***/
+  set_strobe_mask(bistpoll_pins);  /* ��rPin�̐ݒ�(RAMBoot�����܂ł̑ҋ@���ԂɎg�p) */
+  select_vector_mode(poll_pins,_PE_VECTOR_MODE);  //180314 Add-morioka For RamBoot
+  reconnect_pin(poll_pins);                       //180314 Add-morioka For RamBoot
+
+  /*** Test Speed SetUp ***/
+  SetTimming_NS(speed);
+  ChangeTimming_GTSLTS( EXTCYLJ, 1, MODEENTRY_SPEED ); // ModeEntry���g���ݒ� GTS=1,20MHz
+
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if((vcc[1] != 0) && (vcc[2] != 0)){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    sprintf(outbuf," Ext_Vref  ON  \n");
+    DataOut(Ffpt,outbuf);
+  }else{
+    sprintf(outbuf," Ext_Vref  OFF \n");
+    DataOut(Ffpt,outbuf);
+  }
+
+/******** APG SetUp(Wait) *********/
+  load_vlf_offset(_SUB_MODEENTRY_RAM,6,  1000/MODEENTRY_SPEED);    /*   1us Wait */
+  load_vlf_offset(_SUB_MODEENTRY_RAM,1,300000/2/MODEENTRY_SPEED);    /* 300us Wait */
+  load_vlf_offset(_SUB_MODEENTRY_RAM,2, 70000/MODEENTRY_SPEED);    /*  70ms Wait */
+  load_vlf_offset(_SUB_MODEENTRY_RAM,3,tempo1);          /* Vdd/Vddh On/Off */
+  load_vlf_offset(_SUB_RAMBT_END,0,500*waittime/speed); /* RAMBootEnd Wait = waittime x(500x200x2000ns) */
+
+  SetVohVolVtt( 2*vcc[0]/10, 2*vcc[0]/10, 5*vcc[0]/10 , bistpoll_pins );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+
+/******** Test Start *********/
+
+    start_time = bentime(); /* Get Test Start Time */
+    run_apg (_RAM_BOOT_CTRL);                /* Execute Test Pattern   */
+
+  Cputotal = (bentime()-start_time-init_bentime())/1000; /* Get Test Total Time */
+
+  cpuerr = check_pin_errors( bistpoll_pins, _CHECK_FERR ); /* Boot����Error�o�͂�APG�p�^�����璊�o(DPASSDEND_CP�̔�r����) */
+  sprintf(outbuf,"cpuerr=%d \n",cpuerr); DataOut(Ffpt,outbuf);
+  sprintf(outbuf," ----- RAMBOOT End  -----\n\n"); DataOut(Ffpt,outbuf);
+
+
+  set_vlimit(0);
+
+  select_vector_mode(poll_pins,_PE_APG_MODE);
+  reconnect_pin(poll_pins);
+
+/******************************************************************************/
+/*                                 DAXS Read                                  */
+/******************************************************************************/
+  sprintf(outbuf," ----- Result RAM Read Start -----\n");DataOut(Ffpt,outbuf); 
+
+
+/******** PowerUp *********/
+  vs0=vcc[0];
+  vs1=vcc[1];
+  vs2=vcc[2];
+
+  vcc[0]=daxs_trans.vcc;
+  vcc[1]=daxs_trans.vrefh;
+  vcc[2]=daxs_trans.vref;
+
+  if(VccSlow(3300,vs0)){
+    return(HWFAIL);
+  }
+
+  if(SelectPowerSupply(MNORMAL,vcc)) {//�e�d���̋�����Level�̐ݒ�(DAXS�]���p)
+    vcc[0]=vs0;
+    vcc[1]=vs1;
+    vcc[2]=vs2;
+    return(HWFAIL);
+  }
+
+  /*** Daxs Speed SetUp ***/
+  SetVohVolVtt( daxs_trans.voh, daxs_trans.vol, daxs_trans.vtt, daxs_datao_pin );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+
+  set_strobe_mask(daxs_datao_pin);/* ��rPin�̐ݒ�(RAMBoot�����܂ł̑ҋ@���ԂɎg�p) */
+  SetTimming_NS( daxs_trans.read_rate );
+
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if((vcc[1] != 0) && (vcc[2] != 0)){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    sprintf(outbuf," Ext_Vref  ON  \n");
+    DataOut(Ffpt,outbuf);
+  }else{
+    sprintf(outbuf," Ext_Vref  OFF \n");
+    DataOut(Ffpt,outbuf);
+  }
+  load_vlf_offset(_SUB_MODEENTRY_DAXS,4,tempo1);
+
+
+  vcc[0]=vs0;
+  vcc[1]=vs1;
+  vcc[2]=vs2;
+
+  /******** Read RAM data *********/
+  
+  for( cnt=0x1000; cnt<=RAM_END; cnt=cnt+4 ){
+      WriteEcrMode8( cnt, 0xFFFFFFFF, SIZE_L );
+  }
+  
+    result = RAMRunApg( 2, 0x1000, RAM_END );   /* DAXS transport 0=write command */
+    //RAMRunApg( 2, FBM_READTOP ,(FBM_READTOP + FBM_READSIZE - 1) ); /* Daxs Trans For FBM */
+  sprintf(outbuf," ----- Result RAM Read End -----\n\n");DataOut(Ffpt,outbuf); 
+
+
+	if((ReadEcrMode8(0x3D00,SIZE_B)==0xAA) &&
+	   (ReadEcrMode8(0x3D01,SIZE_B)==0xAA) &&
+	   (ReadEcrMode8(0x3D02,SIZE_B)==0xAA) &&
+	   (ReadEcrMode8(0x3D03,SIZE_B)==0xAA) ){
+       printf("WT mode Test FAIL!!!\n");
+	}else if((ReadEcrMode8(0x3D00,SIZE_B)==0x55) &&
+	   (ReadEcrMode8(0x3D01,SIZE_B)==0x55) &&
+	   (ReadEcrMode8(0x3D02,SIZE_B)==0x55) &&
+	   (ReadEcrMode8(0x3D03,SIZE_B)==0x55) ){
+       printf("WT mode Test PASS!!!\n");
+	}else{
+       printf("WT mode Test ECR data ERROR!!!\n");
+       DispEcrBmData(0x3D00 , 0x00FF, DISP_ECR|DISP_1 );
+	}
+  
+
+  DeviceLevelsPowerDown(); //�e�d��OFF�R�}���h
+
+/******************************************************************************/
+/*                                 EndManage                                  */
+/******************************************************************************/
+/******** get data *********/
+  //ECR => param
+  for(cnt=IN_LWORDEND+1;cnt<OUT_BYTEEND;cnt++){
+    (param + cnt) -> value = ReadEcrMode8((param + cnt) -> addr,(param + cnt) -> size);
+  }
+  for(cnt=OUT_BYTEEND+1;cnt<OUT_LWORDEND;cnt++){
+    (param + cnt) -> value = ReadEcrMode8((param + cnt) -> addr,(param + cnt) -> size);
+  }
+  CpuModeOutput(mode,param);
+
+/******** end manage *********/
+  sprintf(outbuf,"cpuerr=%d \n",cpuerr); DataOut(Ffpt,outbuf);
+  if(cpuerr == 1) {
+    switch(GetValue(OUT_JUDGE1,param)) {
+    case CPASS:
+      sprintf(outbuf,"** PASS ** Cpu Total=%dms\n",Cputotal);
+      DataOut(Ffpt,outbuf);
+      return(PASS);
+    case CFAIL:
+      sprintf(outbuf,"-- FAIL -- Cpu total=%dms\n",Cputotal);
+      DataOut(Ffpt,outbuf);
+      return(FAIL);
+    case CFLAG:
+      sprintf(outbuf,"-- FLAG_FAIL -- Cpu Total=%dms\n",Cputotal);
+      DataOut(Ffpt,outbuf);
+      return(FLGFAIL);
+    case READFAIL:
+      sprintf(outbuf,"-- READ_FAIL -- Cpu Total=%dms\n",Cputotal);
+      DataOut(Ffpt,outbuf);
+      return(FAIL);
+    default:
+      sprintf(outbuf,"-- FAIL -- None (%04X) %dms\n",((0x00FF&GetValue(OUT_JUDGE1,param))<<8)|((0xFF00&GetValue(OUT_JUDGE1,param))>>8),Cputotal);
+      DataOut(Ffpt,outbuf);
+      return(CPUFAIL);
+    }
+  }
+  sprintf(outbuf,"-- FAIL -- !!! TimeOver !!! total=%dms\n",Cputotal);
+  DataOut(Ffpt,outbuf);
+
+  return(CPUFAIL);
+}
+
+/************************************************************************
+ * Internal CPU use 2ndFunction
+ ************************************************************************/
+int CpuModeFunc_PE(int limittime,int mode,int mode_sram,int vcc[NUM_POWERSUPPLY],int waittime,interface_t* param,char *pat,char *mess)
+{
+  /*--------------------------------------------------------------------------*/
+  /* Values                                                                   */
+  /*--------------------------------------------------------------------------*/
+  int i, cnt, cpuerr, datasize, patsize, vs0, vs1, vs2, speed, temp,vtemp[NUM_POWERSUPPLY];
+  int result, start_time,old_reg,tempo1,bm_data,ecr_data;
+  char mat_str[20];
+  char disp_addres[256];
+
+  //CpuModeFunc_Bist(mode, mode_sram, vcc, waittime, param, pat, mess);
+  //return(PASS);
+
+  /* Initialyze                                                               */
+  /*--------------------------------------------------------------------------*/
+  cnt = cpuerr = datasize = patsize = vs0 = vs1 = vs2 = speed = tempo1 = 0;
+  DispAddres(param,"",disp_addres);
+
+  for( cnt=RAM_TOP; cnt<=RAM_END; cnt=cnt+4 ){
+      WriteBmMode8( cnt, 0xFFFFFFFF, SIZE_L );
+      WriteEcrMode8( cnt, 0xFFFFFFFF, SIZE_L );
+  }
+
+/******* GET PARAMETER *******/
+  speed=GetValue(IN_EXTAL1,param);
+
+/******* DISP TAITOL *******/
+  //Vref��VrefH�̋L�q�ɕύX�K�v�H
+  sprintf(outbuf,"TEST:%d [ %s ] vcc=%dmV ext_Vrefh=%dmV ext_Vref=%dmV F=%2dns PLL=%d(X%d)\n ",
+    test++,mess,vcc[0],vcc[1],vcc[2],speed,GetValue(IN_PLLON,param),GetValue(IN_PLL_MULT,param));
+  DataOut(Ffpt,outbuf);
+  sprintf(outbuf,"Module:%s\n%s\n",
+          DispMatName(mat_str,param),disp_addres);
+  DataOut(Ffpt,outbuf);
+  //Ldata�̌����ɕύX����K�v�L
+  sprintf(outbuf,"BDATA00:%08X, LDATA0:%08X\n"
+    ,GetValue(IN_BDATA00,param),GetValue(IN_LDATA0,param));
+  DataOut(Ffpt,outbuf);
+
+/******** BGR Code Check *********/
+  BGR_REG_CHECK(vcc[0],param);  
+
+/******* SETUP ECR/BM *******/
+  Ecrsetup8(ECR_OVERL);
+
+/******** RATE SetUp *********/
+  SetTimming_NS( daxs_trans.write_rate );
+
+/******** PowerUp *********/
+  vs0=vcc[0];
+  vs1=vcc[1];
+  vs2=vcc[2];
+  
+  vcc[0]=daxs_trans.vcc;
+  vcc[1]=daxs_trans.vrefh;
+  vcc[2]=daxs_trans.vref;
+  
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if((vcc[1] != 0) && (vcc[2] != 0)){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    sprintf(outbuf," Ext_Vref  ON  \n");
+    DataOut(Ffpt,outbuf);
+  }else{
+    sprintf(outbuf," Ext_Vref  OFF \n");
+    DataOut(Ffpt,outbuf);
+  }
+
+  load_vlf_offset(_SUB_MODEENTRY_DAXS,4,tempo1);
+  
+  if(SelectPowerSupply(mode,vcc)) {//�e�d���̋�����Level�̐ݒ�(DAXS�]���p)
+    vcc[0]=vs0;
+    vcc[1]=vs1;
+    vcc[2]=vs2;
+    return(HWFAIL);
+  }
+  SetVohVolVtt( vcc[0]/2, vcc[0]/2, 0, no_pin );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+  vcc[0]=vs0;
+  vcc[1]=vs1;
+  vcc[2]=vs2;
+
+/******************************************************************************/
+/*                                 Write BM                                   */
+/******************************************************************************/
+
+/******* MAKE ASM PATH *******/
+  strcpy( binpat, glob_cdp ); strcat( binpat, glob_binpat_at );
+  strcat( binpat, pat );
+
+  patsize = CheckPatLength(binpat) - PAT_FILE_HEADER_SIZE;
+
+/******** FILE BM WRITE **********/
+  datasize = comp_load_bm (binpat);   /* comp_load_bm:file pattern => BM */
+
+
+  if(FAIL==datasize) {  /* path/fail check */
+    sprintf(outbuf," !!! NOT OPEN FILE PATH -> %s (checksum:H'%X) !!!\n",binpat,datasize);
+    DataOut(Ffpt,outbuf);
+    DeviceLevelsPowerDown();
+    return(NOPATFAIL);
+  }else{
+    sprintf(outbuf," LOAD FILE PATH -> %s (checksum:H'%X)\n",binpat,datasize);
+    DataOut(Ffpt,outbuf);
+  }
+
+
+  /******** Parameter BM Write *********/
+  result = ParamTransBM(param);
+
+
+  /*** Trans Check ***/
+  if(PASS!=result){
+    sprintf(outbuf,"  TRANS ERROR!!  (param => BM) \n");
+    DataOut(Ffpt,outbuf);
+    return(RAMFAIL);
+  }else{
+    sprintf(outbuf,"  TRANS CHECK OK (param => BM) \n");
+    DataOut(Ffpt,outbuf);
+  }
+
+
+  strcpy( binpat, glob_cdp ); strcat( binpat, glob_binpat_at );
+
+/*  
+  if(strcmp(pat,"devicefunction_at.pat")==0) strcat( binpat, "RC04EX_WT1_P1060_V000100.pat" );
+  else if(strcmp(pat,"readall_code_at.pat")==0) strcat( binpat, "RC04EX_WT1_P3011_V000100.pat" );
+  else if(strcmp(pat,"erase_code_at.pat")==0) strcat( binpat, "RC04EX_WT1_P2000_V000100.pat" );
+  else if(strcmp(pat,"programall_code_at.pat")==0) strcat( binpat, "RC04EX_WT1_P1920_V000100.pat" );
+  else if(strcmp(pat,"program55AA_code_at.pat")==0) strcat( binpat, "RC04EX_WT1_P1920_V000100.pat" );
+  else if(strcmp(pat,"readcount_code_at.pat")==0) strcat( binpat, "RC04EX_WT1_P3011_V000100.pat" );
+  else if(strcmp(pat,"settrimingdata_code_at.pat")==0) strcat( binpat, "RC04EX_WT1_P1100_V000100.pat" );
+  else if(strcmp(pat,"readdump_code_at.pat")==0) strcat( binpat, "RC04EX_WT1_P3011_V000100.pat" );
+  else {
+    printf("parameter file nothing!!\n");
+    return(FAIL);
+  }
+  CheckPatLength(binpat);
+  comp_load_bm (binpat);
+*/
+
+  WriteBmMode8( 0x3C00 , 0x00100000, SIZE_L );    /* Dummy Data 18/04/11 Aoki */  
+
+
+  ParamConditionDisp(PDALL,0,param); //���͗pIF�̏o��
+
+/******************************************************************************/
+/*                                 DAXS Transport                             */
+/******************************************************************************/
+  /******** Start tests *********/
+  printf("Write RAM \n"); /* Print Retry Count */
+
+    result = RAMRunApg( 0, RAM_TOP, OUTPUTIF_END );   /* DAXS transport 0=write command */
+
+  if(PASS!=result){
+    return(RAMFAIL);
+  }
+  
+  
+  printf("Read RAM \n"); /* Print Retry Count */
+
+  SetTimming_NS( daxs_trans.read_rate );
+  
+  set_strobe_mask(daxs_datao_pin);  //Compare Setting command
+
+    result = RAMRunApg( 2, RAM_TOP, OUTPUTIF_END );   /* DAXS transport 0=write command */
+
+
+  for(i=RAM_TOP;i<=OUTPUTIF_END;i=i+4){
+    bm_data=ReadBmMode8(i,SIZE_L);
+    ecr_data=ReadEcrMode8(i,SIZE_L);
+    if(bm_data!=ecr_data){
+      printf("BM <=> ECR Comp ERROR!!! Addr = %X, BM = %X, ECR = %X \n",i,bm_data,ecr_data);
+      result = FAIL;
+    }
+  }
+  
+
+  if(PASS!=result){
+    return(RAMFAIL);
+  }
+
+  sprintf(outbuf," <<<<< EXTRAM transfer OK >>>>>\n");
+  DataOut(Ffpt,outbuf); //CommentOut for RAMBOOT Check
+
+/******************************************************************************/
+/*                                 DAXS RAMBOOT                               */
+/******************************************************************************/
+  /*** Power Change ***/
+  if(SelectPowerSupply(mode,vcc)) {//�e�d���̋�����Level�̐ݒ�(RAMBoot�]���p)
+    return(HWFAIL);
+  }
+
+  /*** Comp Pin SetUp ***/
+  set_strobe_mask(bistpoll_pins);  /* ��rPin�̐ݒ�(RAMBoot�����܂ł̑ҋ@���ԂɎg�p) */
+  select_vector_mode(poll_pins,_PE_VECTOR_MODE);  //180314 Add-morioka For RamBoot
+  reconnect_pin(poll_pins);                       //180314 Add-morioka For RamBoot
+
+  /*** Test Speed SetUp ***/
+  SetTimming_NS(speed);
+
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if((vcc[1] != 0) && (vcc[2] != 0)){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    sprintf(outbuf," Ext_Vref  ON  \n");
+    DataOut(Ffpt,outbuf);
+  }else{
+    sprintf(outbuf," Ext_Vref  OFF \n");
+    DataOut(Ffpt,outbuf);
+  }
+
+/******** APG SetUp(Wait) *********/
+  load_vlf_offset(_SUB_MODEENTRY_RAM,1,  1000/2/speed);    /*   1us Wait */
+  load_vlf_offset(_SUB_MODEENTRY_RAM,2,300000/2/speed);    /* 300us Wait */
+  load_vlf_offset(_SUB_MODEENTRY_RAM,3, 70000/speed);    /*  70ms Wait */
+  load_vlf_offset(_SUB_MODEENTRY_RAM,4,tempo1);          /* Vdd/Vddh On/Off */
+  //load_vlf_offset(_SUB_RAMBT_END,0,500*waittime/speed); /* RAMBootEnd Wait = waittime x(500x200x2000ns) */
+  load_vlf_offset(_SUB_RAMBT_END_PE,0,500*waittime/speed); /* RAMBootEnd Wait = waittime x(500x200x2000ns) */
+  load_vlf_offset(_SUB_RAMBT_END_PE,1,limittime*6);        /* 10min x 6(1hr) x limittime */
+
+  SetVohVolVtt( 2*vcc[0]/10, 2*vcc[0]/10, 5*vcc[0]/10 , bistpoll_pins );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+
+/******** Test Start *********/
+
+    start_time = bentime(); /* Get Test Start Time */
+    //run_apg (_RAM_BOOT_CTRL);                /* Execute Test Pattern   */
+    run_apg (_RAM_BOOT_CTRL_PE);               /* Execute Test Pattern   */
+
+  Cputotal = (bentime()-start_time-init_bentime())/1000; /* Get Test Total Time */
+
+  cpuerr = check_pin_errors( bistpoll_pins, _CHECK_FERR ); /* Boot����Error�o�͂�APG�p�^�����璊�o(DPASSDEND_CP�̔�r����) */
+  sprintf(outbuf,"cpuerr=%d \n",cpuerr); DataOut(Ffpt,outbuf);
+
+
+  set_vlimit(0);
+
+  select_vector_mode(poll_pins,_PE_APG_MODE);
+  reconnect_pin(poll_pins);
+
+/******************************************************************************/
+/*                                 DAXS Read                                  */
+/******************************************************************************/
+
+  set_strobe_mask(daxs_datao_pin);/* ��rPin�̐ݒ�(RAMBoot�����܂ł̑ҋ@���ԂɎg�p) */
+  SetTimming_NS( daxs_trans.read_rate );
+
+/******** PowerUp *********/
+  vs0=vcc[0];
+  vs1=vcc[1];
+  vs2=vcc[2];
+
+  vcc[0]=daxs_trans.vcc;
+  vcc[1]=daxs_trans.vrefh;
+  vcc[2]=daxs_trans.vref;
+
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if((vcc[1] != 0) && (vcc[2] != 0)){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    sprintf(outbuf," Ext_Vref  ON  \n");
+    DataOut(Ffpt,outbuf);
+  }else{
+    sprintf(outbuf," Ext_Vref  OFF \n");
+    DataOut(Ffpt,outbuf);
+  }
+
+  load_vlf_offset(_SUB_MODEENTRY_DAXS,4,tempo1);
+
+  if(SelectPowerSupply(MNORMAL,vcc)) {//�e�d���̋�����Level�̐ݒ�(DAXS�]���p)
+    vcc[0]=vs0;
+    vcc[1]=vs1;
+    vcc[2]=vs2;
+    return(HWFAIL);
+  }
+  SetVohVolVtt( daxs_trans.voh, daxs_trans.vol, daxs_trans.vtt, daxs_datao_pin );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+  vcc[0]=vs0;
+  vcc[1]=vs1;
+  vcc[2]=vs2;
+
+  /******** Read RAM data *********/
+  
+  for( cnt=RAM_TOP; cnt<=RAM_END; cnt=cnt+4 ){
+      WriteEcrMode8( cnt, 0xFFFFFFFF, SIZE_L );
+  }
+
+  result = RAMRunApg( 2, 0x2A00, OUTPUTIF_END );   /* DAXS transport 0=write command */
+
+
+  if((ReadEcrMode8(0x3D00,SIZE_B)==0xAA) &&
+     (ReadEcrMode8(0x3D01,SIZE_B)==0xAA) &&
+     (ReadEcrMode8(0x3D02,SIZE_B)==0xAA) &&
+     (ReadEcrMode8(0x3D03,SIZE_B)==0xAA) ){
+    printf("WT mode Test FAIL!!!\n");
+  }else if((ReadEcrMode8(0x3D00,SIZE_B)==0x55) &&
+           (ReadEcrMode8(0x3D01,SIZE_B)==0x55) &&
+           (ReadEcrMode8(0x3D02,SIZE_B)==0x55) &&
+           (ReadEcrMode8(0x3D03,SIZE_B)==0x55) ){
+    printf("WT mode Test PASS!!!\n");
+  }else{
+    printf("WT mode Test ECR data ERROR!!!\n");
+    DispEcrBmData(0x3D00 , 0x00FF, DISP_ECR|DISP_1 );
+  }
+
+
+  DeviceLevelsPowerDown(); //�e�d��OFF�R�}���h
+
+/******************************************************************************/
+/*                                 EndManage                                  */
+/******************************************************************************/
+/******** get data *********/
+  //ECR => param
+  for(cnt=IN_LWORDEND+1;cnt<OUT_BYTEEND;cnt++){
+    (param + cnt) -> value = ReadEcrMode8((param + cnt) -> addr,(param + cnt) -> size);
+  }
+  for(cnt=OUT_BYTEEND+1;cnt<OUT_LWORDEND;cnt++){
+    (param + cnt) -> value = ReadEcrMode8((param + cnt) -> addr,(param + cnt) -> size);
+  }
+  CpuModeOutput(mode,param);
+
+/******** end manage *********/
+  sprintf(outbuf,"cpuerr=%d \n",cpuerr); DataOut(Ffpt,outbuf);
+  if(cpuerr == 1) {
+    switch(GetValue(OUT_JUDGE1,param)) {
+    case CPASS:
+      sprintf(outbuf,"** PASS ** Cpu Total=%dms\n",Cputotal);
+      DataOut(Ffpt,outbuf);
+      return(PASS);
+    case CFAIL:
+      sprintf(outbuf,"-- FAIL -- Cpu total=%dms\n",Cputotal);
+      DataOut(Ffpt,outbuf);
+      return(FAIL);
+    case CFLAG:
+      sprintf(outbuf,"-- FLAG_FAIL -- Cpu Total=%dms\n",Cputotal);
+      DataOut(Ffpt,outbuf);
+      return(FLGFAIL);
+    case READFAIL:
+      sprintf(outbuf,"-- READ_FAIL -- Cpu Total=%dms\n",Cputotal);
+      DataOut(Ffpt,outbuf);
+      return(FAIL);
+    default:
+      sprintf(outbuf,"-- FAIL -- None (%04X) %dms\n",((0x00FF&GetValue(OUT_JUDGE1,param))<<8)|((0xFF00&GetValue(OUT_JUDGE1,param))>>8),Cputotal);
+      DataOut(Ffpt,outbuf);
+      return(CPUFAIL);
+    }
+  }
+  sprintf(outbuf,"-- FAIL -- !!! TimeOver !!! total=%dms\n",Cputotal);
+  DataOut(Ffpt,outbuf);
+
+  return(CPUFAIL);
+}
+
+/************************************************************************
+ * Internal CPU use triming Function TM0->TM2(F) Mode
+ ************************************************************************/
+int CpuModeMonitor(int mode,int vcc[NUM_POWERSUPPLY],interface_t* param,int waittime,char *pat,char *mess,int *selvol)
+{
+  int cnt,cpuerr,failflag,datasize,patsize,speed;
+  int i,min_vol,max_vol,delta,center;
+  int flg,tempo1;                              /*** CPU drive recklessly flg ***/
+  int result;                           /* Test Result */
+  int selmode,pmu_range,bm_data,ecr_data;
+  char mat_value[100];
+  int start_time;                       /* Start Time For bentime */
+  int vs0,vs1,vs2;    // Power bak
+  int old_reg;
+  char mat_str[20];
+  char disp_addres[256];
+
+  flg = 0;
+  selmode=GetValue(IN_TESTSEL,param);
+
+  DispAddres(param,"",disp_addres);
+
+  for( cnt=RAM_TOP; cnt<=(RAM_TOP + 0x100); cnt=cnt+4 ){
+      //WriteBmMode8( cnt, 0xFFFFFFFF, SIZE_L );
+      WriteEcrMode8( cnt, 0xFFFFFFFF, SIZE_L );
+  }
+
+  printf("Target = %dmV\n",*selvol);
+  /******* GET PARAMETER *******/
+  speed=GetValue(IN_EXTAL1,param);
+
+  if(GetValue(IN_BDATA15,param) == 0)pmu_range = UA250;
+  else pmu_range = GetValue(IN_BDATA15,param);
+
+  /******* DISP TAITOL *******/
+  //Vref��VrefH�̋L�q�ɕύX�K�v�H
+  sprintf(outbuf,"TEST:%d [ %s ] vcc=%dmV ext_Vrefh=%dmV ext_Vref=%dmV F=%2dns PLL=%d(X%d)\n ",
+    test++,mess,vcc[0],vcc[1],vcc[2],speed,GetValue(IN_PLLON,param),GetValue(IN_PLL_MULT,param));
+  DataOut(Ffpt,outbuf);
+  sprintf(outbuf,"Module:%s\n%s\n",
+          DispMatName(mat_str,param),disp_addres);
+  DataOut(Ffpt,outbuf);
+  //Ldata�̌����ɕύX����K�v�L
+  sprintf(outbuf,"BDATA00:%08X, LDATA0:%08X\n"
+    ,GetValue(IN_BDATA00,param),GetValue(IN_LDATA0,param));
+  DataOut(Ffpt,outbuf);
+
+/******** BGR Code Check *********/
+  BGR_REG_CHECK(vcc[0],param);  
+
+  /******* SETUP ECR/BM *******/
+  Ecrsetup8(ECR_OVERL);
+
+  /******** RATE SetUp *********/
+  SetTimming_NS( daxs_trans.write_rate );
+
+  /******** PowerUp *********/
+  vs0=vcc[0];
+  vs1=vcc[1];
+  vs2=vcc[2];
+  
+  vcc[0]=daxs_trans.vcc;
+  vcc[1]=daxs_trans.vrefh;
+  vcc[2]=daxs_trans.vref;
+  
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if((vcc[1] != 0) && (vcc[2] != 0)){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    sprintf(outbuf," Ext_Vref  ON  \n");
+    DataOut(Ffpt,outbuf);
+  }else{
+    sprintf(outbuf," Ext_Vref  OFF \n");
+    DataOut(Ffpt,outbuf);
+  }
+
+  load_vlf_offset(_SUB_MODEENTRY_DAXS,4,tempo1);
+  
+  if(SelectPowerSupply(mode,vcc)) {//�e�d���̋�����Level�̐ݒ�(DAXS�]���p)
+    vcc[0]=vs0;
+    vcc[1]=vs1;
+    vcc[2]=vs2;
+    return(HWFAIL);
+  }
+  SetVohVolVtt( daxs_trans.voh, daxs_trans.vol, daxs_trans.vtt, daxs_datao_pin );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+  vcc[0]=vs0;
+  vcc[1]=vs1;
+  vcc[2]=vs2;
+
+/******************************************************************************/
+/*                                 Write BM                                   */
+/******************************************************************************/
+
+  /******* MAKE ASM PATH *******/
+  strcpy( binpat, glob_cdp ); strcat( binpat, glob_binpat_at );
+  strcat( binpat, pat );
+
+  patsize = CheckPatLength(binpat) - PAT_FILE_HEADER_SIZE;
+
+  /******** FILE BM WRITE **********/
+  datasize = comp_load_bm (binpat);   /* comp_load_bm:file pattern => BM */
+
+
+  if(FAIL==datasize) {  /* path/fail check */
+    sprintf(outbuf," !!! NOT OPEN FILE PATH -> %s (checksum:H'%X) !!!\n",binpat,datasize);
+    DataOut(Ffpt,outbuf);
+    DeviceLevelsPowerDown();
+    return(NOPATFAIL);
+  }else{
+    sprintf(outbuf," LOAD FILE PATH -> %s (checksum:H'%X)\n",binpat,datasize);
+    DataOut(Ffpt,outbuf);
+  }
+
+
+  /******** Parameter BM Write *********/
+  result = ParamTransBM(param);
+
+  WriteBmMode8( 0x3C00 , 0x00100000, SIZE_L );    /* Dummy Data 18/04/11 Aoki */  
+
+  /*** Trans Check ***/
+  if(PASS!=result){
+    sprintf(outbuf,"  TRANS ERROR!!  (param => BM) \n");
+    DataOut(Ffpt,outbuf);
+    return(RAMFAIL);
+  }else{
+    sprintf(outbuf,"  TRANS CHECK OK (param => BM) \n");
+    DataOut(Ffpt,outbuf);
+  }
+
+/******************************************************************************/
+/*                                 DAXS Transport                             */
+/******************************************************************************/
+  sprintf(outbuf," ----- RAM transfer Start -----");DataOut(Ffpt,outbuf); 
+
+  ParamConditionDisp(PDIN_ALL,0,param); //���͗pIF�̏o��
+  /******** Start tests *********/
+  printf("Write RAM \n"); /* Print Retry Count */
+
+    result = RAMRunApg( 0, RAM_TOP, OUTPUTIF_END );   /* DAXS transport 0=write command */
+  
+  if(PASS!=result){
+    return(RAMFAIL);
+  }
+  
+  
+  printf("Read RAM \n"); /* Print Retry Count */
+
+  SetTimming_NS( daxs_trans.read_rate );
+  
+  set_strobe_mask(daxs_datao_pin);  //Compare Setting command
+
+    result = RAMRunApg( 2, RAM_TOP, OUTPUTIF_END );   /* DAXS transport 0=write command */
+  
+  for(i=RAM_TOP;i<=(RAM_TOP + 0x100);i=i+4){
+    bm_data=ReadBmMode8(i,SIZE_L);
+    ecr_data=ReadEcrMode8(i,SIZE_L);
+    if(bm_data!=ecr_data){
+      printf("BM <=> ECR Comp ERROR!!! Addr = %X, BM = %X, ECR = %X \n",i,bm_data,ecr_data);
+      result = FAIL;
+    }
+  }
+  
+
+  if(PASS!=result){
+    return(RAMFAIL);
+  }
+
+  sprintf(outbuf," <<<<< EXTRAM transfer OK >>>>>\n");
+  DataOut(Ffpt,outbuf); //CommentOut for RAMBOOT Check
+
+/******************************************************************************/
+/*                                 DAXS RAMBOOT                               */
+/******************************************************************************/
+  /*** Power Change ***/
+  vs0 = vcc[0];
+  vcc[0] = 3300;
+  if(SelectPowerSupply(mode,vcc)) {//�e�d���̋�����Level�̐ݒ�(RAMBoot�]���p)
+    return(HWFAIL);
+  }
+
+  if(VccSlow(vs0,vcc[0])){
+    return(HWFAIL);
+  }
+  vcc[0] = vs0;
+    
+  /*** Comp Pin SetUp ***/
+  set_strobe_mask(bistpoll_pins);  /* ��rPin�̐ݒ�(RAMBoot�����܂ł̑ҋ@���ԂɎg�p) */
+  select_vector_mode(poll_pins,_PE_VECTOR_MODE);  //180314 Add-morioka For RamBoot
+  reconnect_pin(poll_pins);                       //180314 Add-morioka For RamBoot
+
+  /*** Test Speed SetUp ***/
+  SetTimming_NS(speed);
+  ChangeTimming_GTSLTS( EXTCYLJ, 1, MODEENTRY_SPEED ); // ModeEntry���g���ݒ� GTS=1,20MHz
+
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if((vcc[1] != 0) && (vcc[2] != 0)){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    sprintf(outbuf," Ext_Vref  ON  \n");
+    DataOut(Ffpt,outbuf);
+  }else{
+    sprintf(outbuf," Ext_Vref  OFF \n");
+    DataOut(Ffpt,outbuf);
+  }
+
+  /******** APG SetUp(Wait) *********/
+  load_vlf_offset(_SUB_MODEENTRY_RAM,6,  1000/MODEENTRY_SPEED);    /*   1us Wait */
+  load_vlf_offset(_SUB_MODEENTRY_RAM,1,300000/2/MODEENTRY_SPEED);    /* 300us Wait */
+  load_vlf_offset(_SUB_MODEENTRY_RAM,2, 70000/MODEENTRY_SPEED);    /*  70ms Wait */
+  load_vlf_offset(_SUB_MODEENTRY_RAM,3,tempo1);          /* Vdd/Vddh On/Off */
+  load_vlf_offset(_SUB_RAMBT_END,0,500*waittime/speed); /* RAMBootEnd Wait = waittime x(500x200x2000ns) */
+  load_vlf_offset(_SUB_RAMBT_POLL,0,500*waittime/speed);/* RAMBootPoll Wait = waittime x(500x200x200ns) */
+
+
+  SetVohVolVtt( 2*vcc[0]/10, 2*vcc[0]/10, 5*vcc[0]/10 , bistpoll_pins );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+
+  /*************** PMU Setting ********************/ //PMU�����ݒ�
+
+  printf("  PMU Set\n");
+  if((mode & MONITOR_MODE) || (mode & CP_SUPPLY_MODE)){
+    switch(selmode){
+
+      case MONITOR_VPP_E:
+      case MONITOR_VPP_P:
+      case MONITOR_VPP_PW:
+        set_vlimit(0);           // Set V = 0V
+        comp_set_ilimit(250000); // I-Limit = 250000nA(250uA) 
+        delay_timer( 1000 );
+        connect_ps(PPS_CON_VNN1,PPS_CMODE_PMU);
+        set_pmu_range(pmu_range);// max = 250uA
+        delay_timer( 10000 );
+        break;
+
+      case MONITOR_VHH_P:
+      case MONITOR_VHH_E:
+        set_vlimit(0);           // Set V = 0V
+        comp_set_ilimit(25000);  // I-Limit = 250000nA(250uA) 
+        delay_timer( 1000 );
+        connect_ps(PPS_CON_VNN1,PPS_CMODE_PMU);
+        set_pmu_range(pmu_range);// max = 250uA
+        delay_timer( 10000 );
+        break;
+
+      case MONITOR_BGR:
+        set_vlimit(0);
+        comp_set_ilimit(0);
+        //connect_pmu(bgr_pin); //CH2
+	      disconnect_pin(bgr_pin);
+        delay_timer( 10000 );
+        break;
+	
+      case MONITOR_VDD:
+        vs2 = vcc[2];
+        vcc[2] = 0; //Vdd=0
+        set_vlimit(0);
+        comp_set_ilimit(0);
+        set_site_mask(0); //enable all sites
+        connect_pmu(monitor_vdd_pin); //CH19
+        delay_timer( 10000 );
+        vcc[2] = vs2;
+        break;
+
+      case MONITOR_VDDH:
+        vs1 = vcc[1];
+        vcc[1] = 0; //Vddh=0
+        set_vlimit(0);
+        comp_set_ilimit(0);
+        set_site_mask(0); //enable all sites
+        connect_pmu(monitor_vddh_pin); //CH20
+        delay_timer( 10000 );
+        vcc[1] = vs1;
+        break;
+      case MONITOR_VRSG:
+      case MONITOR_V33R:
+      case MONITOR_VWI:
+      case MONITOR_VDEMG:        //Add 20180324
+      case MONITOR_VREG20:
+      case MONITOR_VREF10:
+        set_vlimit(0);           // Set V = 0V
+        comp_set_ilimit(250000); // I-Limit = 250000nA(250uA) 
+        delay_timer( 1000 );
+        connect_ps(PPS_CON_VNN1,PPS_CMODE_PMU);
+        set_pmu_range(pmu_range);// max = 250uA
+        delay_timer( 10000 );
+        break;
+
+      case MONITOR_IMONI_I01U_NOTEMP:  //Add 2018/0323
+      case MONITOR_IMONI_FLASH_NOTEMP: //Add 2018/0323
+      case MONITOR_IMONI_I01U_TEMP:    //Add 2018/0323
+      case MONITOR_IMONI_FLASH_TEMP:   //Add 2018/0323
+        set_vlimit(0);           // Set V = 0V
+        comp_set_ilimit(25000);  // I-Limit = 25000nA(25uA) 
+        delay_timer( 1000 );
+        connect_ps(PPS_CON_VNN1,PPS_CMODE_PMU);
+        set_pmu_range(pmu_range);// max = 250uA
+        switch(pmu_range){
+          case UA25:
+            comp_set_ilimit(25000);    // I-Limit = 25000nA(25uA) 
+            break;
+          case UA250:
+            comp_set_ilimit(250000);   // I-Limit = 250000nA(250uA) 
+            break;
+          case UA2500:
+            comp_set_ilimit(2500000);  // I-Limit = 2500000nA(2.5mA) 
+            break;
+        }
+        delay_timer( 10000 );
+        set_vlimit(650);         // Set V = 0V
+        //comp_set_ilimit(6000);   // I-Limit = 6000nA(6uA) 
+        delay_timer( 10000 );
+        break;
+
+      case MONITOR_READDELAY8:   //Add 2018/0323
+      case MONITOR_READDELAY10:  //Add 2018/0323
+        //DelayTestSetting(*selvol,vcc[1]*25/10,vcc[2]*158/100);
+        break;
+
+      case MONITOR_VNOEMI_PE:    //Add 2018/0324
+      //case MONITOR_VNOEMI_R:     //Add 2018/0324
+        set_vlimit(0);           // Set V = 0V
+        comp_set_ilimit(250000); // I-Limit = 250000nA(250uA) 
+        delay_timer( 1000 );
+        connect_ps(PPS_CON_VNN1,PPS_CMODE_PMU);
+        set_pmu_range(pmu_range);// max = 250uA
+        delay_timer( 10000 );
+        break;
+
+      default: // Default Error
+        DeviceLevelsPowerDown();
+        printf("MONITOR_MODE PMU setting, Code ERROR!!! code=%X\n",selmode); //Define Error, Check selmode value
+        return(FAIL);
+        break;
+    }
+  }else if( (mode & APPLY_MODE) || (mode & CP_LEAK_MODE) ){
+    switch(selmode){
+
+      case AUTOTRIM_BGR08:       //Add 20180324
+      case AUTOTRIM_VDD:         //Add 20180324
+      case AUTOTRIM_VDDH:        //Add 20180324
+      case AUTOTRIM_VREF10:      //Add 20180324
+      case AUTOTRIM_VPP_E:
+      case AUTOTRIM_VPP_P:
+      case AUTOTRIM_VPP_PW:      //Add 20180324
+      case AUTOTRIM_VHH_E:       //Add 20180324
+      case AUTOTRIM_VHH_P:       //Add 20180324
+      case AUTOTRIM_VRSG:        //Add 20180324
+      case AUTOTRIM_V33R:        //Add 20180324
+      case AUTOTRIM_VWI:         //Add 20180324
+      //case AUTOTRIM_VDEMG:       //Add 20180327
+      //case AUTOTRIM_VNOEMI:      //Add 20180324
+        set_vlimit(0);           // Set V = 0V
+        connect_pmu(v5_pin);     // Connect VNN <=> PMU
+        set_pmu_range(pmu_range);// max = 250uA
+        switch(pmu_range){
+          case UA25:
+            comp_set_ilimit(25000);    // I-Limit = 25000nA(25uA) 
+            break;
+          case UA250:
+            comp_set_ilimit(250000);   // I-Limit = 250000nA(250uA) 
+            break;
+          case UA2500:
+            comp_set_ilimit(2500000);  // I-Limit = 2500000nA(2.5mA) 
+            break;
+        }
+        break;
+
+      //case AUTOTRIM_IMONI_G:
+      //case AUTOTRIM_IMONI_F:
+      case AUTOTRIM_IMONI_I01U_NOTEMP:  //Add 2018/0323
+      case AUTOTRIM_IMONI_FLASH_NOTEMP: //Add 2018/0323
+      case AUTOTRIM_IMONI_I01U_TEMP:    //Add 2018/0323
+      case AUTOTRIM_IMONI_FLASH_TEMP:   //Add 2018/0323
+        set_vlimit(0);           // Set V = 0V
+        connect_pmu(v5_pin);     // Connect VNN <=> PMU
+        set_pmu_range(pmu_range);// max = 250uA
+        //comp_set_ilimit(10500);  // I-Limit = 10.5uA(10.5uA)
+        comp_set_ilimit(*selvol);  // I-Limit = 10.5uA(10.5uA)
+        break;
+
+      case AUTOTRIM_OSC32:       //Add 20180324
+      case AUTOTRIM_OSC1:        //Add 20180324
+        set_vlimit(0);
+        connect_pmu(v5_pin);     // Connect VNN <=> PMU
+        set_pmu_range(pmu_range);// max = 250uA
+        comp_set_ilimit(250000); // I-Limit = 250000nA(250u)
+        break;
+
+      case AUTOTRIM_READDELAY8:   //Add READ Delay8 TRIM SETTING 2018/0322
+      case AUTOTRIM_READDELAY10:  //Add READ Delay10 TRIM SETTING 2018/0322
+        //DelayTestSetting(*selvol,vcc[1]*25/10,vcc[2]*158/100);
+        break;
+
+/*VPP_TF�͊��������̈�pending*/
+//      case AUTOTRIM_VPP_TF:      //Add 20180324
+//        set_vlimit(0);
+//        connect_pmu(v5_pin);     // Connect VNN <=> PMU
+//        set_pmu_range(UA250);    // max = 250uA
+//        comp_set_ilimit(250000); // I-Limit = 250000nA(250u)
+//        break;
+     
+      case AUTOTRIM_VNOEMI_PE:    //Add 20180324
+      //case AUTOTRIM_VNOEMI_R:     //Add 20180324
+        set_vlimit(0);
+        connect_pmu(v5_pin);      // Connect VNN <=> PMU
+        set_pmu_range(pmu_range); // max = 250uA
+        comp_set_ilimit(250000);  // I-Limit = 250000nA(250u)
+        break;
+
+      case VTHREAD_DIS:
+      case VTHREAD_EDGE:
+        set_vlimit(0);
+        connect_pmu(v5_pin);      // Connect VNN <=> PMU
+        set_pmu_range(pmu_range); // max = 250uA
+        comp_set_ilimit(250000);  // I-Limit = 250000nA(250u)
+        break;
+
+      default: // Default Error
+        DeviceLevelsPowerDown();
+        printf("APPLY_MODE PMU setting, Code ERROR!!! code=%X\n",selmode); //Define Error, Check selmode value
+        return(FAIL);
+        break;
+    }
+  
+  }
+
+  /*************************** Run APG & Monitor(Apply) ******************************/
+    start_time = bentime(); /* Get Test Start Time */
+    printf("  APG Start\n");
+    if( CheckFK(FK_INPUT_SCOPE) ) WaitHitKey( "\nPlease Hit Any Key" );
+
+    if(mode & MONITOR_MODE){
+      switch(selmode){
+        case MONITOR_BGR:
+          comp_set_ilimit(0);
+          load_vlf_offset(_SUB_RAMBT_POLL,0,60000/speed); /* 80ms fix(2000*200*200ns) */
+          run_apg(_RAM_BOOT_MONITOR_CTRL);
+	        delay_timer(100*1000);  // 100ms wait = 100*1000*1us
+          SITE_MASK (1, read_pmu_status(0x20));              /* V measurement */
+          SITE_MASK (1, *selvol=read_adc_ave(ADC_VMEAS,0,1000));
+	      break;
+	      case MONITOR_VDD:
+        case MONITOR_VDDH:
+        case MONITOR_VPP_E:
+        case MONITOR_VPP_P:
+        case MONITOR_VPP_PW:
+        case MONITOR_VHH_E:
+        case MONITOR_VHH_P:
+        case MONITOR_VRSG:
+        case MONITOR_V33R:
+        case MONITOR_VWI:
+        case MONITOR_VDEMG:
+        case MONITOR_VREG20:
+        case MONITOR_VREF10:
+        case MONITOR_VNOEMI_PE:
+        //case MONITOR_VNOEMI_R:
+          comp_set_ilimit(0);
+          load_vlf_offset(_SUB_RAMBT_POLL,0,500/speed); /* 20ms fix(2000*200*200ns) */
+          if(GetValue(IN_BDATA16,param) == 12){ //Vnoemi Leak Monitor
+            set_vlimit(*selvol);
+            run_apg(_RAM_BOOT_MONITOR_CTRL);
+		        delay_timer(waittime*1000);
+
+            switch(pmu_range){
+              case UA25:
+                comp_set_ilimit(25000);    // I-Limit = 25000nA(25uA) 
+              break;
+              case UA250:
+                comp_set_ilimit(250000);   // I-Limit = 250000nA(250uA) 
+              break;
+              case UA2500:
+                comp_set_ilimit(2500000);  // I-Limit = 2500000nA(2.5mA) 
+              break;
+            }
+		        delay_timer(50*1000);
+
+
+          }else{
+
+            run_apg(_RAM_BOOT_MONITOR_CTRL);
+		        delay_timer(100*1000);
+            SITE_MASK (1, read_pmu_status(0x20));              /* V measurement */
+            SITE_MASK (1, *selvol=read_adc_ave(ADC_VMEAS,0,100));
+          }
+          break;
+
+        //case MONITOR_IMONI_G:  //Chip Iref monitor
+        //case MONITOR_IMONI_F:  //Flash Iref monitor
+        case MONITOR_IMONI_I01U_NOTEMP:
+        case MONITOR_IMONI_FLASH_NOTEMP:
+        case MONITOR_IMONI_I01U_TEMP:
+        case MONITOR_IMONI_FLASH_TEMP:
+          load_vlf_offset(_SUB_RAMBT_POLL,0,500/speed); /* 20ms fix(500*200*200ns) */
+          run_apg(_RAM_BOOT_MONITOR_CTRL);
+          SITE_MASK (1, read_pmu_status(0x08));              /* I measurement */
+          SITE_MASK (1, *selvol=read_adc_ave(ADC_IMEAS,0,100));
+          break;
+
+        case MONITOR_READDELAY8:   //Add 2018/0323
+        case MONITOR_READDELAY10:  //Add 2018/0323
+          load_vlf_offset(_SUB_RAMBT_POLL,0,1500/speed); /* 60ms fix(1500*200*200ns) */
+          run_apg(_RAM_BOOT_MONITOR_CTRL);
+          //DelayTestSetting(*selvol,vcc[1]*25/10,vcc[2]*158/100);//�p���X����ݒ�
+          DelayTestSetting(*selvol,vcc[1]*25/10,vcc[0]); //�p���X����ݒ�=VCC level
+          run_apg(_RAM_BOOT_DELAYTEST); //�p���X���
+          DelayTestSetting(*selvol,vcc[0],vcc[0]); //Pin�ݒ�����ɖ߂�
+          break;
+
+        default:
+          DeviceLevelsPowerDown();
+          printf("MONITOR_MODE Run APG, Code ERROR!!! code=%X\n",selmode); //Define Error, Check selmode value
+          return(FAIL);
+          break;
+      }
+    }else if(mode & CP_SUPPLY_MODE){
+      switch(selmode){
+        case MONITOR_BGR:
+        case MONITOR_VPP_E:
+        case MONITOR_VPP_P:
+        case MONITOR_VPP_PW:
+        case MONITOR_VHH_E:
+        case MONITOR_VHH_P:
+        case MONITOR_VRSG:
+        case MONITOR_V33R:
+        case MONITOR_VWI:
+        case MONITOR_VDEMG:
+        //case MONITOR_VREG20:
+        case MONITOR_VNOEMI_PE:
+        //case MONITOR_VNOEMI_R:
+	  set_pmu_range(UA250);
+          comp_set_ilimit(0);
+	  set_vlimit(0);
+	  delay_timer( 2000 );
+
+          load_vlf_offset(_SUB_RAMBT_POLL,0,500/speed); /* 20ms fix(500*200*200ns) */
+          run_apg(_RAM_BOOT_MONITOR_CTRL);
+
+          set_pmu_range(pmu_range);
+	  switch(pmu_range){
+	    case UA25:
+              comp_set_ilimit(25000);    // I-Limit = 25000nA(25uA) 
+	    break;
+	    case UA250:
+              comp_set_ilimit(250000);   // I-Limit = 250000nA(250uA) 
+	    break;
+	    case UA2500:
+              comp_set_ilimit(2500000);  // I-Limit = 2500000nA(2.5mA) 
+	    break;
+	  }
+	  set_vlimit(*selvol);
+	  delay_timer( 2000 );
+	   
+          SITE_MASK (1, read_pmu_status(0x08));              /* V measurement */
+          SITE_MASK (1, *selvol=read_adc_ave(ADC_IMEAS,0,100));
+          break;
+	  
+        default:
+          DeviceLevelsPowerDown();
+          printf("MONITOR_MODE Run APG, Code ERROR!!! code=%X\n",selmode); //Define Error, Check selmode value
+          return(FAIL);
+          break;
+      }
+    }else if(mode & APPLY_MODE){
+      switch(selmode){
+        case AUTOTRIM_BGR08:    //Add 2018/0323
+        case AUTOTRIM_VDD:
+        case AUTOTRIM_VDDH:
+        case AUTOTRIM_VREF10:
+        case AUTOTRIM_VPP_E:
+        case AUTOTRIM_VPP_P:
+        case AUTOTRIM_VPP_PW:   //Add 20180324
+        case AUTOTRIM_VRSG:
+        case AUTOTRIM_V33R:
+        case AUTOTRIM_VWI:
+        //case AUTOTRIM_VDEMG:    //Add 20180327
+        //case AUTOTRIM_VNOEMI:   //Add 20180324
+        //case AUTOTRIM_VPP_TF:   //Add 20180324  VPP_TF�͊��������̈�pending
+        case AUTOTRIM_VNOEMI_PE:
+        //case AUTOTRIM_VNOEMI_R:
+        case VTHREAD_DIS:
+        case VTHREAD_EDGE:
+          set_vlimit(*selvol);
+          printf("WaitDelay\n");
+          delay_timer( 200 );     /* wait 200us */
+          load_vlf_offset(_SUB_RAMBT_END,0,500*waittime/speed); /* RAMBootEnd Wait = waittime x(500x200x2000ns) */
+          printf("_RAM_BOOT_CTRL\n");
+          run_apg(_RAM_BOOT_CTRL);
+          break;
+
+        //case AUTOTRIM_IMONI_G:
+        //case AUTOTRIM_IMONI_F:
+        case AUTOTRIM_IMONI_I01U_NOTEMP:
+        case AUTOTRIM_IMONI_FLASH_NOTEMP:
+        case AUTOTRIM_IMONI_I01U_TEMP:
+        case AUTOTRIM_IMONI_FLASH_TEMP:
+          //load_vlf_offset(_SUB_RAMBT_POLL,1,1000); // 50*cycle
+          load_vlf_offset(_SUB_RAMBT_POLL,0,100/speed); /* 4ms fix(100*200*200ns) */
+          run_apg(_RAM_BOOT_MONITOR_CTRL);
+
+          //set_vlimit(*selvol);
+          set_vlimit(1000);       /* 1.0V > BGR=0.8V */
+          delay_timer( 20000 );   /* wait 20ms */
+          break;
+
+        case AUTOTRIM_READDELAY8:   //Add 2018/0323
+        case AUTOTRIM_READDELAY10:  //Add 2018/0323
+          load_vlf_offset(_SUB_RAMBT_POLL,0,1500/speed); /* 60ms fix(1500*200*200ns) */
+          run_apg(_RAM_BOOT_MONITOR_CTRL);
+          //DelayTestSetting(*selvol,vcc[1]*25/10,vcc[2]*158/100);//�p���X����ݒ�
+          DelayTestSetting(*selvol,vcc[1]*25/10,vcc[0]); //�p���X����ݒ�=VCC level
+          run_apg(_RAM_BOOT_DELAYTEST); //�p���X���
+          DelayTestSetting(*selvol,vcc[0],vcc[0]); //Pin�ݒ�����ɖ߂�
+          break;
+
+        case AUTOTRIM_VHH_E:
+        case AUTOTRIM_VHH_P:
+          //WaitHitKey( "\nPlease Hit Any Key -- floating or 0V --\n" ); //Add Vdd debug 20180326
+          set_vlimit( 1250 );   //Set VDDH //add 2018/0328
+          delay_timer( 100 );     /* wait 100us */
+          load_vlf_offset(_SUB_RAMBT_POLL,0,600/speed); /* 24ms fix(600*200*200ns) */
+          run_apg(_RAM_BOOT_MONITOR_CTRL);
+
+          //WaitHitKey( "\nPlease Hit Any Key -- Set 5Vup --\n" ); //Add Vdd debug 20180326          
+          set_vlimit( 5000 );     //Set 5.000V
+          delay_timer( 100 );     /* wait 100us */
+          load_vlf_offset(_SUB_RAMBT_POLL,0,750/speed); /* 30ms fix(750*200*200ns) */
+          run_apg(_RAM_BOOT_MONITOR_POLL);
+
+          //WaitHitKey( "\nPlease Hit Any Key -- Set target --\n" ); //Add Vdd debug 20180326
+          set_vlimit( *selvol );  //Set target
+          delay_timer( 100 );     /* wait 100us */          
+          load_vlf_offset(_SUB_RAMBT_POLL,0,750/speed); /* 30ms fix(750*200*200ns) */
+          run_apg(_RAM_BOOT_MONITOR_POLL);
+
+          //WaitHitKey( "\nPlease Hit Any Key -- Set 5Vdown --\n" ); //Add Vdd debug 20180326          
+          set_vlimit( 5000 );     //Set 5.000V
+          delay_timer( 100 );     /* wait 100us */
+          load_vlf_offset(_SUB_RAMBT_POLL,0,750/speed); /* 30ms fix(750*200*200ns) */
+          run_apg(_RAM_BOOT_MONITOR_POLL);
+
+          set_vlimit( 1250 );   //Set VDDH
+          delay_timer( 20000 );   /* wait 20ms */
+          break;
+
+        default:
+          DeviceLevelsPowerDown();
+          printf("APPLY_MODE Run APG, Code ERROR!!! code=%X\n",selmode); //Define Error, Check selmode value
+          return(FAIL);
+          break;
+      }
+    }else if(mode & CP_LEAK_MODE){
+      printf("\n\nTEST\n\n");
+      
+      switch(selmode){
+
+        case AUTOTRIM_VHH_E:
+        case AUTOTRIM_VHH_P:
+          //WaitHitKey( "\nPlease Hit Any Key -- floating or 0V --\n" ); //Add Vdd debug 20180326
+          set_vlimit( 1250 );   //Set VDDH //add 2018/0328
+          delay_timer( 100 );     /* wait 100us */
+          load_vlf_offset(_SUB_RAMBT_POLL,0,600/speed); /* 60ms fix(1500*200*200ns) */
+          run_apg(_RAM_BOOT_MONITOR_CTRL);
+
+          //WaitHitKey( "\nPlease Hit Any Key -- Set 5Vup --\n" ); //Add Vdd debug 20180326          
+          set_vlimit( 5000 );     //Set 5.000V
+          delay_timer( 100 );     /* wait 100us */
+          load_vlf_offset(_SUB_RAMBT_POLL,0,750/speed); /* 30ms fix(750*200*200ns) */
+          run_apg(_RAM_BOOT_MONITOR_POLL);
+
+          //WaitHitKey( "\nPlease Hit Any Key -- Set target --\n" ); //Add Vdd debug 20180326
+          set_vlimit( *selvol );  //Set target
+          delay_timer( 100 );     /* wait 2000us */
+	  
+	         SITE_MASK (1, read_pmu_status(0x20));              /* V measurement */
+          SITE_MASK (1, *selvol=read_adc_ave(ADC_IMEAS,0,100));
+	            
+          load_vlf_offset(_SUB_RAMBT_POLL,0,750/speed); /* 30ms fix(750*200*200ns) */
+          run_apg(_RAM_BOOT_MONITOR_POLL);
+
+          //WaitHitKey( "\nPlease Hit Any Key -- Set 5Vdown --\n" ); //Add Vdd debug 20180326          
+          set_vlimit( 5000 );     //Set 5.000V
+          delay_timer( 100 );     /* wait 100us */
+          load_vlf_offset(_SUB_RAMBT_POLL,0,750/speed); /* 30ms fix(750*200*200ns) */
+          run_apg(_RAM_BOOT_MONITOR_POLL);
+
+          set_vlimit( 1250 );   //Set VDDH
+          delay_timer( 20000 );   /* wait 20ms */
+          break;
+
+        default:
+          DeviceLevelsPowerDown();
+          printf("APPLY_MODE Run APG, Code ERROR!!! code=%X\n",selmode); //Define Error, Check selmode value
+          return(FAIL);
+          break;
+      }
+    }else{
+      printf("Mode Select Error!!! mode=%X\n",mode);
+      return(FAIL);
+    }
+
+    /************************** RAMBoot End Manage ************************************/
+    
+    if(mode & APPLY_MODE){ /* Auto Trimming */
+      switch(selmode){
+        case AUTOTRIM_BGR08:
+        case AUTOTRIM_VDD:
+        case AUTOTRIM_VDDH:
+        case AUTOTRIM_VREF10:
+        case AUTOTRIM_VPP_E:
+        case AUTOTRIM_VPP_P:
+        case AUTOTRIM_VPP_PW:
+        case AUTOTRIM_VRSG:
+        case AUTOTRIM_V33R:
+        case AUTOTRIM_VWI:
+        case AUTOTRIM_VNOEMI_PE:
+        case VTHREAD_DIS:
+        case VTHREAD_EDGE:
+          break;
+        default: /* Other */
+          //load_vlf_offset(_SUB_RAMBT_END,1,1000); // 50*cycle
+          load_vlf_offset(_SUB_RAMBT_END,0,500*waittime/speed); /* RAMBootEnd Wait = waittime x(500x200x2000ns) */
+          run_apg(_RAM_BOOT_MONITOR_END); // RAM Boot End(APG)
+          break;
+      }
+    }else{ /* Monitor */
+      //load_vlf_offset(_SUB_RAMBT_END,1,1000); // 50*cycle
+      load_vlf_offset(_SUB_RAMBT_END,0,500*waittime/speed); /* RAMBootEnd Wait = waittime x(500x200x2000ns) */
+      run_apg(_RAM_BOOT_MONITOR_END); // RAM Boot End(APG)
+    }
+    set_vlimit(0);                  // PMU 0V
+    reconnect_pin(v5_pin);          // PMU reconnect PNN
+    //set_invert_mask(no_pin);        // �K�v�����H
+
+    cpuerr = check_pin_errors( bistpoll_pins, 4 ); /* Boot����Error�o�͂�APG�p�^�����璊�o(DPASSDEND_CP�̔�r����) */
+    Cputotal = (bentime()-start_time-init_bentime())/1000; /* Get Test Total Time */
+
+/******************************************************************************/
+/*                                 DAXS Read                                  */
+/******************************************************************************/
+
+  set_strobe_mask(daxs_datao_pin);
+  SetTimming_NS( daxs_trans.read_rate );
+  select_vector_mode(poll_pins,_PE_APG_MODE);
+  reconnect_pin(poll_pins);
+
+  /******** PowerUp *********/
+  vs0=vcc[0];
+  vs1=vcc[1];
+  vs2=vcc[2];
+
+  vcc[0]=daxs_trans.vcc;
+  vcc[1]=daxs_trans.vrefh;
+  vcc[2]=daxs_trans.vref;
+
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if((vcc[1] != 0) && (vcc[2] != 0)){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    sprintf(outbuf," Ext_Vref  ON  \n");
+    DataOut(Ffpt,outbuf);
+  }else{
+    sprintf(outbuf," Ext_Vref  OFF \n");
+    DataOut(Ffpt,outbuf);
+  }
+
+  load_vlf_offset(_SUB_MODEENTRY_DAXS,4,tempo1);
+  
+  if(VccSlow(3300,vs0)){
+    return(HWFAIL);
+  }
+
+
+  if(SelectPowerSupply(mode,vcc)) {//�e�d���̋�����Level�̐ݒ�(DAXS�]���p)
+    vcc[0]=vs0;
+    vcc[1]=vs1;
+    vcc[2]=vs2;
+    return(HWFAIL);
+  }
+  SetVohVolVtt( daxs_trans.voh, daxs_trans.vol, daxs_trans.vtt, daxs_datao_pin );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+  vcc[0]=vs0;
+  vcc[1]=vs1;
+  vcc[2]=vs2;
+
+  /******** Read RAM data *********/
+
+  for( cnt=FBM_READTOP; cnt<=OUTPUTIF_END; cnt=cnt+4 ){
+      WriteEcrMode8( cnt, 0xFFFFFFFF, SIZE_L );
+  }  
+
+  //result = RAMRunApg( 2, 0x2A00, OUTPUTIF_END );   /* DAXS transport 0=write command */
+  //RAMRunApg( 2, FBM_READTOP2 ,(FBM_READTOP + FBM_READSIZE - 1) ); /* Daxs Trans For FBM */
+
+  result = RAMRunApg( 2, FBM_READTOP, OUTPUTIF_END );   /* DAXS transport 0=write command */
+
+  if((ReadEcrMode8(0x3D00,SIZE_B)==0xAA) &&
+     (ReadEcrMode8(0x3D01,SIZE_B)==0xAA) &&
+     (ReadEcrMode8(0x3D02,SIZE_B)==0xAA) &&
+     (ReadEcrMode8(0x3D03,SIZE_B)==0xAA) ){
+      printf("WT mode Test FAIL!!!\n");
+  }else if((ReadEcrMode8(0x3D00,SIZE_B)==0x55) &&
+           (ReadEcrMode8(0x3D01,SIZE_B)==0x55) &&
+           (ReadEcrMode8(0x3D02,SIZE_B)==0x55) &&
+           (ReadEcrMode8(0x3D03,SIZE_B)==0x55) ){
+      printf("WT mode Test PASS!!!\n");
+  }else{
+      printf("WT mode Test ECR data ERROR!!!\n");
+      DispEcrBmData(0x3D00 , 0x00FF, DISP_ECR|DISP_1 );
+  }
+
+  //DeviceLevelsPowerDown(); //�e�d��OFF�R�}���h
+
+/******************************************************************************/
+/*                                 EndManage                                  */
+/******************************************************************************/
+
+  /******** get data *********/
+  //ECR => param
+  for(cnt=IN_LWORDEND+1;cnt<OUT_BYTEEND;cnt++){
+    (param + cnt) -> value = ReadEcrMode8((param + cnt) -> addr,(param + cnt) -> size);
+  }
+  for(cnt=OUT_BYTEEND+1;cnt<OUT_LWORDEND;cnt++){
+    (param + cnt) -> value = ReadEcrMode8((param + cnt) -> addr,(param + cnt) -> size);
+  }
+  CpuModeOutput(mode,param);
+
+  if(cpuerr == 1) {
+    switch(GetValue(OUT_JUDGE1,param)) {
+      case CPASS:
+        sprintf(outbuf,"** PASS ** Cpu Total=%dms\n",Cputotal);
+        DataOut(Ffpt,outbuf);
+        break;
+      case CFAIL:
+        sprintf(outbuf,"-- FAIL -- Cpu total=%dms\n",Cputotal);
+        DataOut(Ffpt,outbuf);
+        break;
+      case CFLAG:
+        sprintf(outbuf,"-- FLAG_FAIL -- Cpu Total=%dms\n",Cputotal);
+        DataOut(Ffpt,outbuf);
+        break;
+      case READFAIL:
+        sprintf(outbuf,"-- READ_FAIL -- Cpu Total=%dms\n",Cputotal);
+        DataOut(Ffpt,outbuf);
+        break;
+      default:
+        sprintf(outbuf,"-- FAIL -- None (%04X) %dms\n",((0x00FF&GetValue(OUT_JUDGE1,param))<<8)|((0xFF00&GetValue(OUT_JUDGE1,param))>>8),Cputotal);
+        DataOut(Ffpt,outbuf);
+        break;
+    }
+  }else{
+    sprintf(outbuf,"-- FAIL -- !!! TimeOver !!! total=%dms\n",Cputotal);
+    DataOut(Ffpt,outbuf);
+    //return(FAIL);
+  }
+
+  /******** Monitor Result *********/
+
+  if(mode & MONITOR_MODE){
+    switch(mode & 0x0000FFFF){
+      case  MVSSMON:
+      case  MVSSMON_CH:
+      case  MVSSMON_20K:
+        sprintf(outbuf,"  Monitor Result VSSMON = %dmV\n",*selvol);
+        DataOut(Ffpt,outbuf);
+        break;
+      case  MVCCMON:
+        sprintf(outbuf,"  Monitor Result VCCMON = %dmV\n",*selvol);
+        DataOut(Ffpt,outbuf);
+        break;
+      case  MVRSGMON:                                               
+        sprintf(outbuf,"  Monitor Result VRSGMON = %dmV\n",*selvol);   
+        DataOut(Ffpt,outbuf);                                         
+        break;                                                        
+      case  MVCLMON:
+        sprintf(outbuf,"  Monitor Result VCLMON = %dmV\n",*selvol);
+        DataOut(Ffpt,outbuf);
+        break;
+      default:
+        printf("Result Setting Error!! mode code = %X\n",mode);
+        return(FAIL);      
+        break;
+    }
+    selvol = center;
+  }else if(mode & APPLY_MODE){
+    switch(selmode){
+      case  AUTOTRIM_VDD:
+        break;
+      case  AUTOTRIM_READDELAY8:
+      case  AUTOTRIM_READDELAY10:
+        sprintf(outbuf,"  Target Read Delay = %dns\n",*selvol);
+        DataOut(Ffpt,outbuf);
+        break;
+    }
+    if(GetValue(OUT_JUDGE1,param) == 0x00){
+      sprintf(outbuf," AutoTrim Pass Input Voltage = %d\n",*selvol);
+      DataOut(Ffpt,outbuf);      
+    }else if(GetValue(OUT_JUDGE1,param) == FAIL_TAP_TOP ){
+      sprintf(outbuf," AutoTrim Error!!! Tap Top Hit\n");
+      DataOut(Ffpt,outbuf);      
+    }else if(GetValue(OUT_JUDGE1,param) == FAIL_TAP_END ){
+      sprintf(outbuf," AutoTrim Error!!! Tap Top Hit\n");
+      DataOut(Ffpt,outbuf);      
+    }else if(GetValue(OUT_JUDGE1,param) == PASS ){
+      sprintf(outbuf," AutoTrim PASS Tap Middle Hit\n");
+      DataOut(Ffpt,outbuf);      
+    }else{
+      sprintf(outbuf," AutoTrim JUDGE = 0x%04X\n",((0x00FF&GetValue(OUT_JUDGE1,param))<<8)|((0xFF00&GetValue(OUT_JUDGE1,param))>>8));
+      DataOut(Ffpt,outbuf);      
+    }
+    if( ( ReadEcrMode8( 0x3D00, SIZE_L )==0x55555555/*TEST_PASS*/ )||( ReadEcrMode8( 0x3D00, SIZE_L )==0xAAAAAAAA/*TEST_FAIL*/ ) ){
+      switch( selmode ){
+        case AUTOTRIM_VREF10:    printf( " ETLR11 = 0x%02X ->> 0x%02X \n", GetValue(IN_ETLR11,param), GetValue(OUT_ETLR11,param) );
+                                 SetValue(IN_ETLR11,param,GetValue(OUT_ETLR11,param)); break;
+        case AUTOTRIM_VPP_E:     printf( " ETLR20 = 0x%02X ->> 0x%02X \n", GetValue(IN_ETLR20,param), GetValue(OUT_ETLR20,param) );
+                                 SetValue(IN_ETLR20,param,GetValue(OUT_ETLR20,param)); break;
+        case AUTOTRIM_VPP_P:     printf( " ETLR20 = 0x%02X ->> 0x%02X \n", GetValue(IN_ETLR20,param), GetValue(OUT_ETLR20,param) );
+                                 SetValue(IN_ETLR20,param,GetValue(OUT_ETLR20,param)); break;
+        case AUTOTRIM_VPP_PW:    printf( " ETLR21 = 0x%02X ->> 0x%02X \n", GetValue(IN_ETLR21,param), GetValue(OUT_ETLR21,param) );
+                                 SetValue(IN_ETLR21,param,GetValue(OUT_ETLR21,param)); break;
+        case AUTOTRIM_VHH_E:     printf( " ETLR16 = 0x%02X ->> 0x%02X \n", GetValue(IN_ETLR16,param), GetValue(OUT_ETLR16,param) );
+                                 SetValue(IN_ETLR16,param,GetValue(OUT_ETLR16,param)); break;
+        case AUTOTRIM_VHH_P:     printf( " ETLR17 = 0x%02X ->> 0x%02X \n", GetValue(IN_ETLR17,param), GetValue(OUT_ETLR17,param) );
+                                 SetValue(IN_ETLR17,param,GetValue(OUT_ETLR17,param)); break;
+        case AUTOTRIM_VRSG:      printf( " ETLR18 = 0x%02X ->> 0x%02X \n", GetValue(IN_ETLR18,param), GetValue(OUT_ETLR18,param) );
+                                 SetValue(IN_ETLR18,param,GetValue(OUT_ETLR18,param)); break;
+        case AUTOTRIM_V33R:      printf( " ETLR24 = 0x%02X ->> 0x%02X \n", GetValue(IN_ETLR24,param), GetValue(OUT_ETLR24,param) );
+                                 SetValue(IN_ETLR24,param,GetValue(OUT_ETLR24,param)); break;
+        case AUTOTRIM_VWI:       printf( " ETLR19 = 0x%02X ->> 0x%02X \n", GetValue(IN_ETLR19,param), GetValue(OUT_ETLR19,param) );
+                                 SetValue(IN_ETLR19,param,GetValue(OUT_ETLR19,param)); break;
+        case AUTOTRIM_VNOEMI_PE: printf( " ETLR19 = 0x%02X ->> 0x%02X \n", GetValue(IN_ETLR19,param), GetValue(OUT_ETLR19,param) );
+                                 SetValue(IN_ETLR19,param,GetValue(OUT_ETLR19,param)); break;
+        case AUTOTRIM_IMONI_I01U_NOTEMP:
+        case AUTOTRIM_IMONI_FLASH_NOTEMP:
+        case AUTOTRIM_IMONI_I01U_TEMP:
+        case AUTOTRIM_IMONI_FLASH_TEMP:
+          printf( " ETLR08 = 0x%02X ->> 0x%02X \n", GetValue(IN_ETLR08,param), GetValue(OUT_ETLR08,param) );
+          SetValue(IN_ETLR08,param,GetValue(OUT_ETLR08,param));
+          printf( " ETLR09 = 0x%02X ->> 0x%02X \n", GetValue(IN_ETLR09,param), GetValue(OUT_ETLR09,param) );
+          SetValue(IN_ETLR09,param,GetValue(OUT_ETLR09,param));
+          break;
+      }
+    }
+  }else{
+    printf("Result Setting Error!! mode code = %X\n",mode);
+    return(FAIL);      
+  }
+
+  return(PASS);
+}
+
+/*******************************************************************************
+ *   CpuModeMonitor�̌J��Ԃ����s�p�֐�
+ *******************************************************************************/
+
+
+int CpuModeMonitor_Repeat(int repeat_mode, int mode,int vcc[NUM_POWERSUPPLY],interface_t* param,int waittime,char *pat,char *mess,int *selvol)
+{
+  int cnt,cpuerr,failflag,datasize,patsize,speed;
+  int i,min_vol,max_vol,delta,center,vcc_stack[NUM_POWERSUPPLY];
+  int flg,tempo1;                              /*** CPU drive recklessly flg ***/
+  int result;                           /* Test Result */
+  int selmode,pmu_range,bm_data,ecr_data;
+  char mat_value[100];
+  int start_time;                       /* Start Time For bentime */
+  int vs0,vs1,vs2;    // Power bak
+  int old_reg;
+  char mat_str[20];
+  char disp_addres[256];
+
+  flg = 0;
+  selmode=GetValue(IN_TESTSEL,param);
+
+  DispAddres(param,"",disp_addres);
+  vcc_stack[0]=vcc[0];
+  vcc_stack[1]=vcc[1];
+  vcc_stack[2]=vcc[2];
+
+  /* Repeat��BM��ECR�̏����ݒ�͕s�v�H
+  for( cnt=RAM_TOP; cnt<=RAM_END; cnt++ ){
+      WriteBmMode8( cnt, 0xFF, SIZE_B );
+      WriteEcrMode8( cnt, 0xFF, SIZE_B );
+  }
+ */
+  /******* GET PARAMETER *******/
+  speed=GetValue(IN_EXTAL1,param);
+
+  if(GetValue(IN_BDATA15,param) == 0)pmu_range = UA250;
+  else pmu_range = GetValue(IN_BDATA15,param);
+
+  /******* DISP TAITOL *******/
+  //Vref��VrefH�̋L�q�ɕύX�K�v�H
+  sprintf(outbuf,"TEST:%d [ %s ] vcc=%dmV ext_Vrefh=%dmV ext_Vref=%dmV F=%2dns PLL=%d(X%d)\n ",
+    test++,mess,vcc[0],vcc[1],vcc[2],speed,GetValue(IN_PLLON,param),GetValue(IN_PLL_MULT,param));
+  DataOut(Ffpt,outbuf);
+  sprintf(outbuf,"Module:%s\n%s\n",
+          DispMatName(mat_str,param),disp_addres);
+  DataOut(Ffpt,outbuf);
+  //Ldata�̌����ɕύX����K�v�L
+  sprintf(outbuf,"BDATA00:%08X, LDATA0:%08X\n"
+    ,GetValue(IN_BDATA00,param),GetValue(IN_LDATA0,param));
+  DataOut(Ffpt,outbuf);
+
+/******** BGR Code Check *********/
+  BGR_REG_CHECK(vcc[0],param);  
+
+  /*--------------Repeat-Set--------------*/
+  if( ( repeat_mode & (INITIAL_SET | INIF_SET) ) !=0 ){ // DAXS�]��(����)���s����
+  for( cnt=RAM_TOP; cnt<=(RAM_TOP+0x100); cnt+=4 ){
+//      WriteBmMode8( cnt, 0xFFFFFFFF, SIZE_L );
+      WriteEcrMode8( cnt, 0xFFFFFFFF, SIZE_L );
+  }
+  	DeviceSpecificPowerUp();
+    /******* SETUP ECR/BM *******/
+    Ecrsetup8(ECR_OVERL);
+
+    /******** RATE SetUp *********/
+    SetTimming_NS( daxs_trans.write_rate );
+
+    /******** PowerUp *********/
+    vcc[0]=daxs_trans.vcc;
+
+	/*
+    vs0=vcc[0];
+    vs1=vcc[1];
+    vs2=vcc[2];
+  
+    vcc[0]=daxs_trans.vcc;
+    vcc[1]=daxs_trans.vrefh;
+    vcc[2]=daxs_trans.vref;
+  	*/
+    /******** APG SetUp(Power) *********/
+    tempo1=0;
+    if((vcc[1] != 0) && (vcc[2] != 0)){
+      tempo1 = tempo1 + 0x01;  //ext_vref ON
+      sprintf(outbuf," Ext_Vref  ON  \n");
+      DataOut(Ffpt,outbuf);
+    }else{
+      sprintf(outbuf," Ext_Vref  OFF \n");
+      DataOut(Ffpt,outbuf);
+    }
+
+    load_vlf_offset(_SUB_MODEENTRY_DAXS,4,tempo1);
+  
+
+   if(( repeat_mode & (INITIAL_SET) ) != 0 ){
+      if(SelectPowerSupply(mode,vcc)) {//�e�d���̋�����Level�̐ݒ�(DAXS�]���p)
+        /*
+        vcc[0]=vs0;
+        vcc[1]=vs1;
+        vcc[2]=vs2;
+		*/
+        return(HWFAIL);
+      }
+	}
+    SetVohVolVtt( daxs_trans.voh, daxs_trans.vol, daxs_trans.vtt, daxs_datao_pin );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+    /*
+    vcc[0]=vs0;
+    vcc[1]=vs1;
+    vcc[2]=vs2;
+	*/
+/******************************************************************************/
+/*                                 Write BM                                   */
+/******************************************************************************/
+
+    /******* MAKE ASM PATH *******/
+    strcpy( binpat, glob_cdp ); strcat( binpat, glob_binpat_at );
+    strcat( binpat, pat );
+    
+    patsize = CheckPatLength(binpat) - PAT_FILE_HEADER_SIZE;
+
+    /******** FILE BM WRITE **********/
+    datasize = comp_load_bm (binpat);   /* comp_load_bm:file pattern => BM */
+
+
+    if(FAIL==datasize) {  /* path/fail check */
+      sprintf(outbuf," !!! NOT OPEN FILE PATH -> %s (checksum:H'%X) !!!\n",binpat,datasize);
+      DataOut(Ffpt,outbuf);
+      DeviceLevelsPowerDown();
+      return(NOPATFAIL);
+    }else{
+      sprintf(outbuf," LOAD FILE PATH -> %s (checksum:H'%X)\n",binpat,datasize);
+      DataOut(Ffpt,outbuf);
+    }
+
+
+    /******** Parameter BM Write *********/
+    result = ParamTransBM(param);
+
+    WriteBmMode8( 0x3C00 , 0x00100000, SIZE_L );    /* Dummy Data 18/04/11 Aoki */  
+
+    /*** Trans Check ***/
+    if(PASS!=result){
+      sprintf(outbuf,"  TRANS ERROR!!  (param => BM) \n");
+      DataOut(Ffpt,outbuf);
+      return(RAMFAIL);
+    }else{
+      sprintf(outbuf,"  TRANS CHECK OK (param => BM) \n");
+      DataOut(Ffpt,outbuf);
+    }
+
+    //ParamConditionDisp(PDALL,0,param); //���͗pIF�̏o��
+
+/******************************************************************************/
+/*                                 DAXS Transport                             */
+/******************************************************************************/
+    /******** Start tests *********/
+    printf("Write RAM \n"); /* Print Retry Count */
+
+    /*--------------Repeat-Set--------------*/
+    if(( repeat_mode & (INITIAL_SET) ) !=0 ){ //����IF�ύX
+
+      result = RAMRunApg( 0, RAM_TOP, OUTPUTIF_END );   /* DAXS transport 0=write command */
+  
+      if(PASS!=result){
+        return(RAMFAIL);
+      }
+  
+      printf("Read RAM \n"); /* Print Retry Count */
+  
+      SetTimming_NS( daxs_trans.read_rate );
+  
+      set_strobe_mask(daxs_datao_pin);  //Compare Setting command
+
+      result = RAMRunApg( 2, RAM_TOP, OUTPUTIF_END );   /* DAXS transport 0=write command */
+  
+      for(i=RAM_TOP;i<=(RAM_TOP+0x100);i=i+4){
+        bm_data=ReadBmMode8(i,SIZE_L);
+        ecr_data=ReadEcrMode8(i,SIZE_L);
+        if(bm_data!=ecr_data){
+          printf("BM <=> ECR Comp ERROR!!! Addr = %X, BM = %X, ECR = %X \n",i,bm_data,ecr_data);
+          result = FAIL;
+        }
+      }
+
+      if(PASS!=result){
+        return(RAMFAIL);
+      }
+
+      sprintf(outbuf," <<<<< EXTRAM transfer OK >>>>>\n");
+      DataOut(Ffpt,outbuf); //CommentOut for RAMBOOT Check
+      
+    }else if(( repeat_mode & (INIF_SET) ) != 0 ){ //����IF�ύX
+      
+      RAMRunApg( 0, INPUTIF_TOP, INPUTIF_END );
+
+    }//����IF�ύX If-End
+  } //DAXS�]�����s If-End
+
+/******************************************************************************/
+/*                                 DAXS RAMBOOT                               */
+/******************************************************************************/
+
+  /*--------------Repeat-Set--------------*/
+  if( ( repeat_mode & (INITIAL_SET | INIF_SET | RAMBOOT_CHANGE) ) !=0 ){ // RAMBOOT�ݒ�ύX����
+
+    /*** Power Change ***/
+//    if( ( repeat_mode & (RAMBOOT_CHANGE) ) !=0 ){ // RAMBOOT�ݒ�ύX����
+//      if(SelectPowerSupply(mode,vcc)) {//�e�d���̋�����Level�̐ݒ�(RAMBoot�]���p)
+//        return(HWFAIL);
+//      }
+//    }
+  vs0 = vcc_stack[0];
+  vcc[0] = 3300;
+  if(SelectPowerSupply(mode,vcc)) {//�e�d���̋�����Level�̐ݒ�(RAMBoot�]���p)
+    return(HWFAIL);
+  }
+
+  if(VccSlow(vcc_stack[0],vcc[0])){
+    return(HWFAIL);
+  }
+  vcc[0] = vcc_stack[0];
+
+    /*** Comp Pin SetUp ***/
+    set_strobe_mask(bistpoll_pins);  /* ��rPin�̐ݒ�(RAMBoot�����܂ł̑ҋ@���ԂɎg�p) */
+    select_vector_mode(poll_pins,_PE_VECTOR_MODE);  //180314 Add-morioka For RamBoot
+    reconnect_pin(poll_pins);                       //180314 Add-morioka For RamBoot
+
+    /*** Test Speed SetUp ***/
+    SetTimming_NS(speed);
+    ChangeTimming_GTSLTS( EXTCYLJ, 1, MODEENTRY_SPEED ); // ModeEntry���g���ݒ� GTS=1,20MHz
+
+    /******** APG SetUp(Power) *********/
+    tempo1=0;
+    if((vcc[1] != 0) && (vcc[2] != 0)){
+      tempo1 = tempo1 + 0x01;  //ext_vref ON
+      sprintf(outbuf," Ext_Vref  ON  \n");
+      DataOut(Ffpt,outbuf);
+    }else{
+      sprintf(outbuf," Ext_Vref  OFF \n");
+      DataOut(Ffpt,outbuf);
+    }
+
+    /******** APG SetUp(Wait) *********/
+  load_vlf_offset(_SUB_MODEENTRY_RAM,6,  1000/MODEENTRY_SPEED);    /*   1us Wait */
+  load_vlf_offset(_SUB_MODEENTRY_RAM,1,300000/2/MODEENTRY_SPEED);    /* 300us Wait */
+  load_vlf_offset(_SUB_MODEENTRY_RAM,2, 70000/MODEENTRY_SPEED);    /*  70ms Wait */
+  load_vlf_offset(_SUB_MODEENTRY_RAM,3,tempo1);          /* Vdd/Vddh On/Off */
+    load_vlf_offset(_SUB_RAMBT_END,0,500*waittime/speed); /* RAMBootEnd Wait = waittime x(500x200x2000ns) */
+    load_vlf_offset(_SUB_RAMBT_POLL,0,500*waittime/speed);/* RAMBootPoll Wait = waittime x(500x200x200ns) */
+
+
+    SetVohVolVtt( 2*vcc[0]/10, 2*vcc[0]/10, 5*vcc[0]/10 , bistpoll_pins );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+
+  }//RAMBOOT�ݒ�ύXIf-End
+
+  /*************** PMU Setting ********************/ //PMU�����ݒ�
+
+  sprintf(outbuf,"  PMU Set\n");
+  DataOut(Ffpt,outbuf);
+  if((mode & MONITOR_MODE) || (mode & CP_SUPPLY_MODE)){
+    switch(selmode){
+      case MONITOR_VDD:
+        vs2 = vcc[2];
+        vcc[2] = 0; //Vdd=0
+        set_vlimit(0);
+        comp_set_ilimit(0);
+        set_site_mask(0); //enable all sites
+        connect_pmu(monitor_vdd_pin); //CH19
+        delay_timer( 10000 );
+        vcc[2] = vs2;
+        break;
+
+      case MONITOR_VDDH:
+        vs1 = vcc[1];
+        vcc[1] = 0; //Vddh=0
+        set_vlimit(0);
+        comp_set_ilimit(0);
+        set_site_mask(0); //enable all sites
+        connect_pmu(monitor_vddh_pin); //CH20
+        delay_timer( 10000 );
+        vcc[1] = vs1;
+        break;
+
+      case MONITOR_VPP_E:
+      case MONITOR_VPP_P:
+      case MONITOR_VPP_PW:
+        set_vlimit(0);           // Set V = 0V
+        comp_set_ilimit(250000); // I-Limit = 250000nA(250uA) 
+        delay_timer( 1000 );
+        connect_ps(PPS_CON_VNN1,PPS_CMODE_PMU);
+        set_pmu_range(pmu_range);// max = 250uA
+        delay_timer( 10000 );
+        break;
+
+      case MONITOR_VHH_P:
+      case MONITOR_VHH_E:
+        set_vlimit(0);           // Set V = 0V
+        comp_set_ilimit(25000);  // I-Limit = 250000nA(250uA) 
+        delay_timer( 1000 );
+        connect_ps(PPS_CON_VNN1,PPS_CMODE_PMU);
+        set_pmu_range(pmu_range);// max = 250uA
+        delay_timer( 10000 );
+        break;
+
+      case MONITOR_VRSG:
+      case MONITOR_VREF10:
+      case MONITOR_V33R:
+      case MONITOR_VWI:
+      case MONITOR_VDEMG:        //Add 20180324
+      //case MONITOR_VREG20:
+        set_vlimit(0);           // Set V = 0V
+        comp_set_ilimit(250000); // I-Limit = 250000nA(250uA) 
+        delay_timer( 1000 );
+        connect_ps(PPS_CON_VNN1,PPS_CMODE_PMU);
+        set_pmu_range(pmu_range);// max = 250uA
+        delay_timer( 10000 );
+        break;
+
+      case MONITOR_IMONI_I01U_NOTEMP:  //Add 2018/0323
+      case MONITOR_IMONI_FLASH_NOTEMP: //Add 2018/0323
+      case MONITOR_IMONI_I01U_TEMP:    //Add 2018/0323
+      case MONITOR_IMONI_FLASH_TEMP:   //Add 2018/0323
+        set_vlimit(0);           // Set V = 0V
+        comp_set_ilimit(25000);  // I-Limit = 25000nA(25uA) 
+        delay_timer( 1000 );
+        connect_ps(PPS_CON_VNN1,PPS_CMODE_PMU);
+        set_pmu_range(pmu_range);// max = 250uA
+        switch(pmu_range){
+          case UA25:
+            comp_set_ilimit(25000);    // I-Limit = 25000nA(25uA) 
+            break;
+          case UA250:
+            comp_set_ilimit(250000);   // I-Limit = 250000nA(250uA) 
+            break;
+          case UA2500:
+            comp_set_ilimit(2500000);  // I-Limit = 2500000nA(2.5mA) 
+            break;
+        }
+        delay_timer( 10000 );
+        set_vlimit(650);         // Set V = 0V
+        //comp_set_ilimit(6000);   // I-Limit = 6000nA(6uA) 
+        delay_timer( 10000 );
+        break;
+
+      case MONITOR_READDELAY8:   //Add 2018/0323
+      case MONITOR_READDELAY10:  //Add 2018/0323
+        //DelayTestSetting(*selvol,vcc[1]*25/10,vcc[2]*158/100);
+        break;
+
+      case MONITOR_VNOEMI_PE:    //Add 2018/0324
+      //case MONITOR_VNOEMI_R:     //Add 2018/0324
+        set_vlimit(0);           // Set V = 0V
+        comp_set_ilimit(250000); // I-Limit = 250000nA(250uA) 
+        delay_timer( 1000 );
+        connect_ps(PPS_CON_VNN1,PPS_CMODE_PMU);
+        set_pmu_range(pmu_range);// max = 250uA
+        delay_timer( 10000 );
+        break;
+
+      default: // Default Error
+        DeviceLevelsPowerDown();
+        printf("MONITOR_MODE PMU setting, Code ERROR!!! code=%X\n",selmode); //Define Error, Check selmode value
+        return(FAIL);
+        break;
+    }
+  }else if( mode & APPLY_MODE ){
+    switch(selmode){
+
+      case AUTOTRIM_BGR08:       //Add 20180324
+      case AUTOTRIM_VDD:         //Add 20180324
+      case AUTOTRIM_VDDH:        //Add 20180324
+      case AUTOTRIM_VREF10:      //Add 20180324
+        set_vlimit(0);           // Set V = 0V
+        connect_pmu(v5_pin);     // Connect VNN <=> PMU
+        set_pmu_range(pmu_range);// max = 250uA
+        comp_set_ilimit(250000); // I-Limit = 250000nA(250uA)
+        break;
+
+      case AUTOTRIM_VPP_E:
+      case AUTOTRIM_VPP_P:
+      case AUTOTRIM_VPP_PW:      //Add 20180324
+        set_vlimit(0);           // Set V = 0V
+        connect_pmu(v5_pin);     // Connect VNN <=> PMU
+        set_pmu_range(pmu_range);// max = 250uA
+        comp_set_ilimit(250000); // I-Limit = 250000nA(250uA)
+        break;
+
+      case AUTOTRIM_VHH_E:       //Add 20180324
+      case AUTOTRIM_VHH_P:       //Add 20180324
+        set_vlimit(0);           // Set V = 0V
+        connect_pmu(v5_pin);     // Connect VNN <=> PMU
+        set_pmu_range(pmu_range);// max = 250uA
+        comp_set_ilimit(250000); // I-Limit = 250000nA(250uA)
+        break;
+
+      case AUTOTRIM_VRSG:        //Add 20180324
+      case AUTOTRIM_V33R:        //Add 20180324
+      case AUTOTRIM_VWI:         //Add 20180324
+      //case AUTOTRIM_VDEMG:       //Add 20180327
+      //case AUTOTRIM_VNOEMI:      //Add 20180324
+        set_vlimit(0);           // Set V = 0V
+        connect_pmu(v5_pin);     // Connect VNN <=> PMU
+        set_pmu_range(pmu_range);// max = 250uA
+        comp_set_ilimit(250000); // I-Limit = 250000nA(250uA)
+        break;
+
+      //case AUTOTRIM_IMONI_G:
+      //case AUTOTRIM_IMONI_F:
+      case AUTOTRIM_IMONI_I01U_NOTEMP:  //Add 2018/0323
+      case AUTOTRIM_IMONI_FLASH_NOTEMP: //Add 2018/0323
+      case AUTOTRIM_IMONI_I01U_TEMP:    //Add 2018/0323
+      case AUTOTRIM_IMONI_FLASH_TEMP:   //Add 2018/0323
+        set_vlimit(0);           // Set V = 0V
+        connect_pmu(v5_pin);     // Connect VNN <=> PMU
+        set_pmu_range(pmu_range);// max = 250uA
+        //comp_set_ilimit(10500);  // I-Limit = 10.5uA(10.5uA)
+        comp_set_ilimit(*selvol);  // I-Limit = 10.5uA(10.5uA)
+        break;
+
+      case AUTOTRIM_OSC32:       //Add 20180324
+      case AUTOTRIM_OSC1:        //Add 20180324
+        set_vlimit(0);
+        connect_pmu(v5_pin);     // Connect VNN <=> PMU
+        set_pmu_range(pmu_range);// max = 250uA
+        comp_set_ilimit(250000); // I-Limit = 250000nA(250u)
+        break;
+
+      case AUTOTRIM_READDELAY8:   //Add READ Delay8 TRIM SETTING 2018/0322
+      case AUTOTRIM_READDELAY10:  //Add READ Delay10 TRIM SETTING 2018/0322
+        //DelayTestSetting(*selvol,vcc[1]*25/10,vcc[2]*158/100);
+        break;
+
+/*VPP_TF�͊��������̈�pending*/
+//      case AUTOTRIM_VPP_TF:      //Add 20180324
+//        set_vlimit(0);
+//        connect_pmu(v5_pin);     // Connect VNN <=> PMU
+//        set_pmu_range(UA250);    // max = 250uA
+//        comp_set_ilimit(250000); // I-Limit = 250000nA(250u)
+//        break;
+     
+      case AUTOTRIM_VNOEMI_PE:    //Add 20180324
+      //case AUTOTRIM_VNOEMI_R:     //Add 20180324
+        set_vlimit(0);
+        connect_pmu(v5_pin);      // Connect VNN <=> PMU
+        set_pmu_range(pmu_range); // max = 250uA
+        comp_set_ilimit(250000);  // I-Limit = 250000nA(250u)
+        break;
+
+      case VTHREAD_DIS:
+      case VTHREAD_EDGE:
+        set_vlimit(0);
+        connect_pmu(v5_pin);      // Connect VNN <=> PMU
+        set_pmu_range(pmu_range); // max = 250uA
+        comp_set_ilimit(250000);  // I-Limit = 250000nA(250u)
+        break;
+
+      default: // Default Error
+        DeviceLevelsPowerDown();
+        printf("APPLY_MODE PMU setting, Code ERROR!!! code=%X\n",selmode); //Define Error, Check selmode value
+        return(FAIL);
+        break;
+    }
+  
+  }
+
+  /*************************** Run APG & Monitor(Apply) ******************************/
+    start_time = bentime(); /* Get Test Start Time */
+    printf("  APG Start\n");
+    
+    if(mode & MONITOR_MODE){
+      switch(selmode){
+        case MONITOR_VDD:
+        case MONITOR_VDDH:
+        case MONITOR_VREF10:
+        case MONITOR_VPP_E:
+        case MONITOR_VPP_P:
+        case MONITOR_VPP_PW:
+        case MONITOR_VHH_E:
+        case MONITOR_VHH_P:
+        case MONITOR_VRSG:
+        case MONITOR_V33R:
+        case MONITOR_VWI:
+        case MONITOR_VDEMG:
+        //case MONITOR_VREG20:
+        case MONITOR_VNOEMI_PE:
+        //case MONITOR_VNOEMI_R:
+          comp_set_ilimit(0);
+          load_vlf_offset(_SUB_RAMBT_POLL,0,500/speed); /* 20ms fix(500*200*200ns) */
+          run_apg(_RAM_BOOT_MONITOR_CTRL);
+
+          SITE_MASK (1, read_pmu_status(0x20));              /* V measurement */
+          SITE_MASK (1, *selvol=read_adc_ave(ADC_VMEAS,0,10));
+          break;
+
+        //case MONITOR_IMONI_G:  //Chip Iref monitor
+        //case MONITOR_IMONI_F:  //Flash Iref monitor
+        case MONITOR_IMONI_I01U_NOTEMP:
+        case MONITOR_IMONI_FLASH_NOTEMP:
+        case MONITOR_IMONI_I01U_TEMP:
+        case MONITOR_IMONI_FLASH_TEMP:
+          load_vlf_offset(_SUB_RAMBT_POLL,0,500/speed); /* 80ms fix(2000*200*200ns) */
+          run_apg(_RAM_BOOT_MONITOR_CTRL);
+          SITE_MASK (1, read_pmu_status(0x08));              /* I measurement */
+          SITE_MASK (1, *selvol=read_adc_ave(ADC_IMEAS,0,100));
+          break;
+
+      case MONITOR_READDELAY8:   //Add 2018/0323
+      case MONITOR_READDELAY10:  //Add 2018/0323
+          load_vlf_offset(_SUB_RAMBT_POLL,0,1500/speed); /* 60ms fix(1500*200*200ns) */
+          run_apg(_RAM_BOOT_MONITOR_CTRL);
+          //DelayTestSetting(*selvol,vcc[1]*25/10,vcc[2]*158/100);//�p���X����ݒ�
+          DelayTestSetting(*selvol,vcc[1]*25/10,vcc[0]); //�p���X����ݒ�=VCC level
+          run_apg(_RAM_BOOT_DELAYTEST); //�p���X���
+          DelayTestSetting(*selvol,vcc[0],vcc[0]); //Pin�ݒ�����ɖ߂�
+          break;
+
+        default:
+          DeviceLevelsPowerDown();
+          printf("MONITOR_MODE Run APG, Code ERROR!!! code=%X\n",selmode); //Define Error, Check selmode value
+          return(FAIL);
+          break;
+      }
+    }else if(mode & CP_SUPPLY_MODE){
+      switch(selmode){
+        case MONITOR_BGR:
+        case MONITOR_VPP_E:
+        case MONITOR_VPP_P:
+        case MONITOR_VPP_PW:
+        case MONITOR_VHH_E:
+        case MONITOR_VHH_P:
+        case MONITOR_VRSG:
+        case MONITOR_V33R:
+        case MONITOR_VWI:
+        case MONITOR_VDEMG:
+        //case MONITOR_VREG20:
+        case MONITOR_VNOEMI_PE:
+        //case MONITOR_VNOEMI_R:
+	  set_pmu_range(UA250);
+          comp_set_ilimit(0);
+	  set_vlimit(0);
+	  delay_timer( 2000 );
+
+          load_vlf_offset(_SUB_RAMBT_POLL,0,500/speed); /* 20ms fix(2000*200*200ns) */
+          run_apg(_RAM_BOOT_MONITOR_CTRL);
+
+          set_pmu_range(pmu_range);
+	  switch(pmu_range){
+	    case UA25:
+              comp_set_ilimit(25000);    // I-Limit = 25000nA(25uA) 
+	    break;
+	    case UA250:
+              comp_set_ilimit(250000);   // I-Limit = 250000nA(250uA) 
+	    break;
+	    case UA2500:
+              comp_set_ilimit(2500000);  // I-Limit = 2500000nA(2.5mA) 
+	    break;
+	  }
+	  set_vlimit(*selvol);
+	  delay_timer( 2000 );
+	   
+          SITE_MASK (1, read_pmu_status(0x08));              /* V measurement */
+          SITE_MASK (1, *selvol=read_adc_ave(ADC_IMEAS,0,100));
+          break;
+	  
+        default:
+          DeviceLevelsPowerDown();
+          printf("MONITOR_MODE Run APG, Code ERROR!!! code=%X\n",selmode); //Define Error, Check selmode value
+          return(FAIL);
+          break;
+      }
+    }else if(mode & APPLY_MODE){
+      switch(selmode){
+        case AUTOTRIM_BGR08:    //Add 2018/0323
+        case AUTOTRIM_VDD:
+        case AUTOTRIM_VDDH:
+        case AUTOTRIM_VREF10:
+        case AUTOTRIM_VPP_E:
+        case AUTOTRIM_VPP_P:
+        case AUTOTRIM_VPP_PW:   //Add 20180324
+        case AUTOTRIM_VRSG:
+        case AUTOTRIM_V33R:
+        case AUTOTRIM_VWI:
+        //case AUTOTRIM_VDEMG:    //Add 20180327
+        //case AUTOTRIM_VNOEMI:   //Add 20180324
+        //case AUTOTRIM_VPP_TF:   //Add 20180324  VPP_TF�͊��������̈�pending
+        case AUTOTRIM_VNOEMI_PE:
+        //case AUTOTRIM_VNOEMI_R:
+        case VTHREAD_DIS:
+        case VTHREAD_EDGE:
+          set_vlimit(*selvol);
+          delay_timer( 200 );     /* wait 200us */
+          load_vlf_offset(_SUB_RAMBT_END,0,500*waittime/speed); /* RAMBootEnd Wait = waittime x(500x200x2000ns) */
+          run_apg(_RAM_BOOT_CTRL);
+          break;
+
+        //case AUTOTRIM_IMONI_G:
+        //case AUTOTRIM_IMONI_F:
+        case AUTOTRIM_IMONI_I01U_NOTEMP:
+        case AUTOTRIM_IMONI_FLASH_NOTEMP:
+        case AUTOTRIM_IMONI_I01U_TEMP:
+        case AUTOTRIM_IMONI_FLASH_TEMP:
+          //load_vlf_offset(_SUB_RAMBT_POLL,1,1000); // 50*cycle
+          load_vlf_offset(_SUB_RAMBT_POLL,0,1200/speed); /* 48ms fix(1200*200*200ns) */
+          run_apg(_RAM_BOOT_MONITOR_CTRL);
+
+          //set_vlimit(*selvol);
+          set_vlimit(1000);       /* 1.0V > BGR=0.8V */
+          delay_timer( 20000 );   /* wait 20ms */
+          break;
+
+        case AUTOTRIM_READDELAY8:   //Add 2018/0323
+        case AUTOTRIM_READDELAY10:  //Add 2018/0323
+          load_vlf_offset(_SUB_RAMBT_POLL,0,1500/speed); /* 60ms fix(1500*200*200ns) */
+          run_apg(_RAM_BOOT_MONITOR_CTRL);
+          //DelayTestSetting(*selvol,vcc[1]*25/10,vcc[2]*158/100);//�p���X����ݒ�
+          DelayTestSetting(*selvol,vcc[1]*25/10,vcc[0]); //�p���X����ݒ�=VCC level
+          run_apg(_RAM_BOOT_DELAYTEST); //�p���X���
+          DelayTestSetting(*selvol,vcc[0],vcc[0]); //Pin�ݒ�����ɖ߂�
+          break;
+
+        case AUTOTRIM_VHH_E:
+        case AUTOTRIM_VHH_P:
+          //WaitHitKey( "\nPlease Hit Any Key -- floating or 0V --\n" ); //Add Vdd debug 20180326
+          set_vlimit( 1250 );   //Set VDDH //add 2018/0328
+          delay_timer( 100 );     /* wait 100us */
+          load_vlf_offset(_SUB_RAMBT_POLL,0,1800/speed); /* 60ms fix(1500*200*200ns) */
+          run_apg(_RAM_BOOT_MONITOR_CTRL);
+
+          //WaitHitKey( "\nPlease Hit Any Key -- Set 5Vup --\n" ); //Add Vdd debug 20180326          
+          set_vlimit( 5000 );     //Set 5.000V
+          delay_timer( 100 );     /* wait 100us */
+          load_vlf_offset(_SUB_RAMBT_POLL,0,750/speed); /* 30ms fix(750*200*200ns) */
+          run_apg(_RAM_BOOT_MONITOR_POLL);
+
+          //WaitHitKey( "\nPlease Hit Any Key -- Set target --\n" ); //Add Vdd debug 20180326
+          set_vlimit( *selvol );  //Set target
+          delay_timer( 100 );     /* wait 100us */          
+          load_vlf_offset(_SUB_RAMBT_POLL,0,750/speed); /* 30ms fix(750*200*200ns) */
+          run_apg(_RAM_BOOT_MONITOR_POLL);
+
+          //WaitHitKey( "\nPlease Hit Any Key -- Set 5Vdown --\n" ); //Add Vdd debug 20180326          
+          set_vlimit( 5000 );     //Set 5.000V
+          delay_timer( 100 );     /* wait 100us */
+          load_vlf_offset(_SUB_RAMBT_POLL,0,750/speed); /* 30ms fix(750*200*200ns) */
+          run_apg(_RAM_BOOT_MONITOR_POLL);
+
+          set_vlimit( 1250 );   //Set VDDH
+          delay_timer( 20000 );   /* wait 20ms */
+          break;
+
+        default:
+          DeviceLevelsPowerDown();
+          printf("APPLY_MODE Run APG, Code ERROR!!! code=%X\n",selmode); //Define Error, Check selmode value
+          return(FAIL);
+          break;
+      }
+    }else{
+      printf("Mode Select Error!!! mode=%X\n",mode);
+      return(FAIL);
+    }
+	vcc[0]=vcc_stack[0];
+    /************************** RAMBoot End Manage ************************************/
+    /*--------------Repeat-Set--------------*/
+    if(mode & APPLY_MODE){ /* Auto Trimming */
+      switch(selmode){
+        case AUTOTRIM_BGR08:
+        case AUTOTRIM_VDD:
+        case AUTOTRIM_VDDH:
+        case AUTOTRIM_VREF10:
+        case AUTOTRIM_VPP_E:
+        case AUTOTRIM_VPP_P:
+        case AUTOTRIM_VPP_PW:
+        case AUTOTRIM_VRSG:
+        case AUTOTRIM_V33R:
+        case AUTOTRIM_VWI:
+        case AUTOTRIM_VNOEMI_PE:
+        case VTHREAD_DIS:
+        case VTHREAD_EDGE:
+          break;
+        default: /* Other */
+          //load_vlf_offset(_SUB_RAMBT_END,1,1000); // 50*cycle
+          load_vlf_offset(_SUB_RAMBT_END,0,500*waittime/speed); /* RAMBootEnd Wait = waittime x(500x200x2000ns) */
+          run_apg(_RAM_BOOT_MONITOR_END); // RAM Boot End(APG)
+          break;
+      }
+    }else{ /* Monitor */
+      //load_vlf_offset(_SUB_RAMBT_END,1,1000); // 50*cycle
+      load_vlf_offset(_SUB_RAMBT_END,0,500*waittime/speed); /* RAMBootEnd Wait = waittime x(500x200x2000ns) */
+      run_apg(_RAM_BOOT_MONITOR_END); // RAM Boot End(APG)
+    }
+    set_vlimit(0);                  // PMU 0V
+    reconnect_pin(v5_pin);          // PMU reconnect PNN
+    set_invert_mask(no_pin);        // �K�v�����H
+
+    cpuerr = check_pin_errors( bistpoll_pins, 4 ); /* Boot����Error�o�͂�APG�p�^�����璊�o(DPASSDEND_CP�̔�r����) */
+    Cputotal = (bentime()-start_time-init_bentime())/1000; /* Get Test Total Time */
+
+/******************************************************************************/
+/*                                 DAXS Read                                  */
+/******************************************************************************/
+  /*--------------Repeat-Set--------------*/
+  if( ( repeat_mode & (OUTIF_READ) ) !=0 ){ // DAXS�]��(�o��)���s����
+
+    set_strobe_mask(daxs_datao_pin);
+    SetTimming_NS( daxs_trans.read_rate );
+    select_vector_mode(poll_pins,_PE_APG_MODE);
+    reconnect_pin(poll_pins);
+
+    /******** PowerUp *********/
+    vs0=vcc[0];
+    vs1=vcc[1];
+    vs2=vcc[2];
+
+    vcc[0]=daxs_trans.vcc;
+    vcc[1]=daxs_trans.vrefh;
+    vcc[2]=daxs_trans.vref;
+
+    /******** APG SetUp(Power) *********/
+    tempo1=0;
+    if((vcc[1] != 0) && (vcc[2] != 0)){
+      tempo1 = tempo1 + 0x01;  //ext_vref ON
+      sprintf(outbuf," Ext_Vref  ON  \n");
+      DataOut(Ffpt,outbuf);
+    }else{
+      sprintf(outbuf," Ext_Vref  OFF \n");
+      DataOut(Ffpt,outbuf);
+    }
+
+    load_vlf_offset(_SUB_MODEENTRY_DAXS,4,tempo1);
+
+    SetVohVolVtt( daxs_trans.voh, daxs_trans.vol, daxs_trans.vtt, daxs_datao_pin );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+    vcc[0]=vs0;
+    vcc[1]=vs1;
+    vcc[2]=vs2;
+
+    /******** Read RAM data *********/
+
+    for( cnt=0x1000; cnt<=OUTPUTIF_END; cnt=cnt+4 ){
+      WriteEcrMode8( cnt, 0xFFFFFFFF, SIZE_L );
+    }
+
+    result = RAMRunApg( 2, 0x1000, OUTPUTIF_END );   /* DAXS transport 0=write command */
+    //RAMRunApg( 2, FBM_READTOP ,(FBM_READTOP + FBM_READSIZE - 1) ); /* Daxs Trans For FBM */
+
+    if((ReadEcrMode8(0x3D00,SIZE_B)==0xAA) &&
+       (ReadEcrMode8(0x3D01,SIZE_B)==0xAA) &&
+       (ReadEcrMode8(0x3D02,SIZE_B)==0xAA) &&
+       (ReadEcrMode8(0x3D03,SIZE_B)==0xAA) ){
+        printf("WT mode Test FAIL!!!\n");
+    }else if((ReadEcrMode8(0x3D00,SIZE_B)==0x55) &&
+             (ReadEcrMode8(0x3D01,SIZE_B)==0x55) &&
+             (ReadEcrMode8(0x3D02,SIZE_B)==0x55) &&
+             (ReadEcrMode8(0x3D03,SIZE_B)==0x55) ){
+        printf("WT mode Test PASS!!!\n");
+    }else{
+        printf("WT mode Test ECR data ERROR!!!\n");
+        DispEcrBmData(0x3D00 , 0x00FF, DISP_ECR|DISP_1 );
+    }
+
+
+    /*******************************************************
+     * RAMBOOT�pSetting
+     *******************************************************/
+
+      /*** Comp Pin SetUp ***/
+      set_strobe_mask(bistpoll_pins);  /* ��rPin�̐ݒ�(RAMBoot�����܂ł̑ҋ@���ԂɎg�p) */
+      select_vector_mode(poll_pins,_PE_VECTOR_MODE);  //180314 Add-morioka For RamBoot
+      reconnect_pin(poll_pins);                       //180314 Add-morioka For RamBoot
+
+      /*** Test Speed SetUp ***/
+      SetTimming_NS(speed);
+
+      /******** APG SetUp(Power) *********/
+      tempo1=0;
+      if((vcc[1] != 0) && (vcc[2] != 0)){
+        tempo1 = tempo1 + 0x01;  //ext_vref ON
+        sprintf(outbuf," Ext_Vref  ON  \n");
+        DataOut(Ffpt,outbuf);
+      }else{
+        sprintf(outbuf," Ext_Vref  OFF \n");
+        DataOut(Ffpt,outbuf);
+      }
+
+      /******** APG SetUp(Wait) *********/
+      load_vlf_offset(_SUB_MODEENTRY_RAM,1,  1000/2/speed);    /*   1us Wait */
+      load_vlf_offset(_SUB_MODEENTRY_RAM,2,300000/2/speed);    /* 300us Wait */
+      load_vlf_offset(_SUB_MODEENTRY_RAM,3, 70000/speed);    /*  70ms Wait */
+      load_vlf_offset(_SUB_RAMBT_END,0,500*waittime/speed); /* RAMBootEnd Wait = waittime x(500x200x2000ns) */
+      load_vlf_offset(_SUB_RAMBT_POLL,0,500*waittime/speed);/* RAMBootPoll Wait = waittime x(500x200x200ns) */
+      SetVohVolVtt( 2*vcc[0]/10, 2*vcc[0]/10, 5*vcc[0]/10 , bistpoll_pins );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+    
+
+
+/******************************************************************************/
+/*                                 EndManage                                  */
+/******************************************************************************/
+
+    /******** get data *********/
+    //ECR => param
+    for(cnt=IN_LWORDEND+1;cnt<OUT_BYTEEND;cnt++){
+      (param + cnt) -> value = ReadEcrMode8((param + cnt) -> addr,(param + cnt) -> size);
+    }
+    for(cnt=OUT_BYTEEND+1;cnt<OUT_LWORDEND;cnt++){
+      (param + cnt) -> value = ReadEcrMode8((param + cnt) -> addr,(param + cnt) -> size);
+    }
+
+    if(cpuerr == 1) {
+      switch(GetValue(OUT_JUDGE1,param)) {
+        case CPASS:
+          sprintf(outbuf,"** PASS ** Cpu Total=%dms\n",Cputotal);
+          DataOut(Ffpt,outbuf);
+          break;
+        case CFAIL:
+          sprintf(outbuf,"-- FAIL -- Cpu total=%dms\n",Cputotal);
+          DataOut(Ffpt,outbuf);
+          break;
+        case CFLAG:
+          sprintf(outbuf,"-- FLAG_FAIL -- Cpu Total=%dms\n",Cputotal);
+          DataOut(Ffpt,outbuf);
+          break;
+        case READFAIL:
+          sprintf(outbuf,"-- READ_FAIL -- Cpu Total=%dms\n",Cputotal);
+          DataOut(Ffpt,outbuf);
+          break;
+        default:
+          sprintf(outbuf,"-- FAIL -- None (%04X) %dms\n",((0x00FF&GetValue(OUT_JUDGE1,param))<<8)|((0xFF00&GetValue(OUT_JUDGE1,param))>>8),Cputotal);
+          DataOut(Ffpt,outbuf);
+          break;
+      }
+    }else{
+      sprintf(outbuf,"-- FAIL -- !!! TimeOver !!! total=%dms\n",Cputotal);
+      DataOut(Ffpt,outbuf);
+      //return(FAIL);
+    }
+
+  /******** Monitor Result *********/
+
+    if(mode & MONITOR_MODE){
+      switch(mode & 0x0000FFFF){
+        case  MVSSMON:
+        case  MVSSMON_CH:
+        case  MVSSMON_20K:
+          sprintf(outbuf,"  Monitor Result VSSMON = %dmV\n",*selvol);
+          DataOut(Ffpt,outbuf);
+          break;
+        case  MVCCMON:
+          sprintf(outbuf,"  Monitor Result VCCMON = %dmV\n",*selvol);
+          DataOut(Ffpt,outbuf);
+          break;
+        case  MVRSGMON:                                               
+          sprintf(outbuf,"  Monitor Result VRSGMON = %dmV\n",*selvol);   
+          DataOut(Ffpt,outbuf);                                         
+          break;                                                        
+        case  MVCLMON:
+          sprintf(outbuf,"  Monitor Result VCLMON = %dmV\n",*selvol);
+          DataOut(Ffpt,outbuf);
+          break;
+        default:
+          printf("Result Setting Error!! mode code = %X\n",mode);
+          return(FAIL);      
+          break;
+      }
+      selvol = center;
+    }else if(mode & APPLY_MODE){
+      switch(selmode){
+        case  AUTOTRIM_VDD:
+          break;
+        case  AUTOTRIM_READDELAY8:
+        case  AUTOTRIM_READDELAY10:
+          sprintf(outbuf,"  Target Read Delay = %dns\n",*selvol);
+          DataOut(Ffpt,outbuf);
+          break;
+      }
+      if(GetValue(OUT_JUDGE1,param) == 0x00){
+        sprintf(outbuf," AutoTrim Pass Input Voltage = %d\n",*selvol);
+        DataOut(Ffpt,outbuf);      
+      }else if(GetValue(OUT_JUDGE1,param) == FAIL_TAP_TOP ){
+        sprintf(outbuf," AutoTrim Error!!! Tap Top Hit\n");
+        DataOut(Ffpt,outbuf);      
+      }else if(GetValue(OUT_JUDGE1,param) == FAIL_TAP_END ){
+        sprintf(outbuf," AutoTrim Error!!! Tap Top Hit\n");
+        DataOut(Ffpt,outbuf);      
+      }else if(GetValue(OUT_JUDGE1,param) == PASS ){
+        sprintf(outbuf," AutoTrim PASS Tap Middle Hit\n");
+        DataOut(Ffpt,outbuf);      
+      }else{
+        sprintf(outbuf," AutoTrim JUDGE = 0x%04X\n",((0x00FF&GetValue(OUT_JUDGE1,param))<<8)|((0xFF00&GetValue(OUT_JUDGE1,param))>>8));
+        DataOut(Ffpt,outbuf);      
+      }
+      if( ( ReadEcrMode8( 0x3D00, SIZE_L )==0x55555555/*TEST_PASS*/ )||( ReadEcrMode8( 0x3D00, SIZE_L )==0xAAAAAAAA/*TEST_FAIL*/ ) ){
+        switch( selmode ){
+          case AUTOTRIM_VREF10:    printf( " ETLR11 = 0x%02X ->> 0x%02X \n", GetValue(IN_ETLR11,param), GetValue(OUT_ETLR11,param) );
+                                   SetValue(IN_ETLR11,param,GetValue(OUT_ETLR11,param)); break;
+          case AUTOTRIM_VPP_E:     printf( " ETLR20 = 0x%02X ->> 0x%02X \n", GetValue(IN_ETLR20,param), GetValue(OUT_ETLR20,param) );
+                                   SetValue(IN_ETLR20,param,GetValue(OUT_ETLR20,param)); break;
+          case AUTOTRIM_VPP_P:     printf( " ETLR20 = 0x%02X ->> 0x%02X \n", GetValue(IN_ETLR20,param), GetValue(OUT_ETLR20,param) );
+                                   SetValue(IN_ETLR20,param,GetValue(OUT_ETLR20,param)); break;
+          case AUTOTRIM_VPP_PW:    printf( " ETLR21 = 0x%02X ->> 0x%02X \n", GetValue(IN_ETLR21,param), GetValue(OUT_ETLR21,param) );
+                                   SetValue(IN_ETLR21,param,GetValue(OUT_ETLR21,param)); break;
+          case AUTOTRIM_VHH_E:     printf( " ETLR16 = 0x%02X ->> 0x%02X \n", GetValue(IN_ETLR16,param), GetValue(OUT_ETLR16,param) );
+                                   SetValue(IN_ETLR16,param,GetValue(OUT_ETLR16,param)); break;
+          case AUTOTRIM_VHH_P:     printf( " ETLR17 = 0x%02X ->> 0x%02X \n", GetValue(IN_ETLR17,param), GetValue(OUT_ETLR17,param) );
+                                   SetValue(IN_ETLR17,param,GetValue(OUT_ETLR17,param)); break;
+          case AUTOTRIM_VRSG:      printf( " ETLR18 = 0x%02X ->> 0x%02X \n", GetValue(IN_ETLR18,param), GetValue(OUT_ETLR18,param) );
+                                   SetValue(IN_ETLR18,param,GetValue(OUT_ETLR18,param)); break;
+          case AUTOTRIM_V33R:      printf( " ETLR24 = 0x%02X ->> 0x%02X \n", GetValue(IN_ETLR24,param), GetValue(OUT_ETLR24,param) );
+                                   SetValue(IN_ETLR24,param,GetValue(OUT_ETLR24,param)); break;
+          case AUTOTRIM_VWI:       printf( " ETLR19 = 0x%02X ->> 0x%02X \n", GetValue(IN_ETLR19,param), GetValue(OUT_ETLR19,param) );
+                                   SetValue(IN_ETLR19,param,GetValue(OUT_ETLR19,param)); break;
+          case AUTOTRIM_VNOEMI_PE: printf( " ETLR19 = 0x%02X ->> 0x%02X \n", GetValue(IN_ETLR19,param), GetValue(OUT_ETLR19,param) );
+                                   SetValue(IN_ETLR19,param,GetValue(OUT_ETLR19,param)); break;
+          case AUTOTRIM_IMONI_I01U_NOTEMP:
+          case AUTOTRIM_IMONI_FLASH_NOTEMP:
+          case AUTOTRIM_IMONI_I01U_TEMP:
+          case AUTOTRIM_IMONI_FLASH_TEMP:
+            printf( " ETLR08 = 0x%02X ->> 0x%02X \n", GetValue(IN_ETLR08,param), GetValue(OUT_ETLR08,param) );
+            SetValue(IN_ETLR08,param,GetValue(OUT_ETLR08,param));
+            printf( " ETLR09 = 0x%02X ->> 0x%02X \n", GetValue(IN_ETLR09,param), GetValue(OUT_ETLR09,param) );
+            SetValue(IN_ETLR09,param,GetValue(OUT_ETLR09,param));
+            break;
+        }
+      }
+    }else{
+      printf("Result Setting Error!! mode code = %X\n",mode);
+      return(FAIL);      
+    }
+  }// DAXS�]��(�o��)���sIf-End
+  return(PASS);
+}
+
+
+
+int CpuModeMonitor_current2(int monitor_mode ,int mode,int vcc[NUM_POWERSUPPLY],interface_t* param,int waittime,char *pat,char *mess,int *selvol)
+{
+  int cnt,cpuerr,failflag,datasize,patsize,speed;
+  int i,min_vol,max_vol,delta,center;
+  int flg,tempo1;                              /*** CPU drive recklessly flg ***/
+  int result;                           /* Test Result */
+  int selmode,pmu_range,bm_data,ecr_data;
+  char mat_value[100];
+  int start_time;                       /* Start Time For bentime */
+  int vs0,vs1,vs2;    // Power bak
+  int old_reg;
+  char mat_str[20];
+  char disp_addres[256];
+  char data_name[256];
+  int  data_array1[1024],data_array2[1024],data_array3[1024],data_array4[1024],data_array5[1024],data_array6[1024],data_array7[1024];
+  int  ave_data,sample_num,sample_rate;
+  
+  ave_data=0;
+  sample_num = 1023;
+  sample_rate = GetValue(IN_BDATA10,param); //sample rate:5us
+  
+  flg = 0;
+
+  DispAddres(param,"",disp_addres);
+
+  for( cnt=RAM_TOP; cnt<=RAM_END; cnt++ ){
+      WriteBmMode8( cnt, 0xFF, SIZE_B );
+      WriteEcrMode8( cnt, 0xFF, SIZE_B );
+  }
+
+  /******* GET PARAMETER *******/
+  speed=GetValue(IN_EXTAL1,param);
+
+  if(GetValue(IN_BDATA15,param) == 0)pmu_range = UA250;
+  else pmu_range = GetValue(IN_BDATA15,param);
+
+  /******* DISP TAITOL *******/
+  //Vref��VrefH�̋L�q�ɕύX�K�v�H
+  sprintf(outbuf,"TEST:%d [ %s ] vcc=%dmV ext_Vrefh=%dmV ext_Vref=%dmV F=%2dns PLL=%d(X%d)\n ",
+    test++,mess,vcc[0],vcc[1],vcc[2],speed,GetValue(IN_PLLON,param),GetValue(IN_PLL_MULT,param));
+  DataOut(Ffpt,outbuf);
+  sprintf(outbuf,"Module:%s\n%s\n",
+          DispMatName(mat_str,param),disp_addres);
+  DataOut(Ffpt,outbuf);
+  //Ldata�̌����ɕύX����K�v�L
+  sprintf(outbuf,"BDATA00:%08X, LDATA0:%08X\n"
+    ,GetValue(IN_BDATA00,param),GetValue(IN_LDATA0,param));
+  DataOut(Ffpt,outbuf);
+
+/******** BGR Code Check *********/
+  BGR_REG_CHECK(vcc[0],param);  
+
+  /******* SETUP ECR/BM *******/
+  Ecrsetup8(ECR_OVERL);
+
+  /******** RATE SetUp *********/
+  SetTimming_NS( daxs_trans.write_rate );
+
+  /******** PowerUp *********/
+
+  
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if((vcc[1] != 0) && (vcc[2] != 0)){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    sprintf(outbuf," Ext_Vref  ON  \n");
+    DataOut(Ffpt,outbuf);
+  }else{
+    sprintf(outbuf," Ext_Vref  OFF \n");
+    DataOut(Ffpt,outbuf);
+  }
+
+  load_vlf_offset(_SUB_MODEENTRY_DAXS,4,tempo1);
+
+  select_vector_mode(vec_fly_pin,_PE_VEC_ON_THE_FLY); /* APG mode select */
+  select_vector_mode(data_pins,_PE_APG_MODE);       /* APG mode select */
+
+  SetVohVolVtt( daxs_trans.voh, daxs_trans.vol, daxs_trans.vtt, daxs_datao_pin );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+
+
+/******************************************************************************/
+/*                                 Write BM                                   */
+/******************************************************************************/
+
+  /******* MAKE ASM PATH *******/
+  strcpy( binpat, glob_cdp ); strcat( binpat, glob_binpat_at );
+  strcat( binpat, pat );
+
+  patsize = CheckPatLength(binpat) - PAT_FILE_HEADER_SIZE;
+
+  /******** FILE BM WRITE **********/
+  datasize = comp_load_bm (binpat);   /* comp_load_bm:file pattern => BM */
+
+
+  if(FAIL==datasize) {  /* path/fail check */
+    sprintf(outbuf," !!! NOT OPEN FILE PATH -> %s (checksum:H'%X) !!!\n",binpat,datasize);
+    DataOut(Ffpt,outbuf);
+    DeviceLevelsPowerDown();
+    return(NOPATFAIL);
+  }else{
+    sprintf(outbuf," LOAD FILE PATH -> %s (checksum:H'%X)\n",binpat,datasize);
+    DataOut(Ffpt,outbuf);
+  }
+
+
+  /******** Parameter BM Write *********/
+  result = ParamTransBM(param);
+
+  WriteBmMode8( 0x3C00 , 0x00100000, SIZE_L );    /* Dummy Data 18/04/11 Aoki */  
+
+  /*** Trans Check ***/
+  if(PASS!=result){
+    sprintf(outbuf,"  TRANS ERROR!!  (param => BM) \n");
+    DataOut(Ffpt,outbuf);
+    return(RAMFAIL);
+  }else{
+    sprintf(outbuf,"  TRANS CHECK OK (param => BM) \n");
+    DataOut(Ffpt,outbuf);
+  }
+
+
+/******************************************************************************/
+/*                                 DAXS Transport                             */
+/******************************************************************************/
+  ParamConditionDisp(PDIN_ALL,0,param); //���͗pIF�̏o��
+
+  /******** Start tests *********/
+    sprintf(outbuf,"Write RAM \n");
+    DataOut(Ffpt,outbuf);
+
+    result = RAMRunApg( 0, RAM_TOP, OUTPUTIF_END );   /* DAXS transport 0=write command */
+  
+  if(PASS!=result){
+    return(RAMFAIL);
+  }
+  
+  
+    sprintf(outbuf,"Read RAM \n");
+    DataOut(Ffpt,outbuf);
+
+  SetTimming_NS( daxs_trans.read_rate );
+  
+  set_strobe_mask(daxs_datao_pin);  //Compare Setting command
+
+    result = RAMRunApg( 2, RAM_TOP, OUTPUTIF_END );   /* DAXS transport 0=write command */
+  
+  for(i=RAM_TOP;i<=OUTPUTIF_END;i=i+4){
+    bm_data=ReadBmMode8(i,SIZE_L);
+    ecr_data=ReadEcrMode8(i,SIZE_L);
+    if(bm_data!=ecr_data){
+      printf("BM <=> ECR Comp ERROR!!! Addr = %X, BM = %X, ECR = %X \n",i,bm_data,ecr_data);
+      result = FAIL;
+    }
+  }
+  
+
+  if(PASS!=result){
+    return(RAMFAIL);
+  }
+
+  sprintf(outbuf," <<<<< EXTRAM transfer OK >>>>>\n");
+  DataOut(Ffpt,outbuf); //CommentOut for RAMBOOT Check
+
+/******************************************************************************/
+/*                                 DAXS RAMBOOT                               */
+/******************************************************************************/
+  /*** Power Change ***/
+  if(VccSlow(vcc[0],daxs_trans.vcc)){
+    return(HWFAIL);
+  }
+  PmuSlow(vcc[0],daxs_trans.vcc);
+    
+  /*** Comp Pin SetUp ***/
+  set_strobe_mask(bistpoll_pins);  /* ��rPin�̐ݒ�(RAMBoot�����܂ł̑ҋ@���ԂɎg�p) */
+  select_vector_mode(poll_pins,_PE_VECTOR_MODE);  //180314 Add-morioka For RamBoot
+  reconnect_pin(poll_pins);                       //180314 Add-morioka For RamBoot
+
+  /*** Test Speed SetUp ***/
+  SetTimming_NS(speed);
+  ChangeTimming_GTSLTS( EXTCYLJ, 1, MODEENTRY_SPEED ); // ModeEntry���g���ݒ� GTS=1,20MHz
+  
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if((vcc[1] != 0) && (vcc[2] != 0)){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    sprintf(outbuf," Ext_Vref  ON  \n");
+    DataOut(Ffpt,outbuf);
+  }else{
+    sprintf(outbuf," Ext_Vref  OFF \n");
+    DataOut(Ffpt,outbuf);
+  }
+
+  /******** APG SetUp(Wait) *********/
+  load_vlf_offset(_SUB_MODEENTRY_RAM,6,  3*1000/MODEENTRY_SPEED);         /*   1us Wait */
+  load_vlf_offset(_SUB_MODEENTRY_RAM,1,300000/2/MODEENTRY_SPEED);       /* 300us Wait */
+  load_vlf_offset(_SUB_MODEENTRY_RAM,2, 70000/MODEENTRY_SPEED);         /*  70ms Wait */
+  load_vlf_offset(_SUB_MODEENTRY_RAM,3,tempo1);               /* Vdd/Vddh On/Off */
+  load_vlf_offset(_SUB_RAMBT_END,0,1); /* RAMBootEnd Wait = waittime x(500x200x2000ns) */
+  load_vlf_offset(_SUB_RAMBT_POLL,0,500*waittime/speed);/* RAMBootPoll Wait = waittime x(500x200x200ns) */
+
+
+  SetVohVolVtt( 15*vcc[0]/100, 15*vcc[0]/100, 5*vcc[0]/10 , bistpoll_pins );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+
+  /*************** PMU Setting ********************/ //PMU�ݒ�
+
+  sprintf(outbuf,"  PMU Set\n");
+  DataOut(Ffpt,outbuf);
+
+  if((monitor_mode & ADC_DIGI) !=0){
+
+    printf("APG : ADC_DIGI mode\n");
+
+    load_vlf_offset(_SUB_RAMBT_POLL,0,waittime);
+    
+    load_vlf_offset(_SUB_MODEENTRY_RAM_CRY,6,  3*1000/MODEENTRY_SPEED);         /*   1us Wait */
+    load_vlf_offset(_SUB_MODEENTRY_RAM_CRY,1,300000/2/MODEENTRY_SPEED);       /* 300us Wait */
+    load_vlf_offset(_SUB_MODEENTRY_RAM_CRY,2, 100/MODEENTRY_SPEED);         /*  70ms Wait */
+    load_vlf_offset(_SUB_MODEENTRY_RAM_CRY,3,tempo1);               /* Vdd/Vddh On/Off */
+    
+    run_apg(_RAM_BOOT_MONITOR_CRY);
+
+  
+  if((monitor_mode & CRY_CLK) !=0){
+    // --- CRY CLK mode ---//
+    sprintf(outbuf,"CRY CLK Set\n");
+    DataOut(Ffpt,outbuf);
+    remove_vhh_mask( lb3_pin );
+    run_apg(_RAM_BOOT_RELAY);
+  }
+
+    delay_timer(1*1000); //1ms wait
+    
+    set_pps_resource(PPS_PMU_IRNG,PPS_50mA_RNG);   //PMU 50mA Setting
+    set_pps_resource(PPS_PMU_ILIMIT,50*1000*1000); //PMU ILIMIT = 50mA
+
+      set_pps_resource(PPS_PMU_SENSE_CTRL,/*PPS_REMOTE_SENSE*/PPS_LOCAL_SENSE);
+      delay_timer(1*1000); //1ms wait
+
+      PMU_ADCDIGI_OUT(1,param,mess);
+
+      delay_timer(1*1000); //1ms wait
+      set_pps_resource(PPS_PMU_SENSE_CTRL,PPS_LOCAL_SENSE);
+    
+    set_pps_resource(PPS_PMU_IRNG,PPS_50mA_RNG);   //PMU 50mA Setting
+    set_pps_resource(PPS_PMU_ILIMIT,50*1000*1000); //PMU ILIMIT = 50mA
+
+
+  }else if((monitor_mode & ADC_AVE) !=0){
+
+    printf("APG : ADC_AVE mode\n");
+
+    load_vlf_offset(_SUB_RAMBT_POLL,0,1);
+    
+    
+    run_apg(_RAM_BOOT_MONITOR_CTRL);
+
+    delay_timer(1*1000); //1ms wait
+    
+    set_pps_resource(PPS_PMU_IRNG,PPS_50mA_RNG);   //PMU 50mA Setting
+    set_pps_resource(PPS_PMU_ILIMIT,50*1000*1000); //PMU ILIMIT = 50mA
+
+      set_pps_resource(PPS_PMU_SENSE_CTRL,/*PPS_REMOTE_SENSE*/PPS_LOCAL_SENSE);
+      delay_timer(1*1000); //1ms wait
+
+        *selvol=read_adc_ave(ADC_IMEAS,0,10000);
+
+      delay_timer(1*1000); //1ms wait
+      set_pps_resource(PPS_PMU_SENSE_CTRL,PPS_LOCAL_SENSE);
+    
+    set_pps_resource(PPS_PMU_IRNG,PPS_50mA_RNG);   //PMU 50mA Setting
+    set_pps_resource(PPS_PMU_ILIMIT,50*1000*1000); //PMU ILIMIT = 50mA
+
+
+
+    }
+
+    if((monitor_mode & CRY_CLK) !=0){
+      // --- CRY CLK mode Out ---//
+      sprintf(outbuf,"CRY CLK CLEAR\n");
+      DataOut(Ffpt,outbuf);
+      add_vhh_mask( lb3_pin );
+      run_apg(_RAM_BOOT_RELAY);
+    }
+
+
+    /************************** RAMBoot End Manage ************************************/
+    
+      run_apg(_RAM_BOOT_MONITOR_END); // RAM Boot End(APG)
+
+//    load_vlf_offset(_SUB_MODEENTRY_RAM,1 ,4);   //ModeEntry Wait back
+//    load_vlf_offset(_SUB_MODEENTRY_RAM,30,1200);//ModeEntry Wait back
+
+    cpuerr = check_pin_errors( bistpoll_pins, 4 ); /* Boot����Error�o�͂�APG�p�^�����璊�o(DPASSDEND_CP�̔�r����) */
+    Cputotal = (bentime()-start_time-init_bentime())/1000; /* Get Test Total Time */
+
+/******************************************************************************/
+/*                                 DAXS Read                                  */
+/******************************************************************************/
+
+  set_strobe_mask(daxs_datao_pin);
+  SetTimming_NS( daxs_trans.read_rate );
+  select_vector_mode(poll_pins,_PE_APG_MODE);
+  reconnect_pin(poll_pins);
+
+  /******** PowerUp *********/
+
+  if(VccSlow(daxs_trans.vcc,vcc[0])){
+    return(HWFAIL);
+  }
+  PmuSlow(daxs_trans.vcc,vcc[0]);
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if((vcc[1] != 0) && (vcc[2] != 0)){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    sprintf(outbuf," Ext_Vref  ON  \n");
+    DataOut(Ffpt,outbuf);
+  }else{
+    sprintf(outbuf," Ext_Vref  OFF \n");
+    DataOut(Ffpt,outbuf);
+  }
+
+  load_vlf_offset(_SUB_MODEENTRY_DAXS,4,tempo1);
+  
+  SetVohVolVtt( daxs_trans.voh, daxs_trans.vol, daxs_trans.vtt, daxs_datao_pin );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+
+  /******** Read RAM data *********/
+
+  for( cnt=RAM_TOP; cnt<=RAM_END; cnt++ ){
+      WriteEcrMode8( cnt, 0xFF, SIZE_B );
+  }  
+
+  result = RAMRunApg( 2, 0x2A00, OUTPUTIF_END );   /* DAXS transport 0=write command */
+
+  if((ReadEcrMode8(0x3D00,SIZE_B)==0xAA) ){
+      printf("WT mode Test FAIL!!!\n");
+  }else if((ReadEcrMode8(0x3D00,SIZE_B)==0x55) ){
+      printf("WT mode Test PASS!!!\n");
+  }else if((ReadEcrMode8(0x3D00,SIZE_B)==0x78) ){
+      printf("WT mode Test Time Limit!!!\n");
+  }else{
+      printf("WT mode Test ECR data ERROR!!!\n");
+      DispEcrBmData(0x3D00 , 0x00FF, DISP_ECR|DISP_1 );
+	  result = FAIL;
+  }
+
+/******************************************************************************/
+/*                                 EndManage                                  */
+/******************************************************************************/
+
+  /******** get data *********/
+  //ECR => param
+  for(cnt=IN_LWORDEND+1;cnt<OUT_BYTEEND;cnt++){
+    (param + cnt) -> value = ReadEcrMode8((param + cnt) -> addr,(param + cnt) -> size);
+  }
+  for(cnt=OUT_BYTEEND+1;cnt<OUT_LWORDEND;cnt++){
+    (param + cnt) -> value = ReadEcrMode8((param + cnt) -> addr,(param + cnt) -> size);
+  }
+  return(result);
+}
+int CpuModeMonitor_current2_First(int monitor_mode, int mode,int vcc[NUM_POWERSUPPLY],interface_t* param)
+{
+  int cnt,cpuerr,failflag,datasize,patsize,speed;
+  int i,min_vol,max_vol,delta,center;
+  int flg,tempo1;                              /*** CPU drive recklessly flg ***/
+  int result;                           /* Test Result */
+  int selmode,pmu_range,bm_data,ecr_data;
+  char mat_value[100];
+  int start_time;                       /* Start Time For bentime */
+  int vs0,vs1,vs2;    // Power bak
+  int old_reg;
+  char mat_str[20];
+  char disp_addres[256];
+  char data_name[256];
+  int  data_array1[1024],data_array2[1024],data_array3[1024],data_array4[1024],data_array5[1024],data_array6[1024],data_array7[1024];
+  int  ave_data,sample_num,sample_rate;
+
+  DeviceSpecificPowerUp();
+  
+  flg = 0;
+/******** BGR Code Check *********/
+  BGR_REG_CHECK(vcc[0],param);  
+
+  /******* GET PARAMETER *******/
+  speed=GetValue(IN_EXTAL1,param);
+
+  /******** RATE SetUp *********/
+  SetTimming_NS( daxs_trans.write_rate );
+
+  /******** PowerUp *********/
+  vs0=vcc[0];
+  vs1=vcc[1];
+  vs2=vcc[2];
+  
+  vcc[0]=daxs_trans.vcc;
+  //vcc[1]=daxs_trans.vrefh;
+  //vcc[2]=daxs_trans.vref;
+  
+
+  select_vector_mode(vec_fly_pin,_PE_VEC_ON_THE_FLY); /* APG mode select */
+  select_vector_mode(data_pins,_PE_APG_MODE);       /* APG mode select */
+
+
+  if(SelectPowerSupply(mode,vcc)) {//�e�d���̋�����Level�̐ݒ�(DAXS�]���p)
+    vcc[0]=vs0;
+    vcc[1]=vs1;
+    vcc[2]=vs2;
+    return(HWFAIL);
+  }
+
+    connect_ps(PPS_CON_VNN1,PPS_CMODE_PMU);        //PMU connect VNN
+    set_pps_resource(PPS_PMU_IRNG,PPS_50mA_RNG);   //PMU 50mA Setting
+    set_pps_resource(PPS_PMU_ILIMIT,50*1000*1000); //PMU ILIMIT = 50mA
+    set_pps_resource(PPS_PMU_VLIMIT,daxs_trans.vcc);       //PMU V = Vcc
+
+
+  run_apg(_DUMMY_MODE_ENTRY);
+  WaitHitKey("\nPlease Vcc Swich Change\n");
+  delay_timer(1*1000); //1ms wait
+
+  return(PASS);
+}
+
+
+
+/************************************************************************
+ * Internal CPU use triming Function TM0->TM2(F) Mode
+ ************************************************************************/
+int CpuModeMonitor_Vrsg(int mode,int vcc[NUM_POWERSUPPLY],interface_t* param,int waittime,char *pat,char *mess,int *selvol)
+{
+  int cnt,cpuerr,failflag,datasize,patsize,speed;
+  int i,min_vol,max_vol,delta,center;
+  int flg,tempo1;                              /*** CPU drive recklessly flg ***/
+  int result;                           /* Test Result */
+  int selmode,pmu_range,bm_data,ecr_data;
+  char mat_value[100];
+  int start_time;                       /* Start Time For bentime */
+  int vs0,vs1,vs2;    // Power bak
+  int old_reg,end_flag;
+  char mat_str[20];
+  char disp_addres[256];
+  
+  DeviceSpecificPowerUp();
+  
+  flg = 0;
+  selmode=GetValue(IN_TESTSEL,param);
+
+  DispAddres(param,"",disp_addres);
+
+  for( cnt=RAM_TOP; cnt<=RAM_END; cnt=cnt+4 ){
+      WriteBmMode8( cnt, 0xFFFFFFFF, SIZE_L );
+      WriteEcrMode8( cnt, 0xFFFFFFFF, SIZE_L );
+  }
+
+  connect_ps(PPS_CON_VNN1,PPS_CMODE_DISCONNECT);
+
+  //PMU-Init
+  set_pmu_range(UA250);
+  set_vlimit(0);
+  //set_ilimit(250*1000);
+  set_ilimit(0);
+  
+/******** BGR Code Check *********/
+  BGR_REG_CHECK(vcc[0],param);  
+
+  /******* GET PARAMETER *******/
+  speed=GetValue(IN_EXTAL1,param);
+
+  if(GetValue(IN_BDATA15,param) == 0)pmu_range = UA250;
+  else pmu_range = GetValue(IN_BDATA15,param);
+
+  /******* DISP TAITOL *******/
+  //Vref��VrefH�̋L�q�ɕύX�K�v�H
+  sprintf(outbuf,"TEST:%d [ %s ] vcc=%dmV ext_Vrefh=%dmV ext_Vref=%dmV F=%2dns PLL=%d(X%d)\n ",
+    test++,mess,vcc[0],vcc[1],vcc[2],speed,GetValue(IN_PLLON,param),GetValue(IN_PLL_MULT,param));
+  DataOut(Ffpt,outbuf);
+  sprintf(outbuf,"Module:%s\n%s\n",
+          DispMatName(mat_str,param),disp_addres);
+  DataOut(Ffpt,outbuf);
+  //Ldata�̌����ɕύX����K�v�L
+  sprintf(outbuf,"BDATA00:%08X, LDATA0:%08X\n"
+    ,GetValue(IN_BDATA00,param),GetValue(IN_LDATA0,param));
+  DataOut(Ffpt,outbuf);
+
+  /******* SETUP ECR/BM *******/
+  Ecrsetup8(ECR_OVERL);
+
+  /******** RATE SetUp *********/
+  SetTimming_NS( daxs_trans.write_rate );
+
+  /******** PowerUp *********/
+  vs0=vcc[0];
+  vs1=vcc[1];
+  vs2=vcc[2];
+  
+  vcc[0]=daxs_trans.vcc;
+  //vcc[1]=daxs_trans.vrefh;
+  //vcc[2]=daxs_trans.vref;
+  
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if((vcc[1] != 0) && (vcc[2] != 0)){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    sprintf(outbuf," Ext_Vref  ON  \n");
+    DataOut(Ffpt,outbuf);
+  }else{
+    sprintf(outbuf," Ext_Vref  OFF \n");
+    DataOut(Ffpt,outbuf);
+  }
+
+  load_vlf_offset(_SUB_MODEENTRY_DAXS,4,tempo1);
+  
+  if(SelectPowerSupply(mode,vcc)) {//�e�d���̋�����Level�̐ݒ�(DAXS�]���p)
+    vcc[0]=vs0;
+    vcc[1]=vs1;
+    vcc[2]=vs2;
+    return(HWFAIL);
+  }
+  SetVohVolVtt( daxs_trans.voh, daxs_trans.vol, daxs_trans.vtt, daxs_datao_pin );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+  vcc[0]=vs0;
+  vcc[1]=vs1;
+  vcc[2]=vs2;
+
+/******************************************************************************/
+/*                                 Write BM                                   */
+/******************************************************************************/
+
+  /******* MAKE ASM PATH *******/
+  strcpy( binpat, glob_cdp ); strcat( binpat, glob_binpat_at );
+  strcat( binpat, pat );
+
+  patsize = CheckPatLength(binpat) - PAT_FILE_HEADER_SIZE;
+
+  /******** FILE BM WRITE **********/
+  datasize = comp_load_bm (binpat);   /* comp_load_bm:file pattern => BM */
+
+
+  if(FAIL==datasize) {  /* path/fail check */
+    sprintf(outbuf," !!! NOT OPEN FILE PATH -> %s (checksum:H'%X) !!!\n",binpat,datasize);
+    DataOut(Ffpt,outbuf);
+    DeviceLevelsPowerDown();
+    return(NOPATFAIL);
+  }else{
+    sprintf(outbuf," LOAD FILE PATH -> %s (checksum:H'%X)\n",binpat,datasize);
+    DataOut(Ffpt,outbuf);
+  }
+
+
+  /******** Parameter BM Write *********/
+  result = ParamTransBM(param);
+
+  WriteBmMode8( 0x3C00 , 0x00100000, SIZE_L );    /* Dummy Data 18/04/11 Aoki */  
+
+  /*** Trans Check ***/
+  if(PASS!=result){
+    sprintf(outbuf,"  TRANS ERROR!!  (param => BM) \n");
+    DataOut(Ffpt,outbuf);
+    return(RAMFAIL);
+  }else{
+    sprintf(outbuf,"  TRANS CHECK OK (param => BM) \n");
+    DataOut(Ffpt,outbuf);
+  }
+
+
+  ParamConditionDisp(PDALL,0,param); //���͗pIF�̏o��
+
+/******************************************************************************/
+/*                                 DAXS Transport                             */
+/******************************************************************************/
+  /******** Start tests *********/
+    sprintf(outbuf,"Write RAM \n");
+    DataOut(Ffpt,outbuf);
+
+    result = RAMRunApg( 0, RAM_TOP, OUTPUTIF_END );   /* DAXS transport 0=write command */
+  
+  if(PASS!=result){
+    return(RAMFAIL);
+  }
+  
+  
+    sprintf(outbuf,"Read RAM \n");
+    DataOut(Ffpt,outbuf);
+
+  SetTimming_NS( daxs_trans.read_rate );
+  
+  set_strobe_mask(daxs_datao_pin);  //Compare Setting command
+
+    result = RAMRunApg( 2, RAM_TOP, OUTPUTIF_END );   /* DAXS transport 0=write command */
+  
+  for(i=RAM_TOP;i<=OUTPUTIF_END;i=i+4){
+    bm_data=ReadBmMode8(i,SIZE_L);
+    ecr_data=ReadEcrMode8(i,SIZE_L);
+    if(bm_data!=ecr_data){
+      printf("BM <=> ECR Comp ERROR!!! Addr = %X, BM = %X, ECR = %X \n",i,bm_data,ecr_data);
+      result = FAIL;
+    }
+  }
+  
+
+  if(PASS!=result){
+    return(RAMFAIL);
+  }
+
+  sprintf(outbuf," <<<<< EXTRAM transfer OK >>>>>\n");
+  DataOut(Ffpt,outbuf); //CommentOut for RAMBOOT Check
+
+/******************************************************************************/
+/*                                 DAXS RAMBOOT                               */
+/******************************************************************************/
+  /*** Power Change ***/
+  if(VccSlow(vcc[0],daxs_trans.vcc)){
+    return(HWFAIL);
+  }
+    
+  /*** Comp Pin SetUp ***/
+  set_strobe_mask(bistpoll_pins);  /* ��rPin�̐ݒ�(RAMBoot�����܂ł̑ҋ@���ԂɎg�p) */
+  select_vector_mode(poll_pins,_PE_VECTOR_MODE);  //180314 Add-morioka For RamBoot
+  reconnect_pin(poll_pins);                       //180314 Add-morioka For RamBoot
+
+  /*** Test Speed SetUp ***/
+  SetTimming_NS(speed);
+  ChangeTimming_GTSLTS( EXTCYLJ, 1, MODEENTRY_SPEED ); // ModeEntry���g���ݒ� GTS=1,20MHz
+
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if((vcc[1] != 0) && (vcc[2] != 0)){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    sprintf(outbuf," Ext_Vref  ON  \n");
+    DataOut(Ffpt,outbuf);
+  }else{
+    sprintf(outbuf," Ext_Vref  OFF \n");
+    DataOut(Ffpt,outbuf);
+  }
+
+  /******** APG SetUp(Wait) *********/
+  load_vlf_offset(_SUB_MODEENTRY_RAM,6,  1000/MODEENTRY_SPEED);    /*   1us Wait */
+  load_vlf_offset(_SUB_MODEENTRY_RAM,1,300000/2/MODEENTRY_SPEED);    /* 300us Wait */
+  load_vlf_offset(_SUB_MODEENTRY_RAM,2, 70000/MODEENTRY_SPEED);    /*  70ms Wait */
+  load_vlf_offset(_SUB_MODEENTRY_RAM,3,tempo1);          /* Vdd/Vddh On/Off */
+  load_vlf_offset(_SUB_RAMBT_END,0,500*waittime/speed); /* RAMBootEnd Wait = waittime x(500x200x2000ns) */
+  load_vlf_offset(_SUB_RAMBT_POLL,0,500*waittime/speed);/* RAMBootPoll Wait = waittime x(500x200x200ns) */
+
+
+  SetVohVolVtt( 10*vcc[0]/100, 10*vcc[0]/100, 5*vcc[0]/10 , bistpoll_pins );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+
+  /*************** PMU Setting ********************/ //PMU�����ݒ�
+
+  sprintf(outbuf,"  PMU Set\n");
+  DataOut(Ffpt,outbuf);
+
+  if(mode & MONITOR_MODE){
+    switch(selmode){
+      case MONITOR_VRSG:
+      case MONITOR_VHH_E:
+      case MONITOR_VHH_P:
+        //set_vlimit(3300);      // PMU���Ȃ��Ȃ���Ԃ�PMU��3.3V�d���ɂ��Ă���
+	//set_ilimit(250*1000);
+	//delay_timer(100);
+	set_ilimit(0);
+        set_vlimit(0);
+	connect_ps(PPS_CON_VNN1,PPS_CMODE_PMU);
+        break;
+      default: // Default Error
+        DeviceLevelsPowerDown();
+        printf("MONITOR_MODE PMU setting, Code ERROR!!! code=%X\n",selmode); //Define Error, Check selmode value
+        return(FAIL);
+        break;
+    }
+
+  }else if(mode & APPLY_MODE){
+    switch(selmode){
+      case AUTOTRIM_VRSG:
+        
+      
+      break;
+      case AUTOTRIM_BGR08:
+        set_vlimit(0);
+	connect_ps(PPS_CON_VNN1,PPS_CMODE_PMU);
+        set_pmu_range(UA250);      
+        set_ilimit(250*1000);
+      break;
+    }
+  }
+
+  /*************************** Run APG & Monitor(Apply) ******************************/
+    start_time = bentime(); /* Get Test Start Time */
+    sprintf(outbuf,"  APG Start\n");
+    DataOut(Ffpt,outbuf);
+    
+    if(mode & MONITOR_MODE){
+      switch(selmode){
+        case MONITOR_VRSG:
+        case MONITOR_VHH_E:
+        case MONITOR_VHH_P:
+          comp_set_ilimit(0);
+          //load_vlf_offset(_SUB_RAMBT_POLL,0,2000/speed); /* 80ms fix(2000*200*200ns) */
+          run_apg(_RAM_BOOT_MONITOR_CTRL);
+		  delay_timer(5*1000); // 5ms Wait
+          SITE_MASK (1, read_pmu_status(0x20));              /* V measurement */
+          SITE_MASK (1, *selvol=read_adc_ave(ADC_VMEAS,0,100));
+          break;
+
+        default:
+          DeviceLevelsPowerDown();
+          printf("MONITOR_MODE Run APG, Code ERROR!!! code=%X\n",selmode); //Define Error, Check selmode value
+          return(FAIL);
+          break;
+      }
+    }else if(mode & APPLY_MODE){
+    switch(selmode){
+      case AUTOTRIM_VRSG:
+  load_vlf_offset(_SUB_RAMBT_POLL,0,2);/* RAMBootPoll Wait = waittime x(500x200x200ns) */
+          run_apg(_RAM_BOOT_CTRL);
+        
+      
+
+
+
+      break;
+      case AUTOTRIM_BGR08:
+        if(GetValue(IN_BDATA00,param) == 0){
+	
+          load_vlf_offset(_SUB_RAMBT_POLL,0,2);/* RAMBootPoll Wait = waittime x(500x200x200ns) */
+          set_vlimit(*selvol);
+	  run_apg(_RAM_BOOT_CTRL);
+        }else if(GetValue(IN_BDATA00,param) == 1){
+          load_vlf_offset(_SUB_RAMBT_POLL,0,1000*waittime/speed);/* RAMBootPoll Wait = waittime x(500x200x200ns) */
+          set_vlimit(3800); // 3.8V���VrsgMaxOver���
+	  run_apg(_RAM_BOOT_MONITOR_CTRL);
+          load_vlf_offset(_SUB_RAMBT_DEND_POLL,0,1000*(waittime+4)/speed);/* RAMBootPoll Wait = waittime x(500x200x200ns) */
+	
+	  while(end_flag != 1){
+	    set_vlimit(*selvol);
+	    run_apg(_RAM_BOOT_DEND_POLL);
+	  
+	    if(1 == check_pin_errors( bistpoll_pins, 4 )){
+	      end_flag = 1;
+	    }else{
+	      *selvol = *selvol - 2;
+	    }
+		if(*selvol <= 3000){
+		  end_flag = 1;
+          DeviceLevelsPowerDown(); //�e�d��OFF�R�}���h
+          DeviceSpecificPowerDown();
+		  return(FAIL);
+
+		}
+
+	  }
+	}
+      break;
+        default:
+          DeviceLevelsPowerDown();
+          printf("MONITOR_MODE Run APG, Code ERROR!!! code=%X\n",selmode); //Define Error, Check selmode value
+          return(FAIL);
+          break;
+      }
+
+
+    }else{
+      printf("Mode Select Error!!! mode=%X\n",mode);
+      return(FAIL);
+    }
+
+    /************************** RAMBoot End Manage ************************************/
+    
+    if(mode & MONITOR_MODE){
+      //load_vlf_offset(_SUB_RAMBT_END,1,1000); // 50*cycle
+      load_vlf_offset(_SUB_RAMBT_END,0,500*waittime/speed); /* RAMBootEnd Wait = waittime x(500x200x2000ns) */
+      run_apg(_RAM_BOOT_MONITOR_END); // RAM Boot End(APG)
+    }
+
+	connect_ps(PPS_CON_VNN1,PPS_CMODE_DISCONNECT);
+    set_vlimit(0);                  // PMU 0V
+    reconnect_pin(v5_pin);          // PMU reconnect PNN
+    set_invert_mask(no_pin);        // �K�v�����H
+
+    cpuerr = check_pin_errors( bistpoll_pins, 4 ); /* Boot����Error�o�͂�APG�p�^�����璊�o(DPASSDEND_CP�̔�r����) */
+    Cputotal = (bentime()-start_time-init_bentime())/1000; /* Get Test Total Time */
+
+/******************************************************************************/
+/*                                 DAXS Read                                  */
+/******************************************************************************/
+
+  set_strobe_mask(daxs_datao_pin);
+  SetTimming_NS( daxs_trans.read_rate );
+  select_vector_mode(poll_pins,_PE_APG_MODE);
+  reconnect_pin(poll_pins);
+
+  /******** PowerUp *********/
+
+  if(VccSlow(daxs_trans.vcc,vcc[0])){
+    return(HWFAIL);
+  }
+
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if((vcc[1] != 0) && (vcc[2] != 0)){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    sprintf(outbuf," Ext_Vref  ON  \n");
+    DataOut(Ffpt,outbuf);
+  }else{
+    sprintf(outbuf," Ext_Vref  OFF \n");
+    DataOut(Ffpt,outbuf);
+  }
+
+  load_vlf_offset(_SUB_MODEENTRY_DAXS,4,tempo1);
+  
+  SetVohVolVtt( daxs_trans.voh, daxs_trans.vol, daxs_trans.vtt, daxs_datao_pin );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+
+  /******** Read RAM data *********/
+
+  for( cnt=0x2A00; cnt<=OUTPUTIF_END; cnt=cnt+4 ){
+      WriteEcrMode8( cnt, 0xFFFFFFFF, SIZE_L );
+  }
+
+  result = RAMRunApg( 2, 0x2A00, OUTPUTIF_END );   /* DAXS transport 0=write command */
+
+  DeviceLevelsPowerDown(); //�e�d��OFF�R�}���h
+  DeviceSpecificPowerDown();
+
+
+  if((ReadEcrMode8(0x3D00,SIZE_B)==0xAA) &&
+     (ReadEcrMode8(0x3D01,SIZE_B)==0xAA) &&
+     (ReadEcrMode8(0x3D02,SIZE_B)==0xAA) &&
+     (ReadEcrMode8(0x3D03,SIZE_B)==0xAA) ){
+      printf("WT mode Test FAIL!!!\n");
+  }else if((ReadEcrMode8(0x3D00,SIZE_B)==0x55) &&
+           (ReadEcrMode8(0x3D01,SIZE_B)==0x55) &&
+           (ReadEcrMode8(0x3D02,SIZE_B)==0x55) &&
+           (ReadEcrMode8(0x3D03,SIZE_B)==0x55) ){
+      printf("WT mode Test PASS!!!\n");
+  }else{
+      printf("WT mode Test ECR data ERROR!!!\n");
+      DispEcrBmData(0x3D00 , 0x00FF, DISP_ECR|DISP_1 );
+      return(FAIL);
+  }
+
+  
+/******************************************************************************/
+/*                                 EndManage                                  */
+/******************************************************************************/
+
+  /******** get data *********/
+  //ECR => param
+  for(cnt=IN_LWORDEND+1;cnt<OUT_BYTEEND;cnt++){
+    (param + cnt) -> value = ReadEcrMode8((param + cnt) -> addr,(param + cnt) -> size);
+  }
+  for(cnt=OUT_BYTEEND+1;cnt<OUT_LWORDEND;cnt++){
+    (param + cnt) -> value = ReadEcrMode8((param + cnt) -> addr,(param + cnt) -> size);
+  }
+  CpuModeOutput(mode,param);
+
+  if(cpuerr == 1) {
+    switch(GetValue(OUT_JUDGE1,param)) {
+      case CPASS:
+        sprintf(outbuf,"** PASS ** Cpu Total=%dms\n",Cputotal);
+        DataOut(Ffpt,outbuf);
+        break;
+      case CFAIL:
+        sprintf(outbuf,"-- FAIL -- Cpu total=%dms\n",Cputotal);
+        DataOut(Ffpt,outbuf);
+        break;
+      case CFLAG:
+        sprintf(outbuf,"-- FLAG_FAIL -- Cpu Total=%dms\n",Cputotal);
+        DataOut(Ffpt,outbuf);
+        break;
+      case READFAIL:
+        sprintf(outbuf,"-- READ_FAIL -- Cpu Total=%dms\n",Cputotal);
+        DataOut(Ffpt,outbuf);
+        break;
+      default:
+        sprintf(outbuf,"-- FAIL -- None (%04X) %dms\n",((0x00FF&GetValue(OUT_JUDGE1,param))<<8)|((0xFF00&GetValue(OUT_JUDGE1,param))>>8),Cputotal);
+        DataOut(Ffpt,outbuf);
+        break;
+    }
+  }else{
+    sprintf(outbuf,"-- FAIL -- !!! TimeOver !!! total=%dms\n",Cputotal);
+    DataOut(Ffpt,outbuf);
+    //return(FAIL);
+  }
+
+  /******** Monitor Result *********/
+
+  if(mode & MONITOR_MODE){
+    switch(mode & 0x0000FFFF){
+      case  MVSSMON:
+      case  MVSSMON_CH:
+      case  MVSSMON_20K:
+        sprintf(outbuf,"  Monitor Result VSSMON = %dmV\n",*selvol);
+        DataOut(Ffpt,outbuf);
+        break;
+      case  MVCCMON:
+        sprintf(outbuf,"  Monitor Result VCCMON = %dmV\n",*selvol);
+        DataOut(Ffpt,outbuf);
+        break;
+      case  MVRSGMON:                                               
+        sprintf(outbuf,"  Monitor Result VRSGMON = %dmV\n",*selvol);   
+        DataOut(Ffpt,outbuf);                                         
+        break;                                                        
+      default:
+        printf("Result Setting Error!! mode code = %X\n",mode);
+        return(FAIL);      
+        break;
+      }
+    selvol = center;
+    }else{
+      sprintf(outbuf," AutoTrim JUDGE = 0x%04X\n",((0x00FF&GetValue(OUT_JUDGE1,param))<<8)|((0xFF00&GetValue(OUT_JUDGE1,param))>>8));
+      DataOut(Ffpt,outbuf);      
+    }
+  return(PASS);
+}
+
+
+int CpuModeMonitor_VppTf(int mode,int vcc[NUM_POWERSUPPLY],interface_t* param,int waittime,char *pat,char *mess,int *selvol)
+{
+  /*--------------------------------------------------------------------------*/
+  /* Values                                                                   */
+  /*--------------------------------------------------------------------------*/
+  int i, cnt, cpuerr, datasize, patsize, vs0, vs1, vs2, speed, temp,vtemp[NUM_POWERSUPPLY];
+  int result, start_time,old_reg,tempo1,bm_data,ecr_data;
+  char mat_str[20];
+  char disp_addres[256];
+
+  /*--------------------------------------------------------------------------*/
+  /* Initialyze                                                               */
+  /*--------------------------------------------------------------------------*/
+  cnt = cpuerr = datasize = patsize = vs0 = vs1 = vs2 = speed = tempo1 = 0;
+  DispAddres(param,"",disp_addres);
+
+  for( cnt=RAM_TOP; cnt<=RAM_END; cnt=cnt+4 ){
+      WriteBmMode8( cnt, 0xFFFFFFFF, SIZE_L );
+      WriteEcrMode8( cnt, 0xFFFFFFFF, SIZE_L );
+  }
+
+
+/******* GET PARAMETER *******/
+  speed=GetValue(IN_EXTAL1,param);
+
+/******* DISP TAITOL *******/
+  //Vref��VrefH�̋L�q�ɕύX�K�v�H
+  sprintf(outbuf,"TEST:%d [ %s ] vcc=%dmV ext_Vrefh=%dmV ext_Vref=%dmV F=%2dns PLL=%d(X%d)\n ",
+    test++,mess,vcc[0],vcc[1],vcc[2],speed,GetValue(IN_PLLON,param),GetValue(IN_PLL_MULT,param));
+  DataOut(Ffpt,outbuf);
+  sprintf(outbuf,"Module:%s\n%s\n",
+          DispMatName(mat_str,param),disp_addres);
+  DataOut(Ffpt,outbuf);
+  //Ldata�̌����ɕύX����K�v�L
+  sprintf(outbuf,"BDATA00:%08X, LDATA0:%08X\n"
+    ,GetValue(IN_BDATA00,param),GetValue(IN_LDATA0,param));
+  DataOut(Ffpt,outbuf);
+  
+/******** BGR Code Check *********/
+  BGR_REG_CHECK(vcc[0],param);  
+
+/******* SETUP ECR/BM *******/
+  Ecrsetup8(ECR_OVERL);
+
+/******** RATE SetUp *********/
+  SetTimming_NS( daxs_trans.write_rate );
+
+/******** PowerUp *********/
+  vs0=vcc[0];
+  vs1=vcc[1];
+  vs2=vcc[2];
+  
+  vcc[0]=daxs_trans.vcc;
+  vcc[1]=daxs_trans.vrefh;
+  vcc[2]=daxs_trans.vref;
+  
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if((vcc[1] != 0) && (vcc[2] != 0)){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    sprintf(outbuf," Ext_Vref  ON  \n");
+    DataOut(Ffpt,outbuf);
+  }else{
+    sprintf(outbuf," Ext_Vref  OFF \n");
+    DataOut(Ffpt,outbuf);
+  }
+  
+
+  load_vlf_offset(_SUB_MODEENTRY_DAXS,4,tempo1);
+  
+  if(SelectPowerSupply(mode,vcc)) {//�e�d���̋�����Level�̐ݒ�(DAXS�]���p)
+    vcc[0]=vs0;
+    vcc[1]=vs1;
+    vcc[2]=vs2;
+    return(HWFAIL);
+  }
+  SetVohVolVtt( daxs_trans.voh, daxs_trans.vol, daxs_trans.vtt, daxs_datao_pin );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+  vcc[0]=vs0;
+  vcc[1]=vs1;
+  vcc[2]=vs2;
+
+/******************************************************************************/
+/*                                 Write BM                                   */
+/******************************************************************************/
+
+/******* MAKE ASM PATH *******/
+  strcpy( binpat, glob_cdp ); strcat( binpat, glob_binpat_at );
+  strcat( binpat, pat );
+
+  patsize = CheckPatLength(binpat) - PAT_FILE_HEADER_SIZE;
+
+/******** FILE BM WRITE **********/
+  datasize = comp_load_bm (binpat);   /* comp_load_bm:file pattern => BM */
+
+
+  if(FAIL==datasize) {  /* path/fail check */
+    sprintf(outbuf," !!! NOT OPEN FILE PATH -> %s (checksum:H'%X) !!!\n",binpat,datasize);
+    DataOut(Ffpt,outbuf);
+    DeviceLevelsPowerDown();
+    return(NOPATFAIL);
+  }else{
+    sprintf(outbuf," LOAD FILE PATH -> %s (checksum:H'%X)\n",binpat,datasize);
+    DataOut(Ffpt,outbuf);
+  }
+
+
+  /******** Parameter BM Write *********/
+  result = ParamTransBM(param);
+
+
+  /*** Trans Check ***/
+  if(PASS!=result){
+    sprintf(outbuf,"  TRANS ERROR!!  (param => BM) \n");
+    DataOut(Ffpt,outbuf);
+    return(RAMFAIL);
+  }else{
+    sprintf(outbuf,"  TRANS CHECK OK (param => BM) \n");
+    DataOut(Ffpt,outbuf);
+  }
+
+  
+
+  strcpy( binpat, glob_cdp ); strcat( binpat, glob_binpat_at );
+
+/*  
+  if(strcmp(pat,"devicefunction_at.pat")==0) strcat( binpat, "RC04EX_WT1_P1060_V000100.pat" );
+  else if(strcmp(pat,"readall_code_at.pat")==0) strcat( binpat, "RC04EX_WT1_P3011_V000100.pat" );
+  else if(strcmp(pat,"erase_code_at.pat")==0) strcat( binpat, "RC04EX_WT1_P2000_V000100.pat" );
+  else if(strcmp(pat,"programall_code_at.pat")==0) strcat( binpat, "RC04EX_WT1_P1920_V000100.pat" );
+  else if(strcmp(pat,"program55AA_code_at.pat")==0) strcat( binpat, "RC04EX_WT1_P1920_V000100.pat" );
+  else if(strcmp(pat,"readcount_code_at.pat")==0) strcat( binpat, "RC04EX_WT1_P3011_V000100.pat" );
+  else if(strcmp(pat,"settrimingdata_code_at.pat")==0) strcat( binpat, "RC04EX_WT1_P1100_V000100.pat" );
+  else if(strcmp(pat,"readdump_code_at.pat")==0) strcat( binpat, "RC04EX_WT1_P3011_V000100.pat" );
+  else {
+    printf("parameter file nothing!!\n");
+    return(FAIL);
+  }
+  CheckPatLength(binpat);
+  comp_load_bm (binpat);
+*/
+
+  WriteBmMode8( 0x3C00 , 0x00100000, SIZE_L );    /* Dummy Data 18/04/11 Aoki */  
+
+
+/******************************************************************************/
+/*                                 DAXS Transport                             */
+/******************************************************************************/
+  sprintf(outbuf," ----- RAM transfer Start -----");DataOut(Ffpt,outbuf); 
+
+  ParamConditionDisp(PDIN_ALL,0,param); //���͗pIF�̏o��
+
+  /******** Start tests *********/
+  printf("Write RAM \n"); /* Print Retry Count */
+
+    result = RAMRunApg( 0, RAM_TOP, RAM_END );   /* DAXS transport 0=write command */
+
+  if(PASS!=result){
+    return(RAMFAIL);
+  }
+  
+  
+  printf("Read RAM \n"); /* Print Retry Count */
+
+  SetTimming_NS( daxs_trans.read_rate );
+  
+  set_strobe_mask(daxs_datao_pin);  //Compare Setting command
+
+    result = RAMRunApg( 2, RAM_TOP, OUTPUTIF_END );   /* DAXS transport 0=write command */
+
+  for(i=RAM_TOP;i<=OUTPUTIF_END;i=i+4){
+    bm_data=ReadBmMode8(i,SIZE_L);
+    ecr_data=ReadEcrMode8(i,SIZE_L);
+    if(bm_data!=ecr_data){
+      printf("BM <=> ECR Comp ERROR!!! Addr = %X, BM = %X, ECR = %X \n",i,bm_data,ecr_data);
+      result = FAIL;
+    }
+  }
+
+  if(PASS!=result){
+    return(RAMFAIL);
+  }
+
+  sprintf(outbuf," <<<<< EXTRAM transfer OK >>>>>\n\n");
+  DataOut(Ffpt,outbuf); //CommentOut for RAMBOOT Check
+
+/******************************************************************************/
+/*                                 DAXS RAMBOOT                               */
+/******************************************************************************/
+  sprintf(outbuf," ----- RAMBOOT Start -----\n");
+  DataOut(Ffpt,outbuf); 
+
+  /*** Power Change ***/
+  vs0 = vcc[0];
+  vcc[0] = 3300;
+  if(SelectPowerSupply(mode,vcc)) {//�e�d���̋�����Level�̐ݒ�(RAMBoot�]���p)
+    return(HWFAIL);
+  }
+
+  if(VccSlow(vs0,vcc[0])){
+    return(HWFAIL);
+  }
+  vcc[0] = vs0;
+
+  /*** Comp Pin SetUp ***/
+  set_strobe_mask(bistpoll_pins);  /* ��rPin�̐ݒ�(RAMBoot�����܂ł̑ҋ@���ԂɎg�p) */
+  select_vector_mode(poll_pins,_PE_VECTOR_MODE);  //180314 Add-morioka For RamBoot
+  reconnect_pin(poll_pins);                       //180314 Add-morioka For RamBoot
+
+  set_strobe_mask(dpass_tcheck_pins);  /*dpass��TcheckPin�̔�r�ݒ�*/
+  select_vector_mode(tcheck_poll_pins,_PE_APG_MODE);  //Tcheck��ECR�ɓ]���̂��߁AAPG-Mode�ɕύX
+  select_vector_mode(dpass_pins,_PE_VECTOR_MODE);  //dpass��Vector-Mode�ɐݒ�(�ύX���������O�̂���)
+  reconnect_pin(dpass_tcheck_pins);
+
+  /*** Test Speed SetUp ***/
+  SetTimming_NS(speed);
+  ChangeTimming_GTSLTS( EXTCYLJ, 1, MODEENTRY_SPEED ); // ModeEntry���g���ݒ� GTS=1,20MHz
+
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if((vcc[1] != 0) && (vcc[2] != 0)){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    sprintf(outbuf," Ext_Vref  ON  \n");
+    DataOut(Ffpt,outbuf);
+  }else{
+    sprintf(outbuf," Ext_Vref  OFF \n");
+    DataOut(Ffpt,outbuf);
+  }
+
+/******** APG SetUp(Wait) *********/
+  load_vlf_offset(_SUB_MODEENTRY_RAM,6,  1000/MODEENTRY_SPEED);    /*   1us Wait */
+  load_vlf_offset(_SUB_MODEENTRY_RAM,1,300000/2/MODEENTRY_SPEED);    /* 300us Wait */
+  load_vlf_offset(_SUB_MODEENTRY_RAM,2, 70000/MODEENTRY_SPEED);    /*  70ms Wait */
+  load_vlf_offset(_SUB_MODEENTRY_RAM,3,tempo1);          /* Vdd/Vddh On/Off */
+  load_vlf_offset(_SUB_RAMBT_END,0,500*waittime/speed); /* RAMBootEnd Wait = waittime x(500x200x2000ns) */
+
+  SetVohVolVtt( 7*vcc[0]/10, 7*vcc[0]/10, 5*vcc[0]/10 , dpass_pins );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+
+/******** Test Start *********/
+
+  for( cnt=0x0000; cnt<=0x8000; cnt=cnt+4 ){ //�g�p�̈�(TCHECK�̃��O�p)��ECR���N���A
+      WriteEcrMode8( cnt, 0xFFFFFFFF, SIZE_L );
+  }
+   
+    start_time = bentime(); /* Get Test Start Time */
+    run_apg (_RAM_BOOT_TCHECK_MONITOR);  //RamBoot��Tcheck��ECR�ɓ]���܂�
+
+  // RamBoot End �ݒ�
+  set_strobe_mask(bistpoll_pins);  /* ��rPin�̐ݒ�(RAMBoot�����܂ł̑ҋ@���ԂɎg�p) */
+  select_vector_mode(poll_pins,_PE_VECTOR_MODE);  //180314 Add-morioka For RamBoot
+  reconnect_pin(poll_pins);                       //180314 Add-morioka For RamBoot
+  SetVohVolVtt( 2*vcc[0]/10, 2*vcc[0]/10, 5*vcc[0]/10 , bistpoll_pins );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+
+  run_apg (_RAM_BOOT_MONITOR_END); //RamBoot�I��
+  *selvol = 0;
+  for( cnt=0x0000; cnt<=0x50FF; cnt++ ){//ECR�̈�̃A�h���X���[�v
+    if((cnt%4==0) || (cnt%4)==1){ //H/L���肪�A�h���X�ɂ���ċt�]���Ă����̂ŁA���}���u(�����s��)
+	  ecr_data = read_ecr(cnt)&0xff;
+    }else{
+	  ecr_data = read_ecr(cnt)&0xff;
+	  ecr_data = 0xFF - ecr_data;  //H/L�̋t�]�����{
+	}
+	if(ecr_data == 0) *selvol=*selvol + 1; //Tcheck��H���Ԃ̃N���b�N�����v�Z
+  //���̓f�o�b�O�p
+	//if((cnt % 0x100 == 0) || (cnt % 0x100 == 3)) printf("Addr = 0x%04X : %02X : %02X : %d\n",cnt,read_ecr(cnt)&0xff,ecr_data,*selvol);
+  }
+  //���̓f�o�b�O�p
+  //FbmDataOut_BIST(0x0000, 0x8000, "Test.bin");
+
+  Cputotal = (bentime()-start_time-init_bentime())/1000; /* Get Test Total Time */
+
+  cpuerr = check_pin_errors( bistpoll_pins, _CHECK_FERR ); /* Boot����Error�o�͂�APG�p�^�����璊�o(DPASSDEND_CP�̔�r����) */
+  sprintf(outbuf,"cpuerr=%d \n",cpuerr); DataOut(Ffpt,outbuf);
+  sprintf(outbuf," ----- RAMBOOT End  -----\n\n"); DataOut(Ffpt,outbuf);
+
+
+  set_vlimit(0);
+
+  select_vector_mode(poll_pins,_PE_APG_MODE);
+  reconnect_pin(poll_pins);
+
+/******************************************************************************/
+/*                                 DAXS Read                                  */
+/******************************************************************************/
+  sprintf(outbuf," ----- Result RAM Read Start -----\n");DataOut(Ffpt,outbuf); 
+
+
+/******** PowerUp *********/
+  vs0=vcc[0];
+  vs1=vcc[1];
+  vs2=vcc[2];
+
+  vcc[0]=daxs_trans.vcc;
+  vcc[1]=daxs_trans.vrefh;
+  vcc[2]=daxs_trans.vref;
+
+  if(VccSlow(3300,vs0)){
+    return(HWFAIL);
+  }
+
+  if(SelectPowerSupply(MNORMAL,vcc)) {//�e�d���̋�����Level�̐ݒ�(DAXS�]���p)
+    vcc[0]=vs0;
+    vcc[1]=vs1;
+    vcc[2]=vs2;
+    return(HWFAIL);
+  }
+
+  /*** Daxs Speed SetUp ***/
+  SetVohVolVtt( daxs_trans.voh, daxs_trans.vol, daxs_trans.vtt, daxs_datao_pin );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+
+  set_strobe_mask(daxs_datao_pin);/* ��rPin�̐ݒ�(RAMBoot�����܂ł̑ҋ@���ԂɎg�p) */
+  SetTimming_NS( daxs_trans.read_rate );
+
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if((vcc[1] != 0) && (vcc[2] != 0)){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    sprintf(outbuf," Ext_Vref  ON  \n");
+    DataOut(Ffpt,outbuf);
+  }else{
+    sprintf(outbuf," Ext_Vref  OFF \n");
+    DataOut(Ffpt,outbuf);
+  }
+  load_vlf_offset(_SUB_MODEENTRY_DAXS,4,tempo1);
+
+
+  vcc[0]=vs0;
+  vcc[1]=vs1;
+  vcc[2]=vs2;
+
+  /******** Read RAM data *********/
+  
+  for( cnt=RAM_TOP; cnt<=RAM_END; cnt=cnt+4 ){
+      WriteEcrMode8( cnt, 0xFFFFFFFF, SIZE_L );
+  }
+  
+    result = RAMRunApg( 2, 0x2A00, OUTPUTIF_END );   /* DAXS transport 0=write command */
+    RAMRunApg( 2, FBM_READTOP ,(FBM_READTOP + FBM_READSIZE - 1) ); /* Daxs Trans For FBM */
+  sprintf(outbuf," ----- Result RAM Read End -----\n\n");DataOut(Ffpt,outbuf); 
+
+
+	if((ReadEcrMode8(0x3D00,SIZE_B)==0xAA) &&
+	   (ReadEcrMode8(0x3D01,SIZE_B)==0xAA) &&
+	   (ReadEcrMode8(0x3D02,SIZE_B)==0xAA) &&
+	   (ReadEcrMode8(0x3D03,SIZE_B)==0xAA) ){
+       printf("WT mode Test FAIL!!!\n");
+	}else if((ReadEcrMode8(0x3D00,SIZE_B)==0x55) &&
+	   (ReadEcrMode8(0x3D01,SIZE_B)==0x55) &&
+	   (ReadEcrMode8(0x3D02,SIZE_B)==0x55) &&
+	   (ReadEcrMode8(0x3D03,SIZE_B)==0x55) ){
+       printf("WT mode Test PASS!!!\n");
+	}else{
+       printf("WT mode Test ECR data ERROR!!!\n");
+       DispEcrBmData(0x3D00 , 0x00FF, DISP_ECR|DISP_1 );
+	}
+  
+
+  DeviceLevelsPowerDown(); //�e�d��OFF�R�}���h
+
+/******************************************************************************/
+/*                                 EndManage                                  */
+/******************************************************************************/
+/******** get data *********/
+  //ECR => param
+  for(cnt=IN_LWORDEND+1;cnt<OUT_BYTEEND;cnt++){
+    (param + cnt) -> value = ReadEcrMode8((param + cnt) -> addr,(param + cnt) -> size);
+  }
+  for(cnt=OUT_BYTEEND+1;cnt<OUT_LWORDEND;cnt++){
+    (param + cnt) -> value = ReadEcrMode8((param + cnt) -> addr,(param + cnt) -> size);
+  }
+  CpuModeOutput(mode,param);
+
+/******** end manage *********/
+  sprintf(outbuf,"cpuerr=%d \n",cpuerr); DataOut(Ffpt,outbuf);
+  if(cpuerr == 1) {
+    switch(GetValue(OUT_JUDGE1,param)) {
+    case CPASS:
+      sprintf(outbuf,"** PASS ** Cpu Total=%dms\n",Cputotal);
+      DataOut(Ffpt,outbuf);
+      return(PASS);
+    case CFAIL:
+      sprintf(outbuf,"-- FAIL -- Cpu total=%dms\n",Cputotal);
+      DataOut(Ffpt,outbuf);
+      return(FAIL);
+    case CFLAG:
+      sprintf(outbuf,"-- FLAG_FAIL -- Cpu Total=%dms\n",Cputotal);
+      DataOut(Ffpt,outbuf);
+      return(FLGFAIL);
+    case READFAIL:
+      sprintf(outbuf,"-- READ_FAIL -- Cpu Total=%dms\n",Cputotal);
+      DataOut(Ffpt,outbuf);
+      return(FAIL);
+    default:
+      sprintf(outbuf,"-- FAIL -- None (%04X) %dms\n",((0x00FF&GetValue(OUT_JUDGE1,param))<<8)|((0xFF00&GetValue(OUT_JUDGE1,param))>>8),Cputotal);
+      DataOut(Ffpt,outbuf);
+      return(CPUFAIL);
+    }
+  }
+  sprintf(outbuf,"-- FAIL -- !!! TimeOver !!! total=%dms\n",Cputotal);
+  DataOut(Ffpt,outbuf);
+
+  return(PASS);
+}
+
+
+
+
+/******************************************************************************/
+/* FLASH STANBY FUNCTION TEST                                                 */
+/******************************************************************************/
+
+
+/*------------------------------------------------------------------------------
+  Function:   GlobalHardwareInit
+
+  Description:  Performs tester setup operations that are only
+          required once, after program is loaded.
+------------------------------------------------------------------------------*/
+
+int   GlobalHardwareInit (void)
+{
+int abit, xbit, ybit, zbit;
+
+//-------------------------------------------------------------------------------
+// V4000
+// Please create your own "DUT cross over" for renesas!!
+//-------------------------------------------------------------------------------
+
+    map_xover_connection ( _DUT_XOVER,       _YGEN, 0, 0 );//V4000
+    map_xover_connection ( _DUT_XOVER,       _YGEN, 1, 1 );
+    map_xover_connection ( _DUT_XOVER,       _YGEN, 2, 2 );
+    map_xover_connection ( _DUT_XOVER,       _YGEN, 3, 3 );
+    map_xover_connection ( _DUT_XOVER,       _YGEN, 4, 4 );
+    map_xover_connection ( _DUT_XOVER,       _YGEN, 5, 5 );
+    map_xover_connection ( _DUT_XOVER,       _YGEN, 6, 6 );
+    map_xover_connection ( _DUT_XOVER,       _YGEN, 7, 7 );
+    map_xover_connection ( _DUT_XOVER,       _YGEN, 8, 24 );
+    map_xover_connection ( _DUT_XOVER,       _YGEN, 9, 25 );
+    map_xover_connection ( _DUT_XOVER,       _YGEN, 10, 26 );
+    map_xover_connection ( _DUT_XOVER,       _YGEN, 11, 27 );
+    map_xover_connection ( _DUT_XOVER,       _YGEN, 12, 28 );
+    map_xover_connection ( _DUT_XOVER,       _YGEN, 13, 29 );
+    map_xover_connection ( _DUT_XOVER,       _YGEN, 14, 30 );
+    map_xover_connection ( _DUT_XOVER,       _YGEN, 15, 31 );
+
+    map_xover_connection ( _DUT_XOVER,       _XGEN, 0, 8 );
+    map_xover_connection ( _DUT_XOVER,       _XGEN, 1, 9 );
+    map_xover_connection ( _DUT_XOVER,       _XGEN, 2, 10 );
+    map_xover_connection ( _DUT_XOVER,       _XGEN, 3, 11 );
+    map_xover_connection ( _DUT_XOVER,       _XGEN, 4, 12 );
+    map_xover_connection ( _DUT_XOVER,       _XGEN, 5, 13 );
+    map_xover_connection ( _DUT_XOVER,       _XGEN, 6, 14 );
+    map_xover_connection ( _DUT_XOVER,       _XGEN, 7, 15 );
+    map_xover_connection ( _DUT_XOVER,       _XGEN, 8, 16 );
+    map_xover_connection ( _DUT_XOVER,       _XGEN, 9, 17 );
+    map_xover_connection ( _DUT_XOVER,       _XGEN, 10, 18 );
+    map_xover_connection ( _DUT_XOVER,       _XGEN, 11, 19 );
+    map_xover_connection ( _DUT_XOVER,       _XGEN, 12, 20 );
+    map_xover_connection ( _DUT_XOVER,       _XGEN, 13, 21 );
+    map_xover_connection ( _DUT_XOVER,       _XGEN, 14, 22 );
+    map_xover_connection ( _DUT_XOVER,       _XGEN, 15, 23 );
+
+    print_dlog ("Initializing tester hardare in GlobalHardwareInit().\n");
+
+    /* set up BM and ECR for pre-fuse flow*/
+    set_bmecr_config( largeExtBmEcr_2intEcr);
+
+    //  BM/ECR CROSSOVER (EB0, 1)
+    map_bmecr_xover_connection ( ecr1Memory,       _YGEN, 0, 0 );//V4000
+    map_bmecr_xover_connection ( ecr1Memory,       _YGEN, 1, 1 );
+    map_bmecr_xover_connection ( ecr1Memory,       _YGEN, 2, 2 );
+    map_bmecr_xover_connection ( ecr1Memory,       _YGEN, 3, 3 );
+    map_bmecr_xover_connection ( ecr1Memory,       _YGEN, 4, 4 );
+    map_bmecr_xover_connection ( ecr1Memory,       _YGEN, 5, 5 );
+    map_bmecr_xover_connection ( ecr1Memory,       _YGEN, 6, 6 );
+    map_bmecr_xover_connection ( ecr1Memory,       _YGEN, 7, 7 );
+    map_bmecr_xover_connection ( ecr1Memory,       _YGEN, 8, 24 );
+    map_bmecr_xover_connection ( ecr1Memory,       _YGEN, 9, 25 );
+    map_bmecr_xover_connection ( ecr1Memory,       _YGEN, 10, 26 );
+    map_bmecr_xover_connection ( ecr1Memory,       _YGEN, 11, 27 );
+    map_bmecr_xover_connection ( ecr1Memory,       _YGEN, 12, 28 );
+    map_bmecr_xover_connection ( ecr1Memory,       _YGEN, 13, 29 );
+    map_bmecr_xover_connection ( ecr1Memory,       _YGEN, 14, 30 );
+    map_bmecr_xover_connection ( ecr1Memory,       _YGEN, 15, 31 );
+
+    map_bmecr_xover_connection ( ecr1Memory,       _XGEN, 0, 8 );
+    map_bmecr_xover_connection ( ecr1Memory,       _XGEN, 1, 9 );
+    map_bmecr_xover_connection ( ecr1Memory,       _XGEN, 2, 10 );
+    map_bmecr_xover_connection ( ecr1Memory,       _XGEN, 3, 11 );
+    map_bmecr_xover_connection ( ecr1Memory,       _XGEN, 4, 12 );
+    map_bmecr_xover_connection ( ecr1Memory,       _XGEN, 5, 13 );
+    map_bmecr_xover_connection ( ecr1Memory,       _XGEN, 6, 14 );
+    map_bmecr_xover_connection ( ecr1Memory,       _XGEN, 7, 15 );
+    map_bmecr_xover_connection ( ecr1Memory,       _XGEN, 8, 16 );
+    map_bmecr_xover_connection ( ecr1Memory,       _XGEN, 9, 17 );
+    map_bmecr_xover_connection ( ecr1Memory,       _XGEN, 10, 18 );
+    map_bmecr_xover_connection ( ecr1Memory,       _XGEN, 11, 19 );
+    map_bmecr_xover_connection ( ecr1Memory,       _XGEN, 12, 20 );
+    map_bmecr_xover_connection ( ecr1Memory,       _XGEN, 13, 21 );
+    map_bmecr_xover_connection ( ecr1Memory,       _XGEN, 14, 22 );
+    map_bmecr_xover_connection ( ecr1Memory,       _XGEN, 15, 23 );
+
+//-------------------------------------------------------------------------------
+// Please create your own ECR Setiongs for renesas!!
+//-------------------------------------------------------------------------------
+
+#ifdef V5KONLY
+    /* Enable both site in CRM mode */
+    set_site_mask (0);
+#endif
+
+
+  /* set data width for BM and ECR */
+  set_bmecr_data_width( bm1Memory,  8);
+  set_bmecr_data_width( ecr1Memory, 8);
+
+  /* set IO compression for ECR */
+  set_ecr_compression( ecr1Memory, compressNone);
+
+  /* partition BM and ECR */
+  set_bmecr_address_mask( ecr1Memory, 0xffc00000, 0x0);
+  set_bmecr_address_mask( bm1Memory, 0xffc00000, 0x0);
+
+  set_analysis_flag_mode( ANALYSIS_FLAG_USE_GROUP_COUNTERS
+                        | ANALYSIS_FLAG_REQUIRE_ECRLOG
+                        | ANALYSIS_FLAG_NOT_PERSISTENT     );
+    /* Power down all supplies */
+    zero_ps();
+
+    /* connect all DPSs */
+//    connect_ps (0, PPS_CMODE_REINIT);
+#if defined(V5KONLY)
+    connect_ps (PPS_CON_VCC1_A, PPS_CMODE_SUPPLY);              // V1 PPS
+    connect_ps (PPS_CON_VPP1, PPS_CMODE_SUPPLY);                // V2 PPS
+    connect_ps (PPS_SITE(1,PPS_CON_VCC1_A), PPS_CMODE_SUPPLY);  // V3 PPS
+    connect_ps (PPS_SITE(1,PPS_CON_VPP1), PPS_CMODE_SUPPLY);    // V4 PPS
+    connect_ps (PPS_CON_VNN1, PPS_CMODE_SUPPLY);                // v5 PPS
+
+#elif defined(V4KONLY)
+    connect_ps (PPS_CON_V1, PPS_CMODE_SUPPLY);              // V1 PPS
+    connect_ps (PPS_CON_V2, PPS_CMODE_SUPPLY);              // V2 PPS
+    connect_ps (PPS_CON_V3, PPS_CMODE_SUPPLY);              // V3 PPS
+    connect_ps (PPS_CON_V4, PPS_CMODE_SUPPLY);              // V4 PPS
+    connect_ps (PPS_CON_V5, PPS_CMODE_SUPPLY);              // v5 PPS
+
+#endif
+
+    return (PASS);
+}
+
+/************************************************************************
+ * Device Specific Init Function
+ ************************************************************************/
+int DeviceSpecificInit(void)
+{
+    int i;
+
+#ifdef V5KONLY
+  set_pe_resource (all_pins, PE_VCH, 7000);
+  set_pe_resource (all_pins, PE_VCL, 0);
+#endif
+
+  comp_set_v1(0);
+  comp_set_v2(0);
+  comp_set_v3(0);
+  comp_set_v4(0);
+  set_voh(0);
+  set_vol(0);
+  set_vih1(0);
+  set_vil1(0);
+  set_vih2(0);
+  set_vil2(0);
+  set_vih1_mask(all_pins);
+//  set_vil1_mask(all_pins);
+  set_vhh_mask(lb_all_pins);
+
+  /*Mapping lts and gts, initilize timing set */
+  /* for fixed cycle time */
+  for (i=0; i<=2047; ++i)
+    comp_set_tsmap (all_pins, i, 1);
+  comp_set_io_time_ns (all_pins, 1, 0, 10);
+  set_drive_time_ns (all_pins,1,5,15);
+  set_strobe_time_ns (all_pins,1,5,15);
+
+  /* for EXTCYLM cycle time */
+  comp_set_tsmap (all_pins, EXTCYLM, 0);
+  comp_set_io_time_ns (all_pins, 0, 0, 10);
+  set_drive_time_ns (all_pins,0, 5, 15);
+  set_strobe_time_ns (all_pins,0, 5, 15);
+
+  disconnect_pin(all_pins);
+  Ecrsetup8(ECR_DISAB);
+
+  GlobalHardwareInit();
+  //fill_bmecr(bm1Memory, 0xff);          /* full bm with 0xFF  */
+  //fill_bmecr(ecr1Memory, 0xff);         /* full ecr with 0xFF */
+
+  return(PASS);
+}
+
+
+/*================================================================================================*/
+int RAMRunApg(int mode,int topaddr,int endaddr)
+/*================================================================================================*/
+{
+
+  int cnt,yst,yend,xst,xend,yinc_first,yinc_last,xinc;
+  int t_topaddr, t_endaddr;
+  int entryaddr;
+  
+  yinc_first = yinc_last = 0;
+  /*** ECR�̏����l(=ALL1)�ݒ� for Readout RAM ***/
+  
+  t_topaddr = topaddr;
+  t_endaddr = endaddr;
+    /* topaddr�̉���8Bit��yst,��ʂ�xst */
+  yst  = t_topaddr & WORD_END;
+  yend = t_endaddr & WORD_END;
+  xst  = t_topaddr >> YDECNUM;
+  xend = t_endaddr >> YDECNUM;
+
+  if((xend-xst)==0){
+    yinc_first = ((yend - yst) >> 2) +1;
+    yinc_last  = 0;
+    xinc       = 0;
+  }else{
+    yinc_first = ((WORD_END - yst) >> 2) +1;
+    yinc_last  = (yend >> 2) +1;
+    xinc       = (xend - xst);  
+  }
+  entryaddr = ( t_topaddr + RAM_OFFSET ) >> 2;
+
+  switch( mode ){
+  case 0:                                                 /* Write RAM */
+    /* Entry Addres������ */
+    load_vlf_offset(_SUB_DAXSTRANS_ADDR,0 ,(Byte)((entryaddr>>24)&0x3Ful)|0x80);
+    load_vlf_offset(_SUB_DAXSTRANS_ADDR,6 ,(Byte)((entryaddr>>16)&0xFFul));
+    load_vlf_offset(_SUB_DAXSTRANS_ADDR,14,(Byte)((entryaddr>>8 )&0xFFul));
+    load_vlf_offset(_SUB_DAXSTRANS_ADDR,22,(Byte)((entryaddr    )&0xFFul));
+    /* ��������Area���� */
+    //load_vlf_offset(_DAXS_WRITE_BM,1,yinc_first);
+    load_vlf_offset(_DAXS_WRITE_BM,2,xinc);
+    load_vlf_offset(_DAXS_WRITE_BM,3,yst);
+    load_vlf_offset(_DAXS_WRITE_BM,4,xst);
+    //load_vlf_offset(_DAXS_WRITE_BM,5,yinc_last);
+    run_apg(_DAXS_WRITE_BM);
+    break;
+  case 1:                                                 /* Read RAM */
+/*
+    load_vlf_offset(_SUB_DAXSTRANS_ADDR,0 ,(Byte)((entryaddr>>24)&0x3Ful)|0x80);
+    load_vlf_offset(_SUB_DAXSTRANS_ADDR,6 ,(Byte)((entryaddr>>16)&0xFFul));
+    load_vlf_offset(_SUB_DAXSTRANS_ADDR,14,(Byte)((entryaddr>>8 )&0xFFul));
+    load_vlf_offset(_SUB_DAXSTRANS_ADDR,22,(Byte)((entryaddr    )&0xFFul));
+    load_vlf_offset(_DAXS_READ_BM,1,yinc_first);
+    load_vlf_offset(_DAXS_READ_BM,2,xinc);
+    load_vlf_offset(_DAXS_READ_BM,3,yst);
+    load_vlf_offset(_DAXS_READ_BM,4,xst);
+    load_vlf_offset(_DAXS_READ_BM,5,yinc_last);
+    run_apg(_DAXS_READ_BM);
+*/  return(FAIL);
+    break;
+
+  case 2:                                                 /* ReadOut RAM        */
+  case 3:                                                 /* ReadOut RAM NoInit */
+    load_vlf_offset(_SUB_DAXSTRANS_ADDR,0 ,(Byte)((entryaddr>>24)&0x3Ful)|0x80);
+    load_vlf_offset(_SUB_DAXSTRANS_ADDR,6 ,(Byte)((entryaddr>>16)&0xFFul));
+    load_vlf_offset(_SUB_DAXSTRANS_ADDR,14,(Byte)((entryaddr>>8 )&0xFFul));
+    load_vlf_offset(_SUB_DAXSTRANS_ADDR,22,(Byte)((entryaddr    )&0xFFul));
+    //load_vlf_offset(_DAXS_READOUT_ECR2,1,yinc_first);
+    load_vlf_offset(_DAXS_READOUT_ECR,2,xinc);
+    load_vlf_offset(_DAXS_READOUT_ECR,3,yst);
+    load_vlf_offset(_DAXS_READOUT_ECR,4,xst);
+    //load_vlf_offset(_DAXS_READOUT_ECR2,5,yinc_last);
+    run_apg(_DAXS_READOUT_ECR);
+    break;
+  }
+  
+  if((ferr()!=0) && (mode==1 )){
+    sprintf(outbuf,"-- FAIL -- RAM Read/Write \n");
+    DataOut(Ffpt,outbuf);
+    //DeviceLevelsPowerDown();
+    //return(FAIL);
+  }
+  
+  return(PASS);
+}
+
+
+
+/*!
+  Get Lot Name
+  @param char *lotname [out] Lot Name
+  @param int size [in] lotname Buffer Size
+  @return void
+*/
+void GetLotName(char* lotname, int size)
+{
+
+  int length;
+
+  length=size;
+  if(-1!=get_system_option("__szLotID", lotname, &length)){
+    strtok(lotname, " ");
+  }else{
+    strcpy(lotname,"Lxxxxx");
+  }
+
+  if( 0==strlen(lotname) ){
+    strcpy(lotname,"Lxxxxx");
+  }
+
+}
+
+/*!
+  Get Wafer Name
+  @param char *wafername [out] Wafer Name
+  @param int size [in] wafername Buffer Size
+  @return void
+*/
+void GetWaferName(char* wafername, int size)
+{
+
+  int length;
+  int i;
+
+  length = size;
+  if(-1!=get_system_option("__szWaferID", wafername, &length)){
+    strtok(wafername, " ");
+  }else{
+    strcpy(wafername,"xx");
+  }
+
+  i = 0;
+  while( '*'==*(wafername+i) ){
+    *(wafername+i) = 'x';
+    i++;
+  }
+}
+
+
+
+#ifdef BIGENDIAN
+/************************************************************************
+ *  Read Error Catch RAM Mode BIG ENDIAN
+ *  (addr:DeviceAddr size:4->longword / 2->word / 1->byte)
+ ************************************************************************/
+int ReadEcrMode8(int addr,int size)
+{
+  switch(size){
+  case SIZE_B:
+    return(read_ecr(addr)&0xff);
+    break;
+  case SIZE_W:
+    return(((read_ecr(addr)<<8)&0xff00) | (read_ecr(addr+1)&0x00ff));
+    break;
+  case SIZE_L:
+    return(((read_ecr(addr)<<24)&0xff000000) |
+         ((read_ecr(addr+1)<<16)&0x00ff0000) |
+         ((read_ecr(addr+2)<<8)&0x0000ff00) |
+         (read_ecr(addr+3)&0x000000ff));
+    break;
+  default:
+    printf("!!!!! Error Iregai Argument Input !!!!!\n");
+    break;
+  }
+}
+
+/************************************************************************
+ *  Write Error Catch RAM Mode BIG ENDIAN
+ *  (addr:DeviceAddr data:WriteData size:4->longword / 2->word / 1->byte)
+ ************************************************************************/
+void WriteEcrMode8(int addr,int data,int size)
+{
+  switch(size){
+  case SIZE_B:
+    write_ecr(addr,data);
+    break;
+  case SIZE_W:
+    write_ecr(addr,data>>8);
+    write_ecr(addr+1,data);
+    break;
+  case SIZE_L:
+    write_ecr(addr,data>>24);
+    write_ecr(addr+1,data>>16);
+    write_ecr(addr+2,data>>8);
+    write_ecr(addr+3,data);
+    break;
+  default:
+    printf("!!!!! Error Iregai Argument Input !!!!!\n");
+    break;
+  }
+}
+
+/************************************************************************
+ *  Read Buffer Memory Mode BIG ENDIAN
+ *  (addr:DeviceAddr size:4->longword / 2->word / 1->byte)
+ ************************************************************************/
+int ReadBmMode8(int addr,int size)
+{
+  switch(size){
+  case SIZE_B:
+    return(read_bm(addr)&0xff);
+    break;
+  case SIZE_W:
+    return(((read_bm(addr)<<8)&0xff00) | (read_bm(addr+1)&0x00ff));
+    break;
+  case SIZE_L:
+    return(((read_bm(addr)<<24)&0xff000000) |
+         ((read_bm(addr+1)<<16)&0x00ff0000) |
+         ((read_bm(addr+2)<<8)&0x0000ff00) |
+         (read_bm(addr+3)&0x000000ff));
+    break;
+  default:
+    printf("!!!!! Error Iregai Argument Input !!!!!\n");
+    break;
+  }
+}
+
+/************************************************************************
+ *  Write Buffer Memory Mode BIG ENDIAN
+ *  (addr:DeviceAddr data:WriteData size:4->longword / 2->word / 1->byte)
+ ************************************************************************/
+void WriteBmMode8(int addr,int data,int size)
+{
+  switch(size){
+  case SIZE_B:
+    comp_write_bm(addr,data);
+    break;
+  case SIZE_W:
+    comp_write_bm(addr,data>>8);
+    comp_write_bm(addr+1,data);
+    break;
+  case SIZE_L:
+    comp_write_bm(addr,data>>24);
+    comp_write_bm(addr+1,data>>16);
+    comp_write_bm(addr+2,data>>8);
+    comp_write_bm(addr+3,data);
+    break;
+  default:
+    printf("!!!!! Error Iregai Argument Input !!!!!\n");
+    break;
+  }
+}
+#else
+/************************************************************************
+ *  Read Error Catch RAM Mode LITTLE ENDIAN
+ *  (addr:DeviceAddr size:4->longword / 2->word / 1->byte)
+ ************************************************************************/
+int ReadEcrMode8(int addr,int size)
+{
+  switch(size){
+  case SIZE_B:
+    return(read_ecr(addr)&0xff);
+    break;
+  case SIZE_W:
+    return(((read_ecr(addr+1)<<8)&0xff00) | (read_ecr(addr)&0x00ff));
+    break;
+  case SIZE_L:
+    return(((read_ecr(addr+3)<<24)&0xff000000) |
+         ((read_ecr(addr+2)<<16)&0x00ff0000) |
+         ((read_ecr(addr+1)<<8)&0x0000ff00) |
+         (read_ecr(addr)&0x000000ff));
+    break;
+  default:
+    printf("!!!!! Error Iregai Argument Input !!!!!\n");
+    break;
+  }
+}
+
+/************************************************************************
+ *  Write Error Catch RAM Mode LITTLE ENDIAN
+ *  (addr:DeviceAddr data:WriteData size:4->longword / 2->word / 1->byte)
+ ************************************************************************/
+void WriteEcrMode8(int addr,int data,int size)
+{
+  switch(size){
+  case SIZE_B:
+    write_ecr(addr,data);
+    break;
+  case SIZE_W:
+    write_ecr(addr+1,data>>8);
+    write_ecr(addr,data);
+    break;
+  case SIZE_L:
+    write_ecr(addr+3,data>>24);
+    write_ecr(addr+2,data>>16);
+    write_ecr(addr+1,data>>8);
+    write_ecr(addr,data);
+    break;
+  default:
+    printf("!!!!! Error Iregai Argument Input !!!!!\n");
+    break;
+  }
+}
+
+/************************************************************************
+ *  Read Buffer Memory Mode LITTLE ENDIAN
+ *  (addr:DeviceAddr size:4->longword / 2->word / 1->byte)
+ ************************************************************************/
+int ReadBmMode8(int addr,int size)
+{
+  switch(size){
+  case SIZE_B:
+    return(read_bm(addr)&0xff);
+    break;
+  case SIZE_W:
+    return(((read_bm(addr+1)<<8)&0xff00) | (read_bm(addr)&0x00ff));
+    break;
+  case SIZE_L:
+    return(((read_bm(addr+3)<<24)&0xff000000) |
+         ((read_bm(addr+2)<<16)&0x00ff0000) |
+         ((read_bm(addr+1)<<8)&0x0000ff00) |
+         (read_bm(addr)&0x000000ff));
+    break;
+  default:
+    printf("!!!!! Error Iregai Argument Input !!!!!\n");
+    break;
+  }
+}
+
+/************************************************************************
+ *  Write Buffer Memory Mode LITTLE ENDIAN
+ *  (addr:DeviceAddr data:WriteData size:4->longword / 2->word / 1->byte)
+ ************************************************************************/
+void WriteBmMode8(int addr,int data,int size)
+{
+  switch(size){
+  case SIZE_B:
+    comp_write_bm(addr,data);
+    break;
+  case SIZE_W:
+    comp_write_bm(addr+1,data>>8);
+    comp_write_bm(addr,data);
+    break;
+  case SIZE_L:
+    comp_write_bm(addr+3,data>>24);
+    comp_write_bm(addr+2,data>>16);
+    comp_write_bm(addr+1,data>>8);
+    comp_write_bm(addr,data);
+    break;
+  default:
+    printf("!!!!! Error Iregai Argument Input !!!!!\n");
+    break;
+  }
+}
+#endif
+
+/************************************************************************
+ *  Swap Buffer Memory Data by 4byte
+ ************************************************************************/
+void SwapBMData4byte(int start_addr,int end_addr)
+{
+  int addr;
+  int buf;
+
+  addr = start_addr;
+  while( addr <= end_addr ){
+    buf = (((read_bm(addr+3)<<24)&0xff000000) |
+           ((read_bm(addr+2)<<16)&0x00ff0000) |
+           ((read_bm(addr+1)<<8)&0x0000ff00) |
+            (read_bm(addr)&0x000000ff));
+    comp_write_bm(addr,buf>>24);
+    comp_write_bm(addr+1,buf>>16);
+    comp_write_bm(addr+2,buf>>8);
+    comp_write_bm(addr+3,buf);
+
+    addr += 4;
+  }
+}
+
+/************************************************************************
+ *  Swap ECR Data by 4byte
+ ************************************************************************/
+void SwapECRData4byte(int start_addr,int end_addr)
+{
+  int addr;
+  int buf;
+
+  addr = start_addr;
+  while( addr <= end_addr ){
+    buf = (((read_ecr(addr+3)<<24)&0xff000000) |
+           ((read_ecr(addr+2)<<16)&0x00ff0000) |
+           ((read_ecr(addr+1)<<8)&0x0000ff00) |
+            (read_ecr(addr)&0x000000ff));
+
+    write_ecr(addr,buf>>24);
+    write_ecr(addr+1,buf>>16);
+    write_ecr(addr+2,buf>>8);
+    write_ecr(addr+3,buf);
+
+    addr += 4;
+  }
+}
+
+/**************************************************************************
+ * Param Trans To BM
+ **************************************************************************/
+int ParamTransBM(interface_t* param )
+{
+  int cnt,param_data, bm_data;
+
+  /******** Parameter BM Write *********/
+  for(cnt=0;cnt<IN_BYTEEND;cnt++){                  /* write register(byte) data */
+    WriteBmMode8((param + cnt) -> addr,(param + cnt) -> value,(param + cnt) -> size);
+  }
+  for(cnt=IN_BYTEEND+1;cnt<IN_LWORDEND;cnt++){      /* write other data */
+    WriteBmMode8((param + cnt) -> addr,(param + cnt) -> value,(param + cnt) -> size);
+  }
+  for(cnt=OUTPUTIF_TOP;cnt<OUTPUTIF_END;cnt+=4){    /* write dummy data */
+    WriteBmMode8(cnt,0xFFFFFFFF,SIZE_L);
+  }
+
+
+  //WriteBmMode8((param + OUT_JUDGE) -> addr,CHECK_CODE,(param + OUT_JUDGE) -> size);   /* Write CheckCode */
+
+  /**** Comp parameter <=> BM ****/
+  for(cnt=0;cnt<IN_BYTEEND;cnt++){                  /* Comp register(byte) data */
+    param_data = ((param + cnt) -> value);
+    bm_data    = ReadBmMode8((param + cnt) -> addr,(param + cnt) -> size);
+    if( param_data != bm_data ){
+      sprintf(outbuf,"  TRANS ERROR1!!(param => BM) addr=H'%X data: H'%X(param)<=>H'%X(BM)\n", (param + cnt) -> addr,param_data, bm_data);
+      DataOut(Ffpt,outbuf);
+      return(FAIL);
+    }
+  }
+  for(cnt=IN_BYTEEND+1;cnt<IN_LWORDEND;cnt++){      /* comp other data */
+    param_data = ((param + cnt) -> value);
+    bm_data    = ReadBmMode8((param + cnt) -> addr,(param + cnt) -> size);
+    if( param_data != bm_data ){
+      sprintf(outbuf,"  TRANS ERROR2!!(param => BM) addr=H'%X data: H'%X(param)<=>H'%X(BM)\n", (param + cnt) -> addr,param_data, bm_data);
+      DataOut(Ffpt,outbuf);
+      return(FAIL);
+    }
+  }
+  for(cnt=OUTPUTIF_TOP;cnt<OUTPUTIF_END;cnt+=4){    /* comp dummy data */
+    param_data = 0xFFFFFFFF;
+    bm_data    = ReadBmMode8(cnt,SIZE_L);
+    if( param_data != bm_data ){
+      sprintf(outbuf,"  TRANS ERROR3!!(param => BM) addr=H'%X data: H'%X(param)<=>H'%X(BM)\n", (param + cnt) -> addr,param_data, bm_data);
+      DataOut(Ffpt,outbuf);
+      return(FAIL);
+    }
+  }
+  return(PASS);
+}
+
+/*******************************************************************
+ *  Vth-Search Function
+ *  judge = 0:����Search
+ *  judge = 1:�㐞Search
+ *******************************************************************/
+
+int VthReadSearch(int judge, int vcc[NUM_POWERSUPPLY],interface_t* param,int waittime,int delta)
+{
+  int selvol,start_vol,end_vol,delta_vol,expect,step,mode;
+  char file_name;
+  int result,i,k;
+  int tempo1,bdata00_bak,bdata01_bak,speed,testsel_bak;
+  
+  printf("judge = %d\n",judge);
+
+  
+  result = 0;
+  i = 0;
+  start_vol = end_vol = 0;
+  selvol = 0;
+
+  //-- Initial Setting --//
+  bdata00_bak = GetValue(IN_BDATA00,param);
+  //SetValue(IN_BDATA16,param,VTHREAD_EDGE);
+
+  if(judge == 0){        // - => +
+    bdata01_bak = SetValue(IN_BDATA01,param,0x00); //All"0" judge
+    delta_vol =   delta*1;     //Step : +0.5V
+    start_vol =   0;     //start level : -2.00V
+    end_vol   =  2000;     //end level : 1.25V
+    expect    =  0x00;     //OUT_JUDGE�̊��Ғl
+    
+  }else if(judge == 1){  // + => -
+    bdata01_bak = SetValue(IN_BDATA01,param,0x01); //All"1" judge
+    delta_vol =  delta*-1;     //Step : +0.5V
+    start_vol =  0;     //start level : 1.25V
+    end_vol   = -2000;     //end level: -2.00V
+    expect    =  0x01;     //OUT_JUDGE�̊��Ғl
+
+  }else{  // Error
+    printf("judge number Error!!! judge = %d\n",judge);
+    return(FAIL);  
+  }
+
+  // param Set 
+  speed = SetValue(IN_EXTAL1,param,500); //2MHz CLK SET
+  testsel_bak = SetValue(IN_TESTSEL,param,expect);
+
+
+
+  for (k = 1; k <= 1; k++){
+
+
+    switch(k){
+      case 1 :
+        printf(" 1st Step VthRead Start\n ");
+        break;
+      
+      case 2 : // 0.1V step
+        printf(" 2nd Step VthRead Start\n ");
+        start_vol = selvol - delta_vol;
+	end_vol   = selvol;
+	delta_vol = delta_vol / 5;
+        break;
+
+      case 3 : // 0.02V(20mV) step
+        printf(" 3rd Step VthRead Start\n ");
+        start_vol = selvol - delta_vol;
+	end_vol   = selvol;
+	delta_vol = delta_vol / 5;
+        break;     
+    }  
+      
+    step = ((end_vol - start_vol) / delta_vol) + 1;  
+    printf("Start =%dmV, End = %dmV, Step = %dmV\n",start_vol,end_vol,delta_vol);
+    for (i = 0; i <= step; i++){
+      selvol = start_vol + i * delta_vol;
+	  //printf("enter selvol ->");DigitInput(&selvol);
+
+      if(selvol <=-3500){
+        printf("VthRead level Error!!! level = %dmV\n",selvol);
+        return(FAIL);
+      }else if(selvol <= -2000){
+        SetValue(IN_BDATA00,param,0x01); //Select Vth-Read1
+        printf("Caution! VthRead1 level < -2.0V , level = %dmV\n",selvol);
+	mode = VSSMON_APP;
+      }else if(selvol <= 0){
+        SetValue(IN_BDATA00,param,0x01); //Select Vth-Read1
+        mode = VSSMON_APP;
+      }else if(selvol <= 1250 ){ 
+        SetValue(IN_BDATA00,param,0x02); //Select Vth-Read2    
+        mode = VSSMON_APP;
+      }else if(selvol <= 3300 ){
+        SetValue(IN_BDATA00,param,0x03); //Select Vth-Read3    
+        mode = VCCMON_APP;
+      }else{
+        printf("VthRead level Error!!! level = %dmV\n",selvol);
+        return(FAIL);
+      }
+      printf("Vth-Read Start level = %dmV\n",selvol);
+	  SetValue(OUT_JUDGE1,param,0);
+      result = CpuModeMonitor(mode, vcc, param,waittime,CreatePatFileName("readall_code_at"),"CPU READ VthSearch", selvol); // Vth-Read ���s
+
+      if(result != PASS){
+        sprintf(outbuf,"Vth-Read Fail!! CpuModeMonitor-Error!!!\n");
+	DataOut(Ffpt,outbuf);
+	return(result);
+      }
+      
+      if(READFAIL == GetValue(OUT_JUDGE1,param)){
+        break; // "i" Loop break -> next "k"
+      }
+
+    }
+    // param Return 
+  }
+  SetValue(IN_EXTAL1,param,speed);
+  SetValue(IN_TESTSEL,param,testsel_bak);
+
+  return(selvol);
+}
+
+
+
+int VthReadDist(int vth_mode, int bit_count, int min_vol, int delta_vol, int vcc[NUM_POWERSUPPLY],int waittime, interface_t* param, char file_name[128])
+{
+  int mode,test_item,selvol,data_num,max_vol;
+  int result,tempo1,i,k,tempo2,first_flag,inif_flag;
+  int step,stack0,stack1,stack2,stack3,stack4,stack5;
+  int vth_data[2][105];
+  int bdata00_bak,speed_bak,testsel_bak;
+  int repeat_mode;
+  int repeat_total,start_time;
+  char pat_name[128];
+  first_flag =1;
+  inif_flag =1;
+  
+  testsel_bak = SetValue(IN_TESTSEL,param,0);
+  
+  stack4 = GetValue(IN_ETLR25,param);
+  if(GetValue(IN_BDATA08,param) == 0){//BDATA08=0 -> Iref=2.5uA
+    SetValue(IN_ETLR25,param,(GetValue(IN_ETLR25,param) & 0xF0) | 0x0D);
+  }
+
+#if(VTHMODE)
+//#if(0)
+  if(delta_vol == 5000){
+    sprintf(pat_name,"readdump_code_at");
+  }else{
+    if ( GetValue(IN_BDATA01,param) == 0) sprintf(pat_name,"readcount_code_at");
+    else                                  sprintf(pat_name,"readstripecount_code_at");
+  }
+  result = 0; test_item = 0;
+  i = 0;
+  printf("speed = %d\n",GetValue(IN_EXTAL1,param));
+  switch (vth_mode){
+    case 1:
+      mode = VSSMON_APP; //Connect PMU <=> VSSMON
+      max_vol =  0;      //max = 0V
+      break;
+    case 2:
+      mode = VSSMON_APP; //Connect PMU <=> VSSMON
+      max_vol = 1250;    //max = 1.25V
+      break;
+    case 3:
+      mode = VCCMON_APP; //Connect PMU <=> VCCMON
+      max_vol = vcc[0];  //max = Vcc
+      break;
+    case 12:
+      vth_mode = 1;      //Start Mode = 1
+      test_item = 12;
+      mode = VSSMON_APP; //Connect PMU <=> VSSMON
+      max_vol = 1250;    //max = 2.5V
+      break;
+    case 23:
+      vth_mode = 2;      //Start Mode = 2
+      test_item = 23;
+      mode = VSSMON_APP; //Connect PMU <=> VSSMON
+      max_vol = 2500;    //max = 2.5V
+      break;
+    default:
+      printf("vth_mode Select Error!!! vth_mode = %X",vth_mode);    
+      return(FAIL);
+      break;
+  }
+
+  printf("vth_mode = %d, min_vol = %d, File name = %s\n",vth_mode,min_vol,file_name);
+
+  bdata00_bak = SetValue(IN_BDATA00,param,vth_mode); // VthRead num select
+
+  start_time = bentime(); /* Get Test Start Time */
+
+  for (selvol = min_vol; selvol <= max_vol; selvol = selvol + delta_vol){ //Vth-Read Loop min_vol~max_bit Hit(max_vol)
+
+    if ( test_item == 12 ) {
+      if ( ( selvol > 0 ) && ( vth_mode !=2 ) ) {
+        vth_mode = 2;
+        SetValue(IN_BDATA00,param,vth_mode);   // VthRead num select  
+		inif_flag = 1;
+      }
+    }
+
+    if ( test_item == 23 ) {
+      if ( ( selvol > 1200 ) && ( vth_mode !=3 ) ) {
+        vth_mode = 3;
+        mode = VCCMON_APP; //Connect PMU <=> VCCMON
+        SetValue(IN_BDATA00,param,vth_mode);   // VthRead num select
+	inif_flag = 1;  
+      }
+    }
+
+    printf("VthRead%d Vol = %d , Start",vth_mode,selvol);
+
+    if(first_flag==1){// Initial mode
+      first_flag = 0;
+	  inif_flag = 0;
+
+      repeat_mode = INITIAL_SET | OUTIF_READ;
+    }else{ // Normal Mode
+      repeat_mode = OUTIF_READ;
+    }
+
+    if(inif_flag ==1){
+      inif_flag = 0;
+      repeat_mode = repeat_mode | INIF_SET | RAMBOOT_CHANGE;  //����IF�ύXMode�ǉ�
+    }
+
+    //result = CpuModeMonitor(mode, vcc, param,waittime,CreatePatFileName(pat_name),"CPU READ VthRead", &selvol); // Vth-Read ���s
+    result = CpuModeMonitor_Repeat(repeat_mode,mode, vcc, param,waittime,CreatePatFileName(pat_name),"CPU READ VthRead", &selvol); // Vth-Read ���s
+	
+    if(result != PASS){
+	  return(FAIL);
+    }
+	
+    vth_data[1][i] = GetValue(OUT_LDATA0,param); //Vth Read Count Set
+    vth_data[0][i] = selvol;                     //Vth Read level Set
+    
+	i=i+1;
+    if(bit_count <= vth_data[1][i-1]){ //Max Bit Hit
+      printf(" Bit Count Hit Vol = %dmV, count=%d <= %d\n",selvol,bit_count,vth_data[1][i-1]);
+      break;
+    }
+  }
+
+  repeat_total = (bentime()-start_time-init_bentime())/1000; /* Get Test Total Time */
+  printf("Total Time %dms\n",repeat_total);
+  DeviceLevelsPowerDown(); //�e�d��OFF�R�}���h
+
+
+    max_vol = selvol;
+    // param Return //
+    SetValue(IN_BDATA00,param,bdata00_bak);
+    SetValue(IN_TESTSEL,param,testsel_bak);
+    
+  //-- Vth Read2&3 Dummy Set --//
+  if(test_item == 23){
+    for(selvol = max_vol + delta_vol; selvol <= 2500; selvol = selvol + delta_vol){
+      vth_data[1][i] = GetValue(OUT_LDATA0,param); //Vth Read Count Set
+      vth_data[0][i] = selvol;                     //Vth Read level Set
+      i++;
+    }
+  }
+  //-- Vth Read2 ~1500mV Dummy Set --//
+  else if((vth_mode == 2)|(test_item == 12)){
+    for(selvol = max_vol + delta_vol; selvol <= 1500; selvol = selvol + delta_vol){
+      vth_data[1][i] = GetValue(OUT_LDATA0,param); //Vth Read Count Set
+      vth_data[0][i] = selvol;                     //Vth Read level Set
+      i++;
+    }
+  }
+  //-- Vth Read1 ~0mV Dummy Set --//
+  else if(vth_mode == 1){
+    for(selvol = max_vol + delta_vol; selvol <= 0; selvol = selvol + delta_vol){
+      vth_data[1][i] = GetValue(OUT_LDATA0,param); //Vth Read Count Set
+      vth_data[0][i] = selvol;                     //Vth Read level Set
+      i++;
+    }
+  }
+  
+  i--;
+    
+  step = i;        // Step number
+  data_num = 1;       // Vth bunpu number
+
+  if(delta_vol == 5000){
+    sprintf(file_name,"VthMode_FBM_%d.bin",get_site_number());
+    result = FbmDataOut_BIST(FBM_READTOP,FBM_READSIZE,file_name);
+  }else{
+    result = DistributionDataOut(vth_mode,vth_data,data_num,step,file_name,param);
+  }
+
+#else
+  switch (vth_mode){
+    case 1:
+      max_vol =  0;      //max = 0V
+      break;
+    case 2:
+      max_vol = 1250;    //max = 1.25V
+      break;
+    case 3:
+      max_vol = vcc[0];  //max = Vcc
+      break;
+    case 12:
+      max_vol = 1500;    //max = 1.5V
+      break;
+    case 23:
+      max_vol = 2500;    //max = 2.5V
+      break;
+    default:
+      printf("vth_mode Select Error!!! vth_mode = %X",vth_mode);    
+      return(FAIL);
+      break;
+  }
+  repeat_total = (absolute(max_vol - min_vol) / absolute(delta_vol));
+  stack0 = SetValue(IN_BDATA00,param,repeat_total);
+  testsel_bak = SetValue(IN_TESTSEL,param,1);
+  stack2 = SetValue(IN_LDATA0,param,min_vol);
+  stack3 = SetValue(IN_LDATA1,param,delta_vol);
+  stack5 = SetValue(IN_EXTAL1,param,VTH_FREQ);
+
+  DeviceSpecificPowerUp(); //Power-On Setting
+  CpuMode_VthRead(VSSMON_MON,&vcc[0],param,W1SEC*waittime,CreatePatFileName("Vthbunpu_zitan"),"CPU VthDist",&selvol);
+  DeviceLevelsPowerDown(); //�e�d��OFF�R�}���h
+
+  SetValue(IN_BDATA00,param,stack0);
+  SetValue(IN_TESTSEL,param,testsel_bak);
+  SetValue(IN_LDATA0,param,stack2);
+  SetValue(IN_LDATA1,param,stack3);
+  SetValue(IN_EXTAL1,param,stack5);
+
+  for(i = 0; i <= repeat_total; i++){
+    vth_data[1][i] = ReadEcrMode8(FBM_READTOP+(i*4),SIZE_L);
+    vth_data[0][i] = min_vol + (delta_vol * i);
+  }
+
+  if(delta_vol == 5000){
+    sprintf(file_name,"VthMode_FBM_%d.bin",get_site_number());
+    result = FbmDataOut_BIST(FBM_READTOP,FBM_READSIZE,file_name);
+  }else{
+    result = DistributionDataOut(vth_mode,vth_data,1,repeat_total,file_name,param);
+  }
+#endif
+
+  SetValue(IN_ETLR25,param,stack4);
+  DeviceSpecificPowerUp(); //Power-On Setting
+
+  return(result);
+}
+
+/********************************************************************
+Vth-Edge-Search Function
+ ********************************************************************/
+
+int VthEdgeSearch(int vth_mode,int min_deltavol, int vcc[NUM_POWERSUPPLY],int waittime, interface_t* param)
+{
+  int selvol,mode,max_vol,delta_vol,min_vol;
+  int result,judge,stack0,stack1,stack2,stack3,stack4,stack5,stack6,stack7,i,k;
+  int vth_data[2][105];
+  int step_vol[5] = {};
+  int repeat_mode,first_flag,inif_flag;
+  int repeat_total,start_time;
+  int ffpt_bak;
+
+  first_flag = 1;
+  inif_flag = 0;
+  ffpt_bak = Ffpt; 
+  stack0 = SetValue(IN_EXTAL1,param,VTH_FREQ);
+  stack1 = SetValue(IN_BDATA01,param,0);  //BDATA01 Clear
+  stack3 = GetValue(IN_TESTSEL,param);
+  delta_vol = 500;
+  result = 0;
+  i = 0;
+  k =0;
+  stack4 = GetValue(IN_ETLR25,param);
+  if(GetValue(IN_BDATA08,param) == 0){//BDATA08=0 -> Iref=2.5uA
+    SetValue(IN_ETLR25,param,(GetValue(IN_ETLR25,param) & 0xF0) | 0x0D);
+  }
+
+// 1:VthRead Old Mode, 0:VthRead New Mode
+//#if(0)
+#if(VTHMODE)
+
+  stack2 = GetValue(IN_BDATA00,param);
+  for(delta_vol = 500;delta_vol >= 20 ;delta_vol = delta_vol/5){
+    if(delta_vol > min_deltavol){
+      step_vol[k] = delta_vol;
+      k = k +1;
+    }else if(delta_vol <= min_deltavol){
+      step_vol[k] = min_deltavol;
+      k = 0;
+	  delta_vol = 500;
+      break;
+    }
+  }
+  switch (vth_mode){
+    case 1:
+      SetValue(IN_TESTSEL,param,0);
+      SetValue(IN_BDATA00,param,0x01);
+	  mode = VSSMON_APP;
+      //max_vol =  0;   //max = 1.25V
+      max_vol =  1250;
+      min_vol = -2000;
+      judge = 0;
+      break;
+    case 2:
+      SetValue(IN_TESTSEL,param,1);
+      SetValue(IN_BDATA00,param,0x01);
+	  mode = VSSMON_APP;
+      //max_vol = 0;    //max = 1.25V
+      max_vol =  1250;
+      min_vol = -2000;
+      judge = 1;
+      break;
+    case 3:
+      SetValue(IN_TESTSEL,param,0);
+      SetValue(IN_BDATA00,param,0x02);
+	  mode = VSSMON_APP;
+      max_vol = 3300;    //max = 1.25V
+      min_vol = 0;
+      //min_vol = 0;
+      judge = 0;
+      break;
+    case 4:
+      SetValue(IN_TESTSEL,param,1);
+      SetValue(IN_BDATA00,param,0x02);
+	  mode = VSSMON_APP;
+      max_vol = 3300;    //max = 1.25V
+      min_vol = 0;
+      //min_vol = 0;
+      judge = 1;
+      break;
+    default:
+      printf("vth_mode Select Error!!! vth_mode = %X",vth_mode);    
+      return(FAIL);
+      break;
+  }
+  start_time = bentime(); /* Get Test Start Time */
+
+  while(delta_vol >= min_deltavol){
+    for (selvol = min_vol; selvol <= max_vol; selvol = selvol + delta_vol){
+      printf("selvol=%d[mV],maxvol=%d[mV],minvol=%d[mV],deltavol=%d[mV]\n",selvol,max_vol,min_vol,delta_vol);
+/* range change */
+      if((selvol < 0) && (GetValue(IN_BDATA00,param)!=1)){
+        mode = VSSMON_APP; //Connect PMU <=> VSSMON
+        SetValue(IN_BDATA00,param,0x01);
+        inif_flag = 1;
+        }
+      else if((0 < selvol) && (selvol < 1250) && (GetValue(IN_BDATA00,param)!=2)){
+        mode = VSSMON_APP; //Connect PMU <=> VSSMON
+        SetValue(IN_BDATA00,param,0x02);
+        inif_flag = 1;	
+        }
+      else if((1250 < selvol) && (GetValue(IN_BDATA00,param)!=3)){
+        mode = VCCMON_APP; //Connect PMU <=> VCCMON
+        SetValue(IN_BDATA00,param,0x03);
+        inif_flag = 1;	
+        }
+/* range change end */
+
+//      if(vth_mode ==3 || vth_mode ==4){
+//        
+//	if((selvol < 1250) && (GetValue(IN_BDATA00,param)!=2)){
+//          mode = VSSMON_APP; //Connect PMU <=> VSSMON
+//	  SetValue(IN_BDATA00,param,0x02);
+//          inif_flag = 1;
+//	}else if((selvol > 1250) && (GetValue(IN_BDATA00,param)!=3)){
+//          mode = VCCMON_APP; //Connect PMU <=> VCCMON
+//          SetValue(IN_BDATA00,param,0x03);
+//          inif_flag = 1;
+//	}
+//      
+//      }
+
+      //---------�e�t���O�ɉ�����Mode�ݒ��ύX---------//
+    if(first_flag==1){// Initial mode
+      first_flag = 0;
+      inif_flag = 0;
+      repeat_mode = INITIAL_SET | OUTIF_READ;
+      Ffpt = 1;
+    }else{ // Normal Mode
+      repeat_mode = OUTIF_READ;
+      Ffpt = 0;
+    }
+
+    if(inif_flag ==1){
+      inif_flag = 0;
+      repeat_mode = repeat_mode | INIF_SET | RAMBOOT_CHANGE;  //����IF�ύXMode�ǉ�
+      Ffpt = 1;
+    }
+
+      //CpuModeMonitor(mode, vcc, param,waittime,CreatePatFileName("readall_code_at"),"CPU READ ALL", &selvol);
+      CpuModeMonitor_Repeat(repeat_mode,mode, vcc, param,waittime,CreatePatFileName("readall_code_at"),"CPU READ ALL", &selvol);
+
+      vth_data[1][i] = GetValue(OUT_JUDGE1,param);
+      vth_data[0][i] = selvol;
+      i=i+1;
+      if(judge == 0){
+        if(GetValue(OUT_JUDGE1,param) != CPASS){
+          min_vol = selvol - delta_vol;
+          k = k + 1;
+          delta_vol = step_vol[k];
+          break;
+        }
+      }else if(judge == 1){
+        if(GetValue(OUT_JUDGE1,param) == CPASS){
+        min_vol = selvol - delta_vol;
+        k = k + 1;
+        delta_vol = step_vol[k];
+        break;
+        }
+      }
+    }
+    if(k == 0){
+      printf("Edge Search Error\n");	  
+      break;
+    }
+  }
+  Ffpt = ffpt_bak;
+  repeat_total = (bentime()-start_time-init_bentime())/1000; /* Get Test Total Time */
+  printf("Total Time %dms\n",repeat_total);
+  DeviceLevelsPowerDown(); //�e�d��OFF�R�}���h
+  SetValue(IN_EXTAL1,param,stack0);
+  SetValue(IN_BDATA01,param,stack1);
+  SetValue(IN_BDATA00,param,stack2); 
+  SetValue(IN_TESTSEL,param,stack3);
+  SetValue(IN_ETLR25,param,stack4);
+  if(judge == 0){
+  	selvol = selvol - min_deltavol;
+  }
+  DeviceSpecificPowerUp(); //Power-On Setting
+  return(selvol);
+#else
+  min_vol = absolute(min_deltavol);
+	SetValue(IN_TESTSEL,param,0);
+	SetValue(IN_EXTAL1,param,VTH_FREQ);
+  switch(vth_mode){
+    case 1: //0V->-0.5V->-1.0V
+      stack5 = SetValue(IN_LDATA0,param,0);                         //Initial Voltage
+      stack6 = SetValue(IN_LDATA1,param,delta_vol * (-1));          //First Delta Voltage
+      stack7 = SetValue(IN_LDATA2,param,min_vol * (-1));            //Last Delta Voltage
+      SetValue(IN_BDATA01,param,0);                                 //ExpReadData 0:0x00000000, 1:0xFFFFFFFF
+    break;
+    case 2: //-2.5V->-2.0V->-1.5V
+      stack5 = SetValue(IN_LDATA0,param,-2500);                     //Initial Voltage
+      stack6 = SetValue(IN_LDATA1,param,delta_vol * (+1));          //First Delta Voltage
+      stack7 = SetValue(IN_LDATA2,param,min_vol * (+1));            //Last Delta Voltage
+      SetValue(IN_BDATA01,param,1);                                 //ExpReadData 0:0x00000000, 1:0xFFFFFFFF
+    break;
+    case 3: //+2.5V->+2.0V->+1.5V
+      stack5 = SetValue(IN_LDATA0,param,+2500);                     //Initial Voltage
+      stack6 = SetValue(IN_LDATA1,param,delta_vol * (-1));          //First Delta Voltage
+      stack7 = SetValue(IN_LDATA2,param,min_vol * (-1));            //Last Delta Voltage
+      SetValue(IN_BDATA01,param,0);                                 //ExpReadData 0:0x00000000, 1:0xFFFFFFFF
+    break;
+    case 4: //0V->0.5V->1.0V
+      stack5 = SetValue(IN_LDATA0,param,0);                         //Initial Voltage
+      stack6 = SetValue(IN_LDATA1,param,delta_vol * (+1));          //First Delta Voltage
+      stack7 = SetValue(IN_LDATA2,param,min_vol * (+1));            //Last Delta Voltage
+      SetValue(IN_BDATA01,param,1);                                 //ExpReadData 0:0x00000000, 1:0xFFFFFFFF
+    break;
+  }
+  CpuMode_VthRead(VSSMON_MON,&vcc[0],param,W1SEC*waittime,CreatePatFileName("Vthseach_zitan"),"VthEdgeSearch",&selvol);
+
+  SetValue(IN_EXTAL1,param,stack0);
+  SetValue(IN_BDATA01,param,stack1);
+  SetValue(IN_BDATA00,param,stack2); 
+  SetValue(IN_TESTSEL,param,stack3);
+  SetValue(IN_ETLR25,param,stack4);
+  SetValue(IN_LDATA0,param,stack5);
+  SetValue(IN_LDATA1,param,stack6);
+  SetValue(IN_LDATA2,param,stack7);
+  Ffpt = ffpt_bak;
+  
+  return(selvol);
+
+#endif
+}
+
+/********************************************************************
+ * Make Vth Read Bunpu File
+ * vth_mode : VthRead mode number
+ * vth_data : VthRead Count
+ * data_num : Bunpu number
+ * step     : VthRead step number
+ ********************************************************************/
+
+
+int DistributionDataOut(int vth_mode ,int vth_data[2][105] ,int data_num ,int step ,char file_name[128], interface_t* param)
+{
+  int result,k,i;
+  int ffpt_bak;
+  char outbuf1,outbuf2;
+  char buff[256];
+  result = PASS;
+  k=0;
+  
+  CloseDataOutFile();
+  if ( GetValue(IN_BDATA04,param) == 1) {
+  sprintf( buff, "%s%s%s_%d.csv", glob_cdp, glob_datalog, file_name, get_site_number() );
+  } else if(GetValue(IN_BDATA04,param) == 3) {
+  sprintf( buff, "%s%s%s%s_%d.csv", glob_cdp, glob_bunpu, glob_Extralog, file_name, get_site_number() );
+  } else {
+  sprintf( buff, "%s%s%s_%d.csv", glob_cdp, glob_bunpu, file_name, get_site_number() );
+  }
+  if( NULL==( Fptdata = fopen( buff, "at" ) ) ){
+    printf( "OpenDataOutFile Fptdata Open Err[%s]", buff );
+    return(FAIL);
+  }
+
+  printf("vth_mode_list = %d\n",vth_mode);
+  if(result != PASS){  // File Name Check
+    printf("File Name Error!!!\n");
+    return(FAIL);
+  }
+
+
+  if(data_num>4){      // Data Number Check
+    printf("Data Number Error!!\n");
+    return(FAIL);
+  }
+
+  printf("---Vth-Read Result(Kanni)---\n");
+  for(i=step;i>=0;i--){
+    printf("  %5dmV, %9d\n",vth_data[(k*2)][i],vth_data[(k*2)+1][i]);
+  }
+  printf("----------------------------\n");
+
+
+
+  ffpt_bak = Ffpt; 
+  Ffpt = 3; //File�o��Mode Change
+
+    if ( GetValue(IN_BDATA03,param) == 0) {
+  
+    switch(GetValue(IN_BDATA02,param)) {
+//    switch(data_num){ //1���
+      case 0: sprintf(outbuf,"Data"); break;
+      case 1: sprintf(outbuf,"Data1"); break;
+      case 2: sprintf(outbuf,"Data2"); break;
+      case 3: sprintf(outbuf,"Data3"); break;
+      case 4: sprintf(outbuf,"Data4"); break;
+      default: sprintf(outbuf,""); break;
+    }
+    DataOut(Ffpt,outbuf);
+        
+    if ( GetValue(IN_BDATA05,param) == 0) {
+      for(i=step;i>=0;i--){
+        sprintf(outbuf,", %dmV",vth_data[(k*2)][i]);
+        DataOut(Ffpt,outbuf);
+      }
+        sprintf(outbuf,"\n");
+        DataOut(Ffpt,outbuf);
+      }
+    }
+
+    if ( GetValue(IN_BDATA02,param) != 99) {
+//      sprintf(outbuf,"VthRead%d",vth_mode); //1���
+      sprintf(outbuf,"ETLR25_0x%X",GetValue(IN_ETLR25,param)); //1���
+      DataOut(Ffpt,outbuf);
+    }
+
+    for(i=step;i>=0;i--){
+      sprintf(outbuf,", %d",vth_data[(k*2)+1][i]);
+      DataOut(Ffpt,outbuf);
+    }
+      sprintf(outbuf,"\n");
+      DataOut(Ffpt,outbuf);
+
+  CloseDataOutFile();
+  Ffpt = ffpt_bak; 
+}
+
+int MinoriModeFunc (int mode,int vcc[NUM_POWERSUPPLY],int waittime,interface_t* param,char *pat,char *mess)
+{
+  int i, cnt,addr, cpuerr, datasize, patsize, vs0, vs1, vs2, speed, temp,vtemp[NUM_POWERSUPPLY];
+  int result, start_time,old_reg,fail_data,fail_adr,addr_last1,addr_xin1,addr_yin1,addr_inc1;
+  int addr_last2,addr_xin2,addr_yin2,addr_inc2;
+  int tempo0,tempo1,tempo2,tempo3;
+  int ffpt_bak;
+  char mat_str[20];
+  char disp_addres[256];
+  int minori_ptn[1024];
+  int PatSize[2],*PatSize_p;
+  int runtotal,strat_time;
+  int buff_bm,buff_ecr,ALL_H_flag;
+  
+  //#include "MINORI_ptn\RC04EX_MINORI.c"
+
+  /*--------------------------------------------------------------------------*/
+  /* Initialyze                                                               */
+  /*--------------------------------------------------------------------------*/
+
+  cnt = cpuerr = datasize = patsize = vs0 = vs1 = vs2 = speed = 0;
+  DispAddres(param,"",disp_addres);
+
+/******* GET PARAMETER *******/
+  speed=GetValue(IN_EXTAL1,param);
+
+
+/******* DISP TAITOL *******/
+  sprintf(outbuf,"TEST:%d [ %s ] vcc=%dmV ext_Vrefh=%dmV ext_Vref=%dmV F=%2dns PLL=%d(X%d)\n ",
+    test++,mess,vcc[0],vcc[1],vcc[2],speed,GetValue(IN_PLLON,param),GetValue(IN_PLL_MULT,param));
+  DataOut(Ffpt,outbuf);
+  sprintf(outbuf,"Module:%s\n%s\n",
+          DispMatName(mat_str,param),disp_addres);
+  DataOut(Ffpt,outbuf);
+  
+/******** BGR Code Check *********/
+  BGR_REG_CHECK(vcc[0],param);  
+  
+/******** RATE SetUp *********/
+  SetTimming_NS( 500 ); // 500ns->2MHz
+  ChangeTimming_GTSLTS( EXTCYLJ, 1, speed );
+
+/******* SETUP ECR/BM *******/
+  Ecrsetup8(ECR_OVERL);
+
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if(vcc[1] != 0){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    sprintf(outbuf," Ext_Vref  ON  \n");
+    DataOut(Ffpt,outbuf);
+  }else{
+    sprintf(outbuf," Ext_Vref  OFF \n");
+    DataOut(Ffpt,outbuf);
+  }
+  
+  load_vlf_offset(_MINORI_MODE_ENTRY,4,tempo1);
+
+
+/******** PowerUp *********/
+  
+  if(SelectPowerSupply(mode,vcc)) {//�e�d���̋�����Level�̐ݒ�(DAXS�]���p)
+    vcc[0]=vs0;
+    vcc[1]=vs1;
+    vcc[2]=vs2;
+    return(HWFAIL);
+  }
+
+  SetVohVolVtt( vcc[0]/2, vcc[0]/2, 0, no_pin );
+
+  /**************************************************************************
+   *  Write BM
+   ****************************************************************************/
+  PatSize_p = PatSize;
+  result = MINORI_BM_Setting(param,pat,PatSize_p);
+  if(result != PASS) return(result);
+//  printf("PatSize[0] = 0x%X\n",PatSize[0]);
+//  printf("PatSize[1] = 0x%X\n",PatSize[1]);
+
+  /********************************************************************************
+   *   ModeEntry
+   ********************************************************************************/
+  run_apg(_MINORI_MODE_ENTRY);
+  set_pe_resource( ext_vrefh_pin, PE_VIH2, vcc[1] );
+
+   //delay_timer(100*1000);//100ms Delay
+
+  /********************************************************************************
+   *   TDR Setting
+   ********************************************************************************/
+   TDR04_03(param); // TDR04 & TDR03 Set
+   TDR210(param);   // TDR02 & TDR01 & TDR00 Set 
+
+  /********************************************************************************
+   *  Main APG
+   ********************************************************************************/
+  ChangeTimming_GTSLTS( EXTCYLJ, 1, speed );
+  set_drive_time_ns( clk_pin, 1, 0, speed/2 );
+  
+  ChangeTimming_GTSLTS( EXTCYLM4, 2, speed/4 );
+  set_drive_time_ns( clk_pin, 2, 0, speed/8 );
+  
+  sprintf(outbuf,"-- MINORI Start --\n");
+  DataOut(Ffpt,outbuf);
+
+  //------ APG Setting ------//
+  SetVohVolVtt( vcc[0]/2, vcc[0]/2, daxs_trans.vtt, bistpoll_pins );
+  set_strobe_mask(bistpoll_pins);
+  select_vector_mode(minori_datai_pin,_PE_VEC_ON_THE_FLY);
+  select_vector_mode(bistpoll_pins,_PE_APG_MODE);
+  reconnect_pin(bistpoll_pins);
+    
+  addr_yin1 =  MINORI_BM_TOP_ADDR_MAIN &  WORD_END;
+  addr_xin1 =  MINORI_BM_TOP_ADDR_MAIN >> YDECNUM;
+  addr_inc1 = (PatSize[0] >> YDECNUM) - 1;
+  addr_last1 = PatSize[0] &  WORD_END;
+  addr_yin2 =  MINORI_BM_TOP_ADDR_OUT &  WORD_END;
+  addr_xin2 =  MINORI_BM_TOP_ADDR_OUT >> YDECNUM;
+  addr_inc2 = (PatSize[1] >> YDECNUM) - 1;
+  addr_last2 = PatSize[1] &  WORD_END;
+
+  if(GetValue(IN_BDATA09,param) == 0){
+    //-- Addr Set for BM --//
+    load_vlf_offset(_MINORI_MAIN,0,addr_inc1);
+    load_vlf_offset(_MINORI_MAIN,1,addr_yin1);
+    load_vlf_offset(_MINORI_MAIN,2,addr_xin1);
+    load_vlf_offset(_MINORI_MAIN,3,waittime);
+    load_vlf_offset(_MINORI_MAIN,12,addr_last1);
+    load_vlf_offset(_SUB_MINORI_OUT,0,addr_inc2);
+    load_vlf_offset(_SUB_MINORI_OUT,1,addr_yin2);
+    load_vlf_offset(_SUB_MINORI_OUT,2,addr_xin2);
+    load_vlf_offset(_SUB_MINORI_OUT,10,addr_last2);
+                          
+    run_apg(_MINORI_MAIN);
+  }else if(GetValue(IN_BDATA09,param) == 1){
+    //For ReadBI-Debug
+    load_vlf_offset(_MINORI_MAIN_BI_STA,1,addr_yin1);
+    load_vlf_offset(_MINORI_MAIN_BI_STA,2,addr_xin1);
+    load_vlf_offset(_MINORI_MAIN_BI_STA,0,addr_inc1);
+    load_vlf_offset(_MINORI_MAIN_BI_STA,13,waittime);
+
+    run_apg(_MINORI_MAIN_BI_STA);
+	
+    comp_set_v1(6200);
+	  delay_timer(2000); // 2000us -> Power���莞��
+	  delay_timer(1*1000*1000); //1s=1000 * 1000us
+	  comp_set_v1(vcc[0]);
+	  delay_timer(2000); // 2000us -> Power���莞��
+    run_apg(_MINORI_MAIN_BI_END);
+
+  }else if(GetValue(IN_BDATA09,param) == 2){
+    //-- Addr Set for BM --//
+    load_vlf_offset(_MINORI_LOOP,0,addr_inc1);
+    load_vlf_offset(_MINORI_LOOP,1,addr_yin1);
+    load_vlf_offset(_MINORI_LOOP,2,addr_xin1);
+    load_vlf_offset(_MINORI_LOOP,3,65000/speed);
+    load_vlf_offset(_MINORI_LOOP,4,waittime);
+    load_vlf_offset(_MINORI_LOOP,13,addr_last1);
+    load_vlf_offset(_SUB_MINORI_OUT,0,addr_inc2);
+    load_vlf_offset(_SUB_MINORI_OUT,1,addr_yin2);
+    load_vlf_offset(_SUB_MINORI_OUT,2,addr_xin2);
+    load_vlf_offset(_SUB_MINORI_OUT,10,addr_last2);
+                          
+    run_apg(_MINORI_LOOP);
+
+  }else if(GetValue(IN_BDATA09,param) == 3){//Minori Read for Cry
+    //-- Addr Set for BM --//
+    load_vlf_offset(_MINORI_CRY_STA,0,addr_inc1);
+    load_vlf_offset(_MINORI_CRY_STA,1,addr_yin1);
+    load_vlf_offset(_MINORI_CRY_STA,2,addr_xin1);
+    load_vlf_offset(_MINORI_CRY_LOOP,0,1);
+    load_vlf_offset(_MINORI_CRY_LOOP,1,waittime);
+    load_vlf_offset(_MINORI_CRY_STA,13,addr_last1);
+    load_vlf_offset(_SUB_MINORI_OUT,0,addr_inc2);
+    load_vlf_offset(_SUB_MINORI_OUT,1,addr_yin2);
+    load_vlf_offset(_SUB_MINORI_OUT,2,addr_xin2);
+    load_vlf_offset(_SUB_MINORI_OUT,10,addr_last2);
+                          
+    run_apg(_MINORI_CRY_STA);
+    comp_write_lbreg_pe(RNORMAL_CRS);
+    run_apg(_MINORI_CRY_LOOP);
+	delay_timer(waittime*100);//waittime * 0.1ms Wait
+    comp_write_lbreg_pe(RNORMAL);
+    run_apg(_MINORI_CRY_END);
+
+  }
+    //printf("\n  Ipar_judge = %X\n\n",ipar_judge);
+
+    sprintf(outbuf,"<<  MINORI End  >>\n");
+    DataOut(Ffpt,outbuf);
+    DeviceSpecificPowerDown();
+    DeviceLevelsPowerDown();
+
+	DispEcrBmData( MINORI_BM_TOP_ADDR_OUT,PatSize[1] , DISP_BM|DISP_1 );
+	DispEcrBmData( MINORI_BM_TOP_ADDR_OUT,PatSize[1] , DISP_ECR|DISP_1 );
+	
+	result = PASS;
+  ALL_H_flag = 1;
+	for(i=MINORI_BM_TOP_ADDR_OUT;i<MINORI_BM_TOP_ADDR_OUT+PatSize[1];i++){
+	  buff_bm = ReadBmMode8(i,SIZE_B);
+	  if((buff_bm & 0x20) != 0x20){
+	    buff_ecr = ReadEcrMode8(i,SIZE_B);
+        if(((0xFF - buff_ecr) << 1) == 0x00) ALL_H_flag = 0;
+      if( (buff_bm & 0x10) != ((0xFF - buff_ecr) << 1) ){
+		    //printf("MINORI-FAIL Addr = 0x%X, BM = 0x%X, ECR = 0x%X\n",i,(buff_bm & 0x30),(0xFF - buff_ecr)>>3);
+		    result = FAIL;
+  		}
+	  }
+	}
+
+  if(result == PASS){
+    sprintf(outbuf," ** Minori Read PASS **\n");
+  }else if((result == FAIL) && (ALL_H_flag == 1)){
+    sprintf(outbuf," -- Minori Read Error!! --\n");
+    result = CFAIL;
+  }else if((result == FAIL)){
+    sprintf(outbuf," -- Minori Read FAIL --\n");
+	if(((0xFF - ReadEcrMode8(MINORI_BM_TOP_ADDR_OUT + 0x48,SIZE_B))>>3) == 0){
+    DataOut(Ffpt,outbuf);
+    sprintf(outbuf," -- Minori Read Time Out!!! --\n");
+	}
+  }else{
+    printf("  -- Minori Result Check Error!!! --  \n");
+    printf("  -- Please Check Code!!!  \n\n");
+    result = CFAIL;
+  }
+  DataOut(Ffpt,outbuf);
+
+  return(result);
+
+}
+
+int MinoriMonitor_Vrsg_First (int mode,int vcc[NUM_POWERSUPPLY],int waittime,interface_t* param,char *pat,char *mess, int *selvol)
+{
+  int i, cnt,addr, cpuerr, datasize, patsize, vs0, vs1, vs2, speed, temp,vtemp[NUM_POWERSUPPLY];
+  int result, start_time,old_reg,addr_xin,addr_yin,addr_inc,fail_data,fail_adr;
+  int tempo0,tempo1,tempo2,tempo3;
+  int iparh,iparl,ipar_judge;
+  char mat_str[20];
+  char disp_addres[256];
+  int minori_ptn[1024];
+  int Ldata[6];
+  int PatSize[2],*PatSize_p;
+  
+  //#include "MINORI_ptn\RC04EX_MINORI.c"
+
+  DeviceSpecificPowerUp();
+  /*--------------------------------------------------------------------------*/
+  /* Initialyze                                                               */
+  /*--------------------------------------------------------------------------*/
+  iparh = GetValue(IN_LDATA1,param);
+  iparl = GetValue(IN_LDATA2,param);
+
+  cnt = cpuerr = datasize = patsize = vs0 = vs1 = vs2 = speed = 0;
+  DispAddres(param,"",disp_addres);
+
+  fill_bmecr(bm1Memory, 0xff);          /* full bm with 0xFF  */
+  fill_bmecr(ecr1Memory, 0xff);         /* full ecr with 0xFF */
+/******** BGR Code Check *********/
+  BGR_REG_CHECK(vcc[0],param);  
+
+
+/******* GET PARAMETER *******/
+  speed=GetValue(IN_EXTAL1,param);
+
+
+/******* DISP TAITOL *******/
+  //Vref��VrefH�̋L�q�ɕύX�K�v�H
+  sprintf(outbuf,"TEST:%d [ %s ] vcc=%dmV ext_Vrefh=%dmV ext_Vref=%dmV F=%2dns PLL=%d(X%d)\n ",
+    test++,mess,vcc[0],vcc[1],vcc[2],speed,GetValue(IN_PLLON,param),GetValue(IN_PLL_MULT,param));
+  DataOut(Ffpt,outbuf);
+  sprintf(outbuf,"Module:%s\n%s\n",
+          DispMatName(mat_str,param),disp_addres);
+  DataOut(Ffpt,outbuf);
+  
+  
+/******** RATE SetUp *********/
+  SetTimming_NS( 500 ); // 500ns->2MHz
+  ChangeTimming_GTSLTS( EXTCYLJ, 1, speed );
+  
+
+/******* SETUP ECR/BM *******/
+  Ecrsetup8(ECR_OVERL);
+
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if(vcc[1] != 0){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    sprintf(outbuf," Ext_Vref  ON  \n");
+    DataOut(Ffpt,outbuf);
+  }else{
+    sprintf(outbuf," Ext_Vref  OFF \n");
+    DataOut(Ffpt,outbuf);
+  }
+  
+  load_vlf_offset(_MINORI_MODE_ENTRY,4,tempo1);
+
+
+  //********* PMU Init Setting *********//
+
+  connect_ps(PPS_CON_VNN1,PPS_CMODE_PMU);
+  set_pmu_range(UA250);
+  set_vlimit(0);
+  set_ilimit(0);
+  
+
+
+/******** PowerUp *********/
+  
+  if(SelectPowerSupply(mode,vcc)) {//�e�d���̋�����Level�̐ݒ�(DAXS�]���p)
+    vcc[0]=vs0;
+    vcc[1]=vs1;
+    vcc[2]=vs2;
+    return(HWFAIL);
+  }
+
+  SetVohVolVtt( vcc[0]/2, vcc[0]/2, 0, no_pin );
+
+  /**************************************************************************
+   *  Write BM
+   ****************************************************************************/
+  PatSize_p = PatSize;
+  MINORI_BM_Setting(param,pat,PatSize_p);
+
+  /********************************************************************************
+   *   ModeEntry
+   ********************************************************************************/
+
+   run_apg(_MINORI_MODE_ENTRY);
+
+  /********************************************************************************
+   *   TDR Setting
+   ********************************************************************************/
+   TDR04_03(param); // TDR04 & TDR03 Set
+   TDR210(param);   // TDR02 & TDR01 & TDR00 Set 
+
+  /********************************************************************************
+   *  Main APG
+   ********************************************************************************/
+  ChangeTimming_GTSLTS( EXTCYLJ, 1, speed );
+  set_drive_time_ns( clk_pin, 1, 0, speed/2 );
+  
+  ChangeTimming_GTSLTS( EXTCYLM4, 2, speed/4 );
+  set_drive_time_ns( clk_pin, 2, 0, speed/8 );
+  
+    sprintf(outbuf,"-- MINORI Start --\n");
+    DataOut(Ffpt,outbuf);
+
+    //------ APG Setting ------//
+    SetVohVolVtt( vcc[0]/2, vcc[0]/2, daxs_trans.vtt, bistpoll_pins );
+    set_strobe_mask(bistpoll_pins);
+    select_vector_mode(minori_datai_pin,_PE_VEC_ON_THE_FLY);
+    select_vector_mode(bistpoll_pins,_PE_APG_MODE);
+    reconnect_pin(bistpoll_pins);
+    
+    addr_yin =  MINORI_BM_TOP_ADDR &  WORD_END;
+    addr_xin =  MINORI_BM_TOP_ADDR >> YDECNUM;
+    addr_inc =  3;
+
+    if(GetValue(IN_BDATA09,param) == 0){
+      //-- Addr Set for BM --//
+      load_vlf_offset(_MINORI_MAIN,1,addr_yin);
+      load_vlf_offset(_MINORI_MAIN,2,addr_xin);
+      load_vlf_offset(_MINORI_MAIN,0,addr_inc);
+      load_vlf_offset(_MINORI_MAIN,13,waittime);
+    
+      //-------- iparh/iparl Set ----------//
+        set_iparh( iparh );
+        set_iparl( iparl );
+        set_pmu_strobe_mask(0xC00);
+        load_vlf_offset(_MINORI_MAIN,12,GetValue(IN_BDATA04,param));
+        load_vlf_offset(_MINORI_MAIN,16,GetValue(IN_LDATA0,param)-GetValue(IN_BDATA04,param));
+      //-----------------------------------//
+
+        run_apg(_MINORI_MAIN);
+
+    }else if(GetValue(IN_BDATA09,param) == 4){
+      //For ReadBI-Debug
+      load_vlf_offset(_MINORI_MAIN_BI_STA,1,addr_yin);
+      load_vlf_offset(_MINORI_MAIN_BI_STA,2,addr_xin);
+      load_vlf_offset(_MINORI_MAIN_BI_STA,0,addr_inc);
+      load_vlf_offset(_MINORI_MAIN_BI_STA,13,waittime);
+
+        run_apg(_MINORI_MAIN_BI_STA);
+	delay_timer(10*1000);  //10ms Delay
+	
+        *selvol=read_adc_ave(ADC_VMEAS,0,1000);
+
+        run_apg(_MINORI_MAIN_BI_END);
+
+      }
+    //-------- iparh/iparl judge ----------//
+      ipar_judge = read_pmu_status(0xC00);
+      SetValue(OUT_LDATA1,param,(ipar_judge & 0x800));
+      SetValue(OUT_LDATA2,param,(ipar_judge & 0x400));
+    //-------------------------------------//
+
+    sprintf(outbuf,"<<  MINORI End  >>\n");
+    DataOut(Ffpt,outbuf);
+    //DeviceSpecificPowerDown();
+    //DeviceLevelsPowerDown();
+
+    fail_data = ReadEcrMode8(MINORI_BM_TOP_ADDR+0x5,SIZE_L);
+
+    //DispEcrBmData( MINORI_BM_TOP_ADDR,0x40 , DISP_ECR|DISP_1 );
+
+    if((ReadEcrMode8(MINORI_BM_TOP_ADDR+0x1,SIZE_L)== 0x00)&&
+       (fail_data == 0x00)){
+      sprintf(outbuf," -- Minori Read Pass --\n");
+      result = PASS;
+    }else if((ReadEcrMode8(MINORI_BM_TOP_ADDR+0x1,SIZE_L)== 0x00)&&
+             (fail_data != 0x00)){
+      sprintf(outbuf," -- Minori Read Fail --\n    Fail Data = 0x%X\n",fail_data);
+      result = FAIL;
+    }else{
+      sprintf(outbuf," -- Minori Read Error!! --\n");
+      DispEcrBmData( MINORI_BM_TOP_ADDR,0x40 , DISP_ECR|DISP_1 );
+//      result = CPUFAIL;
+    }
+    //DispEcrBmData( 0x0000,0x40 , DISP_ECR|DISP_1 );
+    if(ReadEcrMode8(0x00000000,SIZE_L) != 0xFFFFFFFF){
+      sprintf(outbuf,"\n -- Time-Over!! -- \n");
+    }
+    DataOut(Ffpt,outbuf);
+
+  return(result);
+
+}
+
+
+int MinoriMonitor_Vrsg_Repeat (int mode,int vcc[NUM_POWERSUPPLY],int waittime,interface_t* param,char *pat,char *mess, int vcc_bak, int *selvol)
+{
+  int i, cnt,addr, cpuerr, datasize, patsize, vs0, vs1, vs2, speed, temp,vtemp[NUM_POWERSUPPLY];
+  int result, start_time,old_reg,addr_xin,addr_yin,addr_inc,fail_data,fail_adr;
+  int tempo0,tempo1,tempo2,tempo3;
+  int iparh,iparl,ipar_judge;
+  char mat_str[20];
+  char disp_addres[256];
+  int minori_ptn[1024];
+  int Ldata[6];
+  int PatSize[2],*PatSize_p;
+  
+  //#include "MINORI_ptn\RC04EX_MINORI.c"
+
+
+  /*--------------------------------------------------------------------------*/
+  /* Initialyze                                                               */
+  /*--------------------------------------------------------------------------*/
+
+  cnt = cpuerr = datasize = patsize = vs0 = vs1 = vs2 = speed = 0;
+  DispAddres(param,"",disp_addres);
+
+  for( cnt=MINORI_BM_TOP_ADDR; cnt<=(MINORI_BM_TOP_ADDR+0x40); cnt=cnt+4 ){
+      WriteEcrMode8( cnt, 0xFFFFFFFF, SIZE_L );
+  }
+
+/******** BGR Code Check *********/
+  BGR_REG_CHECK(vcc[0],param);  
+
+/******* GET PARAMETER *******/
+  speed=GetValue(IN_EXTAL1,param);
+
+
+/******* DISP TAITOL *******/
+  //Vref��VrefH�̋L�q�ɕύX�K�v�H
+  sprintf(outbuf,"TEST:%d [ %s ] vcc=%dmV ext_Vrefh=%dmV ext_Vref=%dmV F=%2dns PLL=%d(X%d)\n ",
+    test++,mess,vcc[0],vcc[1],vcc[2],speed,GetValue(IN_PLLON,param),GetValue(IN_PLL_MULT,param));
+  DataOut(Ffpt,outbuf);
+  sprintf(outbuf,"Module:%s\n%s\n",
+          DispMatName(mat_str,param),disp_addres);
+  DataOut(Ffpt,outbuf);
+  
+  
+/******** RATE SetUp *********/
+  SetTimming_NS( 500 ); // 500ns->2MHz
+  ChangeTimming_GTSLTS( EXTCYLJ, 1, speed );
+  
+
+/******* SETUP ECR/BM *******/
+  Ecrsetup8(ECR_OVERL);
+
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if(vcc[1] != 0){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    sprintf(outbuf," Ext_Vref  ON  \n");
+    DataOut(Ffpt,outbuf);
+  }else{
+    sprintf(outbuf," Ext_Vref  OFF \n");
+    DataOut(Ffpt,outbuf);
+  }
+  
+  load_vlf_offset(_MINORI_MODE_ENTRY,4,tempo1);
+
+
+/******** PowerUp *********/
+  
+  if(VccSlow(vcc[0],vcc_bak)){
+    return(HWFAIL);
+  }
+
+  SetVohVolVtt( vcc[0]/2, vcc[0]/2, 0, no_pin );
+
+  /**************************************************************************
+   *  Write BM
+   ****************************************************************************/
+  PatSize_p = PatSize;
+  MINORI_BM_Setting(param,pat,PatSize_p);
+
+  /********************************************************************************
+   *   ModeEntry
+   ********************************************************************************/
+
+   run_apg(_MINORI_MODE_ENTRY);
+
+  /********************************************************************************
+   *   TDR Setting
+   ********************************************************************************/
+   TDR04_03(param); // TDR04 & TDR03 Set
+   TDR210(param);   // TDR02 & TDR01 & TDR00 Set 
+
+  /********************************************************************************
+   *  Main APG
+   ********************************************************************************/
+  ChangeTimming_GTSLTS( EXTCYLJ, 1, speed );
+  set_drive_time_ns( clk_pin, 1, 0, speed/2 );
+  
+  ChangeTimming_GTSLTS( EXTCYLM4, 2, speed/4 );
+  set_drive_time_ns( clk_pin, 2, 0, speed/8 );
+  
+    sprintf(outbuf,"-- MINORI Start --\n");
+    DataOut(Ffpt,outbuf);
+
+    //------ APG Setting ------//
+    SetVohVolVtt( vcc[0]/2, vcc[0]/2, daxs_trans.vtt, bistpoll_pins );
+    set_strobe_mask(bistpoll_pins);
+    select_vector_mode(minori_datai_pin,_PE_VEC_ON_THE_FLY);
+    select_vector_mode(bistpoll_pins,_PE_APG_MODE);
+    reconnect_pin(bistpoll_pins);
+    
+    addr_yin =  MINORI_BM_TOP_ADDR &  WORD_END;
+    addr_xin =  MINORI_BM_TOP_ADDR >> YDECNUM;
+    addr_inc =  3;
+
+    if(GetValue(IN_BDATA09,param) == 0){
+	  /*
+      //-- Addr Set for BM --//
+      load_vlf_offset(_MINORI_MAIN,1,addr_yin);
+      load_vlf_offset(_MINORI_MAIN,2,addr_xin);
+      load_vlf_offset(_MINORI_MAIN,0,addr_inc);
+      load_vlf_offset(_MINORI_MAIN,13,waittime);
+    
+
+        run_apg(_MINORI_MAIN);
+	  */
+      load_vlf_offset(_MINORI_MAIN_BI_STA,1,addr_yin);
+      load_vlf_offset(_MINORI_MAIN_BI_STA,2,addr_xin);
+      load_vlf_offset(_MINORI_MAIN_BI_STA,0,addr_inc);
+      load_vlf_offset(_MINORI_MAIN_BI_STA,13,waittime);
+
+      run_apg(_MINORI_MAIN_BI_STA);
+      delay_timer(10*1000);  //10ms Delay
+      *selvol=read_adc_ave(ADC_VMEAS,0,1000);
+	   
+      load_vlf_offset(_MINORI_LOOP,0,waittime);
+      load_vlf_offset(_MINORI_LOOP,1,1);
+
+      run_apg(_MINORI_LOOP);
+
+      
+      run_apg(_MINORI_MAIN_BI_END);
+
+    }else{
+      //For ReadBI-Debug
+      load_vlf_offset(_MINORI_MAIN_BI_STA,1,addr_yin);
+      load_vlf_offset(_MINORI_MAIN_BI_STA,2,addr_xin);
+      load_vlf_offset(_MINORI_MAIN_BI_STA,0,addr_inc);
+      load_vlf_offset(_MINORI_MAIN_BI_STA,13,waittime);
+
+        run_apg(_MINORI_MAIN_BI_STA);
+	delay_timer(10*1000);  //10ms Delay
+	
+        *selvol=read_adc_ave(ADC_VMEAS,0,1000);
+      load_vlf_offset(_MINORI_LOOP,0,waittime);
+      load_vlf_offset(_MINORI_LOOP,1,1);
+        run_apg(_MINORI_LOOP);
+        run_apg(_MINORI_MAIN_BI_END);
+
+      }
+	//printf("MinoriMonitor_Vrsg_Repeat : selvol = %dmV\n",*selvol);
+    sprintf(outbuf,"<<  MINORI End  >>\n");
+    DataOut(Ffpt,outbuf);
+
+    fail_data = ReadEcrMode8(MINORI_BM_TOP_ADDR+0x5,SIZE_L);
+
+    //DispEcrBmData( MINORI_BM_TOP_ADDR,0x40 , DISP_ECR|DISP_1 );
+
+    if((ReadEcrMode8(MINORI_BM_TOP_ADDR+0x1,SIZE_L)== 0x00)&&
+       (fail_data == 0x00)){
+      sprintf(outbuf," -- Minori Read Pass --\n");
+      result = PASS;
+    }else if((ReadEcrMode8(MINORI_BM_TOP_ADDR+0x1,SIZE_L)== 0x00)&&
+             (fail_data != 0x00)){
+      sprintf(outbuf," -- Minori Read Fail --\n    Fail Data = 0x%X\n",fail_data);
+      result = FAIL;
+    }else{
+      sprintf(outbuf," -- Minori Read Error!! --\n");
+      //DispEcrBmData( MINORI_BM_TOP_ADDR,0x40 , DISP_ECR|DISP_1 );
+      result = CPUFAIL;
+    }
+    //DispEcrBmData( 0x0000,0x40 , DISP_ECR|DISP_1 );
+    if(ReadEcrMode8(0x00000000,SIZE_L) != 0xFFFFFFFF){
+      sprintf(outbuf," -- Time-Over!! -- \n");
+    }
+    DataOut(Ffpt,outbuf);
+
+  return(result);
+
+}
+
+
+
+
+
+int TDR04_03(interface_t* param)
+{
+ int tdr04_data,tdr03_data;
+ int reg_num,reg_max,param_base;
+ int i;
+ 
+
+  for(i=1;i<=2;i++){ //i=1:ETLR i=2:ETCR
+
+    if(i==1){ //ETLR Setting
+      if(GetValue(IN_REG,param) & TRIM_REG){
+        sprintf(outbuf,"ETLR Setting\n");
+        DataOut(Ffpt,outbuf);
+      }else{
+        break;
+      }
+
+    }else if(i==2){ //ETCR Setting
+      if(GetValue(IN_REG,param) & TEST_REG){
+        sprintf(outbuf,"ETCR Setting\n");
+        DataOut(Ffpt,outbuf);
+      }else{
+        break;
+      }    
+
+    }else{
+      printf(" C-Program Error!!! Please Cehck TDR04_03\n");
+      return(FAIL);
+    }
+
+
+    switch(i){
+      case 1: //ETLR Setting
+        param_base = IN_ETLR00;
+	reg_max = 39;
+        tdr04_data = 0x05; //ETLR entry Code
+        break;
+
+      case 2: //ETCR Setting
+        param_base = IN_ETCR00;
+	reg_max = 13;
+        tdr04_data = 0x03; //ETCR entry Code
+        break;
+	
+      default :
+        printf(" C-Program Error!!! Please Cehck TDR04_03\n");
+	return(FAIL);
+	break;
+    }	
+
+    load_vlf_offset(_MINORI_TDR04,18,tdr04_data);
+    run_apg(_MINORI_TDR04);
+
+    for(reg_num=0;reg_num<=reg_max;reg_num=reg_num+2){
+ 
+      load_vlf_offset(_MINORI_TDR03,33,reg_num);
+      load_vlf_offset(_MINORI_TDR03,17,GetValue( (param_base+reg_num  ) ,param) );
+      load_vlf_offset(_MINORI_TDR03,25,GetValue( (param_base+reg_num+1) ,param) );
+      run_apg(_MINORI_TDR03);
+ 
+    }
+    
+    tdr04_data = 0x06; //Register Entry Reset
+    load_vlf_offset(_MINORI_TDR04,18,tdr04_data);
+    run_apg(_MINORI_TDR04);
+    
+  }
+  tdr04_data = 0x07; //Register Entry Reset
+  load_vlf_offset(_MINORI_TDR04,18,tdr04_data);
+  run_apg(_MINORI_TDR04);
+
+  return(PASS);
+}
+
+int TDR210(interface_t* param)
+{
+  int tdr00_data,tdr01_data,tdr02_data;
+  int tdr00_addr,tdr01_addr,tdr02_addr;
+  int tempo1,tempo2;
+  char mat_value[60];
+  
+
+  tdr00_addr = 0x28;
+  tdr01_addr = 0xA8;
+  tdr02_addr = 0x68;
+  
+  tdr00_data = 0x30000000;
+  tdr01_data = 0x00000000;
+  tdr02_data = 0x00000000;
+
+       if (strcmp(DispMatName(mat_value,param)," FLP0 "     )==0)  tempo1 = 0x00;
+  else if (strcmp(DispMatName(mat_value,param)," EXTRA1 "   )==0)  tempo1 = 0x01;
+  else if (strcmp(DispMatName(mat_value,param)," EXTRA2 "   )==0)  tempo1 = 0x02;
+  else if (strcmp(DispMatName(mat_value,param)," EXTRA3 "   )==0)  tempo1 = 0x03;
+  else if (strcmp(DispMatName(mat_value,param)," EXTRA4 "   )==0)  tempo1 = 0x04;
+  else if (strcmp(DispMatName(mat_value,param)," EXTRA5 "   )==0)  tempo1 = 0x05;
+  else if (strcmp(DispMatName(mat_value,param)," EXTRA6 "   )==0)  tempo1 = 0x06;
+  else{ printf("Mat Select Error!!!\n"); return;}
+
+  tempo2 = 0x0;
+
+  tdr00_data = tdr00_data + (GetValue(IN_BDATA03,param) << 30); // Bdata03 : CLK Setting
+
+  tdr01_data = tdr01_data + (tempo2 << 30);                     // Module Select(FLP0 ~ FLI3)
+  tdr01_data = tdr01_data + (tempo1 << 27);                     // Module Select(user or extra)
+  tdr01_data = tdr01_data + (GetValue(IN_TESTSEL,param) << 24); // TestSel : Check Pattern
+  tdr01_data = tdr01_data + (GetValue(IN_BDATA00,param) << 23); // Bdata00 : �X�N�����u��
+  tdr01_data = tdr01_data + (GetValue(IN_BDATA01,param) << 14); // Bdata01 : LowPowerRead
+  
+  //tdr02_data = tdr02_data + (GetValue(IN_BDATA02,param) << 26); // Bdata02 : Back-Bias
+  
+  //For ReadBI-Debug
+  if(GetValue(IN_BDATA09,param) == 1){
+    tdr00_data = tdr00_data + (0x1 << 6);  //TDR00[6]     =    1
+    tdr00_data = tdr00_data + (0xB << 7);  //TDR00[10:7]  = 1011
+    tdr00_data = tdr00_data + (0x1 << 11); //TDR00[11]    =    1
+    tdr00_data = tdr00_data + (0xE << 12); //TDR00[15:12] = 1110
+    tdr00_data = tdr00_data + (0x1 << 23); //TDR00[23]    =    1
+  }
+  //For ReadBI-Debug
+
+      // TDR02~00 Set
+
+      load_vlf_offset(_MINORI_TDR00_02,0 ,  tdr02_addr);
+      load_vlf_offset(_MINORI_TDR00_02,17,( tdr02_data        & 0xFF));
+      load_vlf_offset(_MINORI_TDR00_02,25,((tdr02_data >>  8) & 0xFF));
+      load_vlf_offset(_MINORI_TDR00_02,33,((tdr02_data >> 16) & 0xFF));
+      load_vlf_offset(_MINORI_TDR00_02,41,((tdr02_data >> 24) & 0xFF));
+      run_apg(_MINORI_TDR00_02);
+
+      load_vlf_offset(_MINORI_TDR00_02,0 ,  tdr01_addr);
+      load_vlf_offset(_MINORI_TDR00_02,17,( tdr01_data        & 0xFF));
+      load_vlf_offset(_MINORI_TDR00_02,25,((tdr01_data >>  8) & 0xFF));
+      load_vlf_offset(_MINORI_TDR00_02,33,((tdr01_data >> 16) & 0xFF));
+      load_vlf_offset(_MINORI_TDR00_02,41,((tdr01_data >> 24) & 0xFF));
+      run_apg(_MINORI_TDR00_02);
+
+      load_vlf_offset(_MINORI_TDR00_02,0 ,  tdr00_addr);
+      load_vlf_offset(_MINORI_TDR00_02,17,( tdr00_data        & 0xFF));
+      load_vlf_offset(_MINORI_TDR00_02,25,((tdr00_data >>  8) & 0xFF));
+      load_vlf_offset(_MINORI_TDR00_02,33,((tdr00_data >> 16) & 0xFF));
+      load_vlf_offset(_MINORI_TDR00_02,41,((tdr00_data >> 24) & 0xFF));
+      run_apg(_MINORI_TDR00_02);
+
+  return(PASS);
+
+}
+
+int MinoriModeFunc_Repeat_F (int mode,int vcc[NUM_POWERSUPPLY],int waittime,interface_t* param,char *pat,char *mess)
+{
+  int i, cnt,addr, cpuerr, datasize, patsize, vs0, vs1, vs2, speed, temp,vtemp[NUM_POWERSUPPLY];
+  int result, start_time,old_reg,addr_xin,addr_yin,addr_inc,fail_data,fail_adr;
+  int tempo0,tempo1,tempo2,tempo3;
+  int ffpt_bak;
+  char mat_str[20];
+  char disp_addres[256];
+  int Ldata[6];
+  int runtotal,strat_time;
+  int PatSize[2],*PatSize_p;
+
+  //#include "MINORI_ptn\RC04EX_MINORI.c"
+
+  Ldata[0] = Ldata[1] = Ldata[2] = Ldata[3] = Ldata[4] = Ldata[5] = 0;
+
+  /*--------------------------------------------------------------------------*/
+  /* Initialyze                                                               */
+  /*--------------------------------------------------------------------------*/
+
+  cnt = cpuerr = datasize = patsize = vs0 = vs1 = vs2 = speed = 0;
+  DispAddres(param,"",disp_addres);
+
+/******* GET PARAMETER *******/
+  speed=GetValue(IN_EXTAL1,param);
+
+/******** BGR Code Check *********/
+  BGR_REG_CHECK(vcc[0],param);  
+  
+/******** RATE SetUp *********/
+  SetTimming_NS( 500 ); // 500ns->2MHz
+  ChangeTimming_GTSLTS( EXTCYLJ, 1, speed );
+  
+
+/******* SETUP ECR/BM *******/
+  Ecrsetup8(ECR_OVERL);
+
+
+/******** PowerUp *********/
+  if(SelectPowerSupply(mode,vcc)) {//�e�d���̋�����Level�̐ݒ�(DAXS�]���p)
+    return(HWFAIL);
+  }
+
+  SetVohVolVtt( vcc[0]/2, vcc[0]/2, 0, no_pin );
+  
+  /**************************************************************************
+   *  Write BM
+   ****************************************************************************/
+  PatSize_p = PatSize;
+  result = MINORI_BM_Setting(param,pat,PatSize_p);
+  if(result != PASS) return(result);
+  SetValue(IN_LDATA0,param,PatSize[0]);
+  SetValue(IN_LDATA1,param,PatSize[1]);
+
+
+  return(result);
+
+}
+
+int MinoriModeFunc_Repeat (int mode,int vcc[NUM_POWERSUPPLY],int waittime,interface_t* param,char *pat,char *mess)
+{
+  int i, cnt,addr, cpuerr, datasize, patsize, vs0, vs1, vs2, speed, temp,vtemp[NUM_POWERSUPPLY];
+  int result, start_time,old_reg,fail_data,fail_adr,addr_last1,addr_xin1,addr_yin1,addr_inc1;
+  int addr_last2,addr_xin2,addr_yin2,addr_inc2;
+  int tempo0,tempo1,tempo2,tempo3;
+  int iparh,iparl,ipar_judge;
+  int ffpt_bak;
+  char mat_str[20];
+  char disp_addres[256];
+  int Ldata[6];
+  int runtotal,strat_time;
+  int PatSize[2],*PatSize_p;
+  int buff_bm,buff_ecr,ALL_H_flag;
+
+  
+  //#include "MINORI_ptn\RC04EX_MINORI.c"
+
+  Ldata[0] = Ldata[1] = Ldata[2] = Ldata[3] = Ldata[4] = Ldata[5] = 0;
+
+  /*--------------------------------------------------------------------------*/
+  /* Initialyze                                                               */
+  /*--------------------------------------------------------------------------*/
+  cnt = cpuerr = datasize = patsize = vs0 = vs1 = vs2 = speed = 0;
+  DispAddres(param,"",disp_addres);
+
+/******* GET PARAMETER *******/
+  speed=GetValue(IN_EXTAL1,param);
+
+/******** RATE SetUp *********/
+  SetTimming_NS( 500 ); // 500ns->2MHz
+  ChangeTimming_GTSLTS( EXTCYLJ, 1, speed );
+  
+
+/******* SETUP ECR/BM *******/
+  Ecrsetup8(ECR_OVERL);
+
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if(vcc[1] != 0){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    sprintf(outbuf," Ext_Vref  ON  \n");
+    DataOut(Ffpt,outbuf);
+  }else{
+    sprintf(outbuf," Ext_Vref  OFF \n");
+    DataOut(Ffpt,outbuf);
+  }
+  
+  load_vlf_offset(_MINORI_MODE_ENTRY,4,tempo1);
+
+/******** PowerUp *********/
+  comp_set_v3(vcc[2]);
+  set_vih2(vcc[1]);
+  delay_timer(1000); 
+  
+  SetVohVolVtt( vcc[0]/2, vcc[0]/2, 0, no_pin );
+
+  /**************************************************************************
+   *  BM & ECR Setting
+   ****************************************************************************/
+  //PatSize_p = PatSize;
+  //result = MINORI_BM_Setting(param,pat,PatSize_p);
+  //if(result != PASS) return(result);
+  PatSize[0] = GetValue(IN_LDATA0,param);
+  PatSize[1] = GetValue(IN_LDATA1,param);
+  for(addr=MINORI_BM_TOP_ADDR_OUT;addr<=(MINORI_BM_END_ADDR_OUT+0xFF);addr=addr+4){ //BM All"0" Set
+    WriteEcrMode8(addr,0xFFFFFFFF,SIZE_L);
+  }
+
+
+  /********************************************************************************
+   *   ModeEntry
+   ********************************************************************************/
+
+   run_apg(_MINORI_MODE_ENTRY);
+
+  /********************************************************************************
+   *   TDR Setting
+   ********************************************************************************/
+   TDR04_03(param); // TDR04 & TDR03 Set
+   TDR210(param);   // TDR02 & TDR01 & TDR00 Set 
+
+  /********************************************************************************
+   *  Main APG
+   ********************************************************************************/
+  ChangeTimming_GTSLTS( EXTCYLJ, 1, speed );
+  set_drive_time_ns( clk_pin, 1, 0, speed/2 );
+  
+  ChangeTimming_GTSLTS( EXTCYLM4, 2, speed/4 );
+  set_drive_time_ns( clk_pin, 2, 0, speed/8 );
+  
+  sprintf(outbuf,"-- MINORI Start --\n");
+  DataOut(Ffpt,outbuf);
+
+  //------ APG Setting ------//
+  SetVohVolVtt( vcc[0]/2, vcc[0]/2, daxs_trans.vtt, bistpoll_pins );
+  set_strobe_mask(bistpoll_pins);
+  select_vector_mode(minori_datai_pin,_PE_VEC_ON_THE_FLY);
+  select_vector_mode(bistpoll_pins,_PE_APG_MODE);
+  reconnect_pin(bistpoll_pins);
+    
+  addr_yin1 =  MINORI_BM_TOP_ADDR_MAIN &  WORD_END;
+  addr_xin1 =  MINORI_BM_TOP_ADDR_MAIN >> YDECNUM;
+  addr_inc1 = (PatSize[0] >> YDECNUM) - 1;
+  addr_last1 = PatSize[0] &  WORD_END;
+  addr_yin2 =  MINORI_BM_TOP_ADDR_OUT &  WORD_END;
+  addr_xin2 =  MINORI_BM_TOP_ADDR_OUT >> YDECNUM;
+  addr_inc2 = (PatSize[1] >> YDECNUM) - 1;
+  addr_last2 = PatSize[1] &  WORD_END;
+
+  if(GetValue(IN_BDATA09,param) == 0){
+    //-- Addr Set for BM --//
+    load_vlf_offset(_MINORI_MAIN,0,addr_inc1);
+    load_vlf_offset(_MINORI_MAIN,1,addr_yin1);
+    load_vlf_offset(_MINORI_MAIN,2,addr_xin1);
+    load_vlf_offset(_MINORI_MAIN,3,waittime);
+    load_vlf_offset(_MINORI_MAIN,12,addr_last1);
+    load_vlf_offset(_SUB_MINORI_OUT,0,addr_inc2);
+    load_vlf_offset(_SUB_MINORI_OUT,1,addr_yin2);
+    load_vlf_offset(_SUB_MINORI_OUT,2,addr_xin2);
+    load_vlf_offset(_SUB_MINORI_OUT,10,addr_last2);
+                          
+    run_apg(_MINORI_MAIN);
+  }else if(GetValue(IN_BDATA09,param) == 1){
+    //For ReadBI-Debug
+    load_vlf_offset(_MINORI_MAIN_BI_STA,1,addr_yin1);
+    load_vlf_offset(_MINORI_MAIN_BI_STA,2,addr_xin1);
+    load_vlf_offset(_MINORI_MAIN_BI_STA,0,addr_inc1);
+    load_vlf_offset(_MINORI_MAIN_BI_STA,13,waittime);
+
+    run_apg(_MINORI_MAIN_BI_STA);
+	
+    comp_set_v1(6200);
+	  delay_timer(2000); // 2000us -> Power���莞��
+	  delay_timer(1*1000*1000); //1s=1000 * 1000us
+	  comp_set_v1(vcc[0]);
+	  delay_timer(2000); // 2000us -> Power���莞��
+    run_apg(_MINORI_MAIN_BI_END);
+
+  }else if(GetValue(IN_BDATA09,param) == 2){
+    //-- Addr Set for BM --//
+    load_vlf_offset(_MINORI_LOOP,0,addr_inc1);
+    load_vlf_offset(_MINORI_LOOP,1,addr_yin1);
+    load_vlf_offset(_MINORI_LOOP,2,addr_xin1);
+    load_vlf_offset(_MINORI_LOOP,3,65000/speed);
+    load_vlf_offset(_MINORI_LOOP,4,waittime);
+    load_vlf_offset(_MINORI_LOOP,13,addr_last1);
+    load_vlf_offset(_SUB_MINORI_OUT,0,addr_inc2);
+    load_vlf_offset(_SUB_MINORI_OUT,1,addr_yin2);
+    load_vlf_offset(_SUB_MINORI_OUT,2,addr_xin2);
+    load_vlf_offset(_SUB_MINORI_OUT,10,addr_last2);
+                          
+    run_apg(_MINORI_LOOP);
+
+  }else if(GetValue(IN_BDATA09,param) == 3){//Minori Read for Cry
+    //-- Addr Set for BM --//
+    load_vlf_offset(_MINORI_CRY_STA,0,addr_inc1);
+    load_vlf_offset(_MINORI_CRY_STA,1,addr_yin1);
+    load_vlf_offset(_MINORI_CRY_STA,2,addr_xin1);
+    load_vlf_offset(_MINORI_CRY_LOOP,0,1);
+    load_vlf_offset(_MINORI_CRY_LOOP,1,waittime);
+    load_vlf_offset(_MINORI_CRY_STA,13,addr_last1);
+    load_vlf_offset(_SUB_MINORI_OUT,0,addr_inc2);
+    load_vlf_offset(_SUB_MINORI_OUT,1,addr_yin2);
+    load_vlf_offset(_SUB_MINORI_OUT,2,addr_xin2);
+    load_vlf_offset(_SUB_MINORI_OUT,10,addr_last2);
+                          
+    run_apg(_MINORI_CRY_STA);
+    comp_write_lbreg_pe(RNORMAL_CRS);
+    run_apg(_MINORI_CRY_LOOP);
+	delay_timer(waittime*100);//waittime * 0.1ms Wait
+    comp_write_lbreg_pe(RNORMAL);
+    run_apg(_MINORI_CRY_END);
+
+  }
+    //printf("\n  Ipar_judge = %X\n\n",ipar_judge);
+
+    sprintf(outbuf,"<<  MINORI End  >>\n");
+    DataOut(Ffpt,outbuf);
+	
+	result = PASS;
+  ALL_H_flag = 1;
+	for(i=MINORI_BM_TOP_ADDR_OUT;i<MINORI_BM_TOP_ADDR_OUT+PatSize[1];i++){
+	  buff_bm = ReadBmMode8(i,SIZE_B);
+	  if((buff_bm & 0x20) != 0x20){
+	    buff_ecr = ReadEcrMode8(i,SIZE_B);
+        if(((0xFF - buff_ecr) << 1) == 0x00) ALL_H_flag = 0;
+      if( (buff_bm & 0x10) != ((0xFF - buff_ecr) << 1) ){
+		    //printf("MINORI-FAIL Addr = 0x%X, BM = 0x%X, ECR = 0x%X\n",i,(buff_bm & 0x30),(0xFF - buff_ecr)>>3);
+		    result = FAIL;
+  		}
+	  }
+	}
+
+  if(result == PASS){
+    sprintf(outbuf," ** Minori Read PASS **\n");
+  }else if((result == FAIL) && (ALL_H_flag == 1)){
+    sprintf(outbuf," -- Minori Read Error!! --\n");
+    result = CFAIL;
+  }else if((result == FAIL)){
+    sprintf(outbuf," -- Minori Read FAIL --\n");
+	if(((0xFF - ReadEcrMode8(MINORI_BM_TOP_ADDR_OUT + 0x48,SIZE_B))>>3) == 0){
+    DataOut(Ffpt,outbuf);
+    sprintf(outbuf," -- Minori Read Time Out!!! --\n");
+	}
+  }else{
+    printf("  -- Minori Result Check Error!!! --  \n");
+    printf("  -- Please Check Code!!!  \n\n");
+    result = CFAIL;
+  }
+  DataOut(Ffpt,outbuf);
+
+  return(result);
+
+}
+
+
+
+
+int TDR_BGR_Trim(int Target,int vcc[NUM_POWERSUPPLY],int waittime,interface_t* param)
+{
+  int i, cnt,addr, cpuerr, datasize, patsize, vs0, vs1, vs2, speed, temp,vtemp[NUM_POWERSUPPLY];
+  int result,tempo1,mode;
+  int iparh,iparl,ipar_judge,selvol2;
+  char mat_str[20];
+  char disp_addres[256];
+  int runtotal,strat_time;
+  int  SetReg,HighReg,LowReg,TapVol,CulcReg,LoopReg_flag;
+  int  loop_num,vnum,vrsg_vol,end_flag,VrsgLimit,VrsgDelta,loop_judge;
+  int  selvol[BGR_ARRAY_REPEAT];
+
+  /*--------------------------------------------------------------------------*/
+  /* Initialyze                                                               */
+  /*--------------------------------------------------------------------------*/
+  DeviceSpecificPowerUp();
+  cnt = cpuerr = datasize = patsize = vs0 = vs1 = vs2 = speed = 0;
+  DispAddres(param,"",disp_addres);
+
+  HighReg = 0x7F;
+  LowReg = 0x00;
+  VrsgLimit = 1600;
+  loop_judge = 10;
+  VrsgDelta = 10;
+  
+
+
+
+   end_flag = 0;
+
+   while(end_flag != 1){
+   
+     SetReg = (HighReg + LowReg) /2;
+     
+
+   
+     if(SetReg >= 0x40){ // �������W�X�^�l��ETLR00�ɕϊ�
+       SetValue(IN_ETLR00,param,( (SetReg & 0x3F) | 0x80 ));
+     }else{
+       SetValue(IN_ETLR00,param,( (SetReg & 0x3F) | 0xC0 ));
+     }
+     
+   
+     vrsg_vol = vnum = 0;
+     for(i=1;i<=3;i++){
+       /*
+       load_vlf_offset(_MINORI_TDR04,18,0x05);//ETLR Entry Code
+       run_apg(_MINORI_TDR04);
+
+       load_vlf_offset(_MINORI_TDR03,33,0x00); //ETLR00~01 Address
+       load_vlf_offset(_MINORI_TDR03,17,GetValue(IN_ETLR00,param) );
+       run_apg(_MINORI_TDR03);
+   
+       load_vlf_offset(_MINORI_TDR04,18,0x07);//ETLR Close Code
+       run_apg(_MINORI_TDR04);
+
+       delay_timer(10*1000);//10ms Wait
+       selvol[i-1] = read_adc_ave(ADC_VMEAS,0,100);
+       */
+    SetValue(IN_TESTSEL,param,MONITOR_VRSG);
+    SetValue(IN_BDATA00,param,0);
+	   Ffpt = 0;
+	   result = CpuModeMonitor_Vrsg(VRSGMON_MON,&vcc[0],param,W1SEC*6/10,CreatePatFileName("monitorvoltage_at"),"Vrsg_monitor",&selvol2);
+       Ffpt=1;
+       selvol[i-1] = selvol2;
+       if(selvol[i-1] >= VrsgLimit ){
+         vnum = vnum +1;
+         vrsg_vol = vrsg_vol + selvol[i-1];
+       }
+     }
+     
+     if(vnum == 0){ //���j�^�[Fail 
+       end_flag = 1;
+       SetValue(OUT_JUDGE1,param,FAIL);
+     }else{ //���j�^�[Pass
+       vrsg_vol = vrsg_vol /vnum;
+     }
+     
+     printf("Debug1 : HighReg0x%X LowReg0x%X Reg0x%X[0x%X] vrsg_vol = %dmV \n",HighReg,LowReg,SetReg,GetValue(IN_ETLR00,param),vrsg_vol);
+     
+     if((vrsg_vol <= (Target + (VrsgDelta/2))) && (vrsg_vol >= (Target - (VrsgDelta/2)))){ //�g���~���OPass
+       end_flag = 1;
+       SetValue(OUT_ETLR00,param,GetValue(IN_ETLR00,param));
+       SetValue(OUT_JUDGE1,param,PASS);
+     }else if(((SetReg+1) == HighReg) || ((SetReg-1) == LowReg)){
+       end_flag = 1;
+       SetValue(OUT_ETLR00,param,GetValue(IN_ETLR00,param));
+       SetValue(OUT_JUDGE1,param,FAIL);
+     }else{
+       if(Target <= vrsg_vol){
+         LowReg = SetReg;
+       }else{
+         HighReg = SetReg;
+       }
+     
+     }
+
+   }
+
+ DeviceLevelsPowerDown();
+ DeviceSpecificPowerDown();
+ if(PASS != GetValue(OUT_JUDGE1,param))return(FAIL);
+ else return(PASS);
+  
+}
+
+
+int CpuModeFuncLogic(int mode,int mode_sram,int vcc[NUM_POWERSUPPLY],int waittime,interface_t* param,char *pat,char *mess, int in_ldata[16])
+{
+  /*--------------------------------------------------------------------------*/
+  /* Values                                                                   */
+  /*--------------------------------------------------------------------------*/
+  int i, cnt, cpuerr, datasize, patsize, vs0, vs1, vs2, speed, temp,vtemp[NUM_POWERSUPPLY];
+  int result, start_time,old_reg,tempo1,tempo2,bm_data,ecr_data, pf_flag;
+  char mat_str[20];
+  char disp_addres[256];
+
+  DeviceSpecificPowerUp();
+  /* Initialyze */
+  pf_flag = cnt = cpuerr = datasize = patsize = vs0 = vs1 = vs2 = speed = tempo1 = 0;
+  DispAddres(param,"",disp_addres);
+
+  for( cnt=RAM_TOP; cnt<=RAM_END; cnt=cnt+4 ){
+      //WriteBmMode8( cnt, 0xFFFFFFFF, SIZE_L );
+      WriteEcrMode8( cnt, 0xFFFFFFFF, SIZE_L );
+  }
+
+  //speed=GetValue(IN_EXTAL1,param);
+  //speed=GetValue(IN_EXTAL1,param);
+  speed=GetValue(IN_EXTAL_PS,param);
+
+  /******* DISP TAITOL *******/
+  //Vref��VrefH�̋L�q�ɕύX�K�v�H
+  sprintf(outbuf,"TEST:%d [ %s ] vcc=%dmV ext_Vrefh=%dmV ext_Vref=%dmV F=%2dps PLL=%d(X%d)\n ", test++,mess,vcc[0],vcc[1],vcc[2],speed,GetValue(IN_PLLON,param),GetValue(IN_PLL_MULT,param)); DataOut(Ffpt,outbuf);
+  sprintf(outbuf,"Module:%s\n%s\n", DispMatName(mat_str,param),disp_addres); DataOut(Ffpt,outbuf);
+  //Ldata�̌����ɕύX����K�v�L
+  sprintf(outbuf,"BDATA00:%08X, LDATA0:%08X\n", GetValue(IN_BDATA00,param),GetValue(IN_LDATA0,param)); DataOut(Ffpt,outbuf);
+  if( CheckFK(FK_DISP_DEBUG) ){ for( i=0; i<16; i++ ){ if( in_ldata[ i ]!=0x55345678 ){ sprintf( outbuf,"in_ldata[%d]=%08X, ", i, in_ldata[ i ] ); DataOut(Ffpt,outbuf); } } DataOut(Ffpt,"\n"); }
+
+  /******* SETUP ECR/BM *******/
+  Ecrsetup8(ECR_OVERL);
+
+  if( NULL!=strstr( mess, "UserBoot" ) ) goto DAXS_RAMBOOT;
+
+  /******** RATE SetUp *********/
+  SetTimming_NS( daxs_trans.write_rate );
+
+  /******** PowerUp *********/
+  vs0=vcc[0]; vs1=vcc[1]; vs2=vcc[2];
+  vcc[0]=daxs_trans.vcc;
+  vcc[1]=daxs_trans.vrefh;
+  vcc[2]=daxs_trans.vref;
+  
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if((vcc[1] != 0) && (vcc[2] != 0)){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    if( CheckFK(FK_DISP_DEBUG) ) DataOut(Ffpt," Ext_Vref  ON  \n");
+  }else{
+    if( CheckFK(FK_DISP_DEBUG) ) DataOut(Ffpt," Ext_Vref  OFF \n");
+  }
+
+  load_vlf_offset(_SUB_MODEENTRY_DAXS,4,tempo1);
+
+  if(SelectPowerSupply(mode,vcc)) {//�e�d���̋�����Level�̐ݒ�(DAXS�]���p)
+    vcc[0]=vs0;
+    vcc[1]=vs1;
+    vcc[2]=vs2;
+    return(HWFAIL);
+  }
+  SetVohVolVtt( daxs_trans.voh, daxs_trans.vol, daxs_trans.vtt, daxs_datao_pin );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+  vcc[0]=vs0;
+  vcc[1]=vs1;
+  vcc[2]=vs2;
+
+/******************************************************************************/
+/*                                 Write BM                                   */
+/******************************************************************************/
+
+  /******* MAKE ASM PATH *******/
+  strcpy( binpat, glob_cdp ); strcat( binpat, glob_binpat_logic );
+  strcat( binpat, pat );
+  patsize = CheckPatLength(binpat) - PAT_FILE_HEADER_SIZE;
+  datasize = comp_load_bm (binpat);
+
+  if(FAIL==datasize) {  /* path/fail check */
+    sprintf(outbuf," !!! NOT OPEN FILE PATH -> %s (checksum:H'%X) !!!\n",binpat,datasize); DataOut(Ffpt,outbuf); DeviceLevelsPowerDown();
+    return(NOPATFAIL);
+  }else{
+    sprintf(outbuf," LOAD FILE PATH -> %s (checksum:H'%X)\n",binpat,datasize); DataOut(Ffpt,outbuf);
+  }
+
+  /* input data bm set */
+  for( i = 0; i<16; i++ ){
+    if( in_ldata[ i ] != 0x55345678 ) WriteBmMode8( 0x40 + i*4, in_ldata[ i ], SIZE_L );
+  }
+
+
+
+/******************************************************************************/
+/*                                 DAXS Transport                             */
+/******************************************************************************/
+  /******** Start tests *********/
+  //printf("Write RAM \n"); /* Print Retry Count */
+
+  RAMRunApg( 0, RAM_TOP, OUTPUTIF_END );   /* DAXS transport 0=write command */
+
+  //printf("Read RAM \n"); /* Print Retry Count */
+
+  SetTimming_NS( daxs_trans.read_rate );
+  set_strobe_mask(daxs_datao_pin);  //Compare Setting command
+
+  result = RAMRunApg( 2, RAM_TOP, OUTPUTIF_END );   /* DAXS transport 2=ecr dump command */
+
+  for(i=RAM_TOP;i<=OUTPUTIF_END;i=i+4){
+    bm_data=ReadBmMode8(i,SIZE_L);
+    ecr_data=ReadEcrMode8(i,SIZE_L);
+    if(bm_data!=ecr_data){
+      sprintf( outbuf, "\nBM <=> ECR Comp ERROR!!! Addr = %X, BM = %X, ECR = %X \n",i,bm_data,ecr_data ); DataOut(Ffpt,outbuf);
+      result = FAIL;  break;
+    }
+  }
+  if( CheckFK(FK_DISP_DEBUG) ){ DispEcrBmData(0x0 , 0x0100, DISP_BM|DISP_1 );  DispEcrBmData(0x3D00 , 0x0100, DISP_BM|DISP_1 ); }
+  if(PASS!=result){
+    return(RAMFAIL);
+  }
+
+  DataOut( Ffpt, " <<<<< EXTRAM transfer OK >>>>>\n" ); //CommentOut for RAMBOOT Check
+
+/******************************************************************************/
+/*                                 DAXS RAMBOOT                               */
+/******************************************************************************/
+DAXS_RAMBOOT:
+  /*** Power Change ***/
+  vs0 = vcc[0];
+  vcc[0] = 3300;
+  if(SelectPowerSupply(mode,vcc)) {//�e�d���̋�����Level�̐ݒ�(RAMBoot�]���p)
+    return(HWFAIL);
+  }
+
+  if(VccSlow(vs0,vcc[0])){
+    return(HWFAIL);
+  }
+  vcc[0] = vs0;
+
+  /*** Comp Pin SetUp ***/
+  set_strobe_mask(bistpoll_pins);  /* ��rPin�̐ݒ�(RAMBoot�����܂ł̑ҋ@���ԂɎg�p) */
+  select_vector_mode(poll_pins,_PE_VECTOR_MODE);  //180314 Add-morioka For RamBoot
+  reconnect_pin(poll_pins);                       //180314 Add-morioka For RamBoot
+
+  /*** Test Speed SetUp ***/
+  //if( speed<=TM_SET_NS_MAX ){ SetTimming_NS(speed); }
+  //else                      { SetTimming_PS(speed); speed = speed / 1000; }
+  //SetTimming_PS(speed);
+  SetTimming_NS(speed/1000);
+  speed = speed / 1000;
+  ChangeTimming_GTSLTS( EXTCYLJ, 1, MODEENTRY_SPEED ); // ModeEntry���g���ݒ� GTS=1,20MHz
+
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if((vcc[1] != 0) && (vcc[2] != 0)){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    if( CheckFK(FK_DISP_DEBUG) ) DataOut(Ffpt," Ext_Vref  ON  \n");
+  }else{
+    if( CheckFK(FK_DISP_DEBUG) ) DataOut(Ffpt," Ext_Vref  OFF \n");
+  }
+
+  /******** APG SetUp(Wait) *********/
+  load_vlf_offset(_SUB_MODEENTRY_RAM,6,  1000/MODEENTRY_SPEED);    /*   1us Wait */
+  load_vlf_offset(_SUB_MODEENTRY_RAM,1,300000/2/MODEENTRY_SPEED);    /* 300us Wait */
+  load_vlf_offset(_SUB_MODEENTRY_RAM,2, 70000/MODEENTRY_SPEED);    /*  70ms Wait */
+  load_vlf_offset(_SUB_MODEENTRY_RAM,3,tempo1);          /* Vdd/Vddh On/Off */
+  load_vlf_offset(_SUB_RAMBT_END,0,500*waittime/speed); /* RAMBootEnd Wait = waittime x(500x200x2000ns) */
+
+  SetVohVolVtt( 2*vcc[0]/10, 2*vcc[0]/10, 5*vcc[0]/10 , bistpoll_pins );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+
+  /******** Test Start *********/
+  if( CheckFK(FK_INPUT_SCOPE) ) WaitHitKey( "\nPlease Hit Any Key" );
+  start_time = bentime();                  /* Get Test Start Time */
+  if( NULL!=strstr( pat, "bgr_monitor") ){
+    run_apg (_RAM_BOOT_CTRL_RESH);                /* Execute Test Pattern   */
+    set_pmu_range( UA250 );      /* range NA2500, UA25, UA250, UA2500, MA25, MA250 MA1000 */
+    comp_set_ilimit( 200000 );   /* PMU +-xxmA clamp  200uA     */
+    comp_set_iparh( 200000 );    /* PMU meas Hi current judgh   */
+    set_vlimit( 0 );
+    pmu_delay( 1000 );  /* PMU Conect delay(us) 1ms */
+    connect_pmu( daxs_datai_pin );
+    SITE_MASK( 1, tempo1 = read_pmu_status( 0x08 ) );
+    SITE_MASK( 1, tempo2 = read_adc_ave( ADC_VMEAS, 0, 10 ) );
+    SITE_MASK( 1, tempo1 = read_adc_ave( ADC_IMEAS, 0, 10 ) );
+    sprintf( outbuf,"\nATBM1(DATAI) = %d[mV]  %d[nA]\n", tempo2, tempo1 ); DataOut( Ffpt, outbuf );
+    reconnect_pin( daxs_datai_pin );
+    connect_pmu( vcl1_pin );
+    SITE_MASK( 1, tempo1 = read_pmu_status( 0x08 ) );
+    SITE_MASK( 1, tempo2 = read_adc_ave( ADC_VMEAS, 0, 10 ) );
+    SITE_MASK( 1, tempo1 = read_adc_ave( ADC_IMEAS, 0, 10 ) );
+    sprintf( outbuf,"VCL1 = %d[mV]  %d[nA]\n", tempo2, tempo1 ); DataOut( Ffpt, outbuf );
+    reconnect_pin( vcl1_pin );
+    connect_pmu( vcl2_pin );
+    SITE_MASK( 1, tempo1 = read_pmu_status( 0x08 ) );
+    SITE_MASK( 1, tempo2 = read_adc_ave( ADC_VMEAS, 0, 10 ) );
+    SITE_MASK( 1, tempo1 = read_adc_ave( ADC_IMEAS, 0, 10 ) );
+    sprintf( outbuf,"VCL2 = %d[mV]  %d[nA]\n", tempo2, tempo1 ); DataOut( Ffpt, outbuf );
+    reconnect_pin( vcl2_pin );
+    run_apg (_RAM_BOOT_CTRL_RESL);
+  }else if( NULL!=strstr( pat, "vbb_monitor") ){
+    run_apg (_RAM_BOOT_CTRL_RESH);                /* Execute Test Pattern   */
+    set_pmu_range( UA250 );      /* range NA2500, UA25, UA250, UA2500, MA25, MA250 MA1000 */
+    comp_set_ilimit( 200000 );   /* PMU +-xxmA clamp  200uA     */
+    comp_set_iparh( 200000 );    /* PMU meas Hi current judgh   */
+    set_vlimit( 0 );
+    pmu_delay( 1000 );  /* PMU Conect delay(us) 1ms */
+    connect_pmu( vbp_pin );
+    SITE_MASK( 1, tempo1 = read_adc_ave( ADC_VMEAS, 0, 10 ) );
+    SITE_MASK( 1, tempo2 = read_adc_ave( ADC_IMEAS, 0, 10 ) );
+    sprintf( outbuf,"\nVBB(VBP) = %d[mV]  %d[nA]\n", tempo1, tempo2 ); DataOut( Ffpt, outbuf );
+    reconnect_pin( vbp_pin );
+    connect_pmu( vbn_pin );
+    SITE_MASK( 1, tempo1 = read_adc_ave( ADC_VMEAS, 0, 10 ) );
+    SITE_MASK( 1, tempo2 = read_adc_ave( ADC_IMEAS, 0, 10 ) );
+    sprintf( outbuf,"\nVBB(VBN) = %d[mV]  %d[nA]\n", tempo1, tempo2 ); DataOut( Ffpt, outbuf );
+    reconnect_pin( vbn_pin );
+    run_apg (_RAM_BOOT_CTRL_RESL);
+  }else if( NULL!=strstr( mess, "UserBoot" ) ){
+    load_vlf_offset(_SUB_MODEENTRY_ROM,1,  1000/2/speed);    /*   1us Wait */
+    load_vlf_offset(_SUB_MODEENTRY_ROM,2,300000/2/speed);    /* 300us Wait */
+    load_vlf_offset(_SUB_MODEENTRY_ROM,3, 70000/speed);    /*  70ms Wait */
+    load_vlf_offset(_SUB_MODEENTRY_ROM,4,tempo1);          /* Vdd/Vddh On/Off */
+    run_apg ( _USER_BOOT_CTRL );
+  }else{
+    run_apg (_RAM_BOOT_CTRL);                /* Execute Test Pattern   */
+  }
+  Cputotal = (bentime()-start_time-init_bentime())/1000; /* Get Test Total Time */
+
+  cpuerr = check_pin_errors( bistpoll_pins, _CHECK_FERR ); /* Boot����Error�o�͂�APG�p�^�����璊�o(DPASSDEND_CP�̔�r����) */
+  Cpuferr = cpuerr;
+  if( CheckFK(FK_DISP_DEBUG) ){ sprintf(outbuf,"cpuerr=%d \n",cpuerr); DataOut(Ffpt,outbuf); }
+
+
+/******************************************************************************/
+/*                                 DAXS Read                                  */
+/******************************************************************************/
+  set_vlimit(0);
+  select_vector_mode(poll_pins,_PE_APG_MODE);
+  reconnect_pin(poll_pins);
+  set_strobe_mask(daxs_datao_pin);/* ��rPin�̐ݒ�(RAMBoot�����܂ł̑ҋ@���ԂɎg�p) */
+  SetTimming_NS( daxs_trans.read_rate );
+
+/******** PowerUp *********/
+  vs0=vcc[0];
+  vs1=vcc[1];
+  vs2=vcc[2];
+
+  vcc[0]=daxs_trans.vcc;
+  vcc[1]=daxs_trans.vrefh;
+  vcc[2]=daxs_trans.vref;
+
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if((vcc[1] != 0) && (vcc[2] != 0)){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    if( CheckFK(FK_DISP_DEBUG) ) DataOut(Ffpt," Ext_Vref  ON  \n");
+  }else{
+    if( CheckFK(FK_DISP_DEBUG) ) DataOut(Ffpt," Ext_Vref  OFF \n");
+  }
+  load_vlf_offset(_SUB_MODEENTRY_DAXS,4,tempo1);
+
+  if(SelectPowerSupply(MNORMAL,vcc)) {//�e�d���̋�����Level�̐ݒ�(DAXS�]���p)
+    vcc[0]=vs0;
+    vcc[1]=vs1;
+    vcc[2]=vs2;
+    return(HWFAIL);
+  }
+  SetVohVolVtt( daxs_trans.voh, daxs_trans.vol, daxs_trans.vtt, daxs_datao_pin );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+  vcc[0]=vs0;
+  vcc[1]=vs1;
+  vcc[2]=vs2;
+
+  /******** Read RAM data *********/
+  for( cnt=RAM_TOP; cnt<=RAM_END; cnt=cnt+4 ) WriteEcrMode8( cnt, 0xFFFFFFFF, SIZE_L );
+
+  RAMRunApg( 2, RAM_TOP, RAM_END );   /* RAM->ECR ReadOut */
+
+  if( NULL!=strstr( pat, "read_dump") ){
+    if( ReadEcrMode8( RAM_TOP + 0x50, SIZE_L ) ){ tempo1 = 0xC000; tempo2 = 64; }
+    else                                        { tempo1 = 0x28000; tempo2 = 512; } /* UIAREA */
+    for( cnt=RAM_TOP+0x8000; cnt<=RAM_TOP+tempo1; cnt++ ) write_ecr( cnt, 0xFF );
+    RAMRunApg( 2, RAM_TOP + 0x8000, RAM_TOP + 0x8000 + tempo2*0x100 + 0xFF );   /* RAM->ECR ReadOut */
+  }
+  if( CheckFK(FK_DISP_DEBUG) ){ DispEcrBmData(0x0 , 0x0100, DISP_ECR|DISP_1 ); DispEcrBmData(0x3D00 , 0x0100, DISP_ECR|DISP_1 ); }
+
+
+/******** end manage *********/
+  DeviceLevelsPowerDown(); //�e�d��OFF�R�}���h
+
+  if( cpuerr==1 ){
+    if( ReadEcrMode8(0x3D00,SIZE_L)==0xAAAAAAAA ){
+       //printf("Test FAIL!!!  %08X %d\n", ReadEcrMode8(0x3D00,SIZE_L), cpuerr );
+       printf("-- FAIL -- Cpu total=%dms\n",Cputotal);
+       return(FAIL);
+    }else if( ReadEcrMode8(0x3D00,SIZE_L)==0x55555555 ){
+       //printf("Test PASS!!!  %08X %d\n", ReadEcrMode8(0x3D00,SIZE_L), cpuerr );
+       printf("** PASS ** Cpu Total=%dms\n",Cputotal);
+       return(PASS);
+    }else{
+       //printf("Test ECR data ERROR!!!\n");
+       DispEcrBmData(0x3D00 , 0x0100, DISP_ECR|DISP_1 );
+       printf("-- FLAG_FAIL -- Cpu Total=%dms\n",Cputotal);
+       return(FLGFAIL);
+    }
+  }
+  printf("-- FAIL -- !!! TimeOver !!! total=%dms\n",Cputotal);
+
+  return(CPUFAIL);
+}
+
+
+
+
+
+int Minori_LPRead(int mode,int vcc[NUM_POWERSUPPLY],int waittime,interface_t* param,char *pat,char *mess)
+{
+  int i, cnt,addr, cpuerr, datasize, patsize, vs0, vs1, vs2, speed, temp,vtemp[NUM_POWERSUPPLY];
+  int result, start_time,old_reg,addr_inc,fail_data,fail_adr;
+  int tempo0,tempo1,tempo2,tempo3;
+  int iparh,iparl,ipar_judge;
+  int ffpt_bak;
+  char mat_str[20];
+  char disp_addres[256];
+  int minori_ptn[1024];
+  int Ldata[6];
+  int runtotal,strat_time;
+  int initial_addr,TS6_13_addr,TS13_15_addr,TS15_13_addr,end_addr;
+  int initial_addr_yin,initial_addr_xin;
+  int TS6_13_addr_yin ,TS6_13_addr_xin;
+  int TS13_15_addr_yin,TS13_15_addr_xin;
+  int TS15_13_addr_yin,TS15_13_addr_xin;
+  int end_addr_yin,    end_addr_xin;
+  int apg_1st_x_loop,apg_1st_y_loop_be,apg_1st_y_loop_af;
+  int apg_2nd_x_loop,apg_2nd_y_loop_be,apg_2nd_y_loop_af;
+  int apg_3rd_x_loop,apg_3rd_y_loop_be,apg_3rd_y_loop_af;
+  int apg_4th_x_loop,apg_4th_y_loop_be,apg_4th_y_loop_af;
+
+  //#include "MINORI_ptn\RC04EX_MINORI.c"
+
+  Ldata[0] = Ldata[1] = Ldata[2] = Ldata[3] = Ldata[4] = Ldata[5] = 0;
+
+  /*--------------------------------------------------------------------------*/
+  /* Initialyze                                                               */
+  /*--------------------------------------------------------------------------*/
+  iparh = GetValue(IN_LDATA1,param);
+  iparl = GetValue(IN_LDATA2,param);
+
+  cnt = cpuerr = datasize = patsize = vs0 = vs1 = vs2 = speed = 0;
+  DispAddres(param,"",disp_addres);
+
+  DeviceSpecificPowerUp();
+
+/******* GET PARAMETER *******/
+  speed=GetValue(IN_EXTAL1,param);
+
+
+/******* DISP TAITOL *******/
+  //Vref��VrefH�̋L�q�ɕύX�K�v�H
+  sprintf(outbuf,"TEST:%d [ %s ] vcc=%dmV ext_Vrefh=%dmV ext_Vref=%dmV F=%2dns PLL=%d(X%d)\n ",
+    test++,mess,vcc[0],vcc[1],vcc[2],speed,GetValue(IN_PLLON,param),GetValue(IN_PLL_MULT,param));
+  DataOut(Ffpt,outbuf);
+  sprintf(outbuf,"Module:%s\n%s\n",
+          DispMatName(mat_str,param),disp_addres);
+  DataOut(Ffpt,outbuf);
+  
+/******** BGR Code Check *********/
+  BGR_REG_CHECK(vcc[0],param);  
+  
+/******** RATE SetUp *********/
+  
+
+/******* SETUP ECR/BM *******/
+  Ecrsetup8(ECR_OVERL);
+
+  /******** PowerUp *********/
+  if(SelectPowerSupply(mode,vcc)) {//�e�d���̋�����Level�̐ݒ�(DAXS�]���p)
+    vcc[0]=vs0;
+    vcc[1]=vs1;
+    vcc[2]=vs2;
+    return(HWFAIL);
+  }
+
+  SetVohVolVtt( vcc[0]/2, vcc[0]/2, 0, no_pin );
+
+  /********************************************************************************
+   *  Pin Setting
+   ********************************************************************************/
+  select_vector_mode(all_pins,_PE_VECTOR_MODE);
+  
+  select_vector_mode(data_pins,_PE_APG_MODE);
+  select_vector_mode(vec_fly_pin,_PE_APG_MODE);
+  /********************************************************************************
+   *  Timming Setting
+   ********************************************************************************/
+  SetTimming_NS( 80 ); // 80ns->12.5MHz
+  ChangeTimming_GTSLTS_LP( EXTCYLJ , 1, 3000  );// 3000ns  -> 333KHz
+  //ChangeTimming_GTSLTS_LP( EXTCYLM4, 2, speed );// 30000ns ->  33KHz
+  ChangeTimming_GTSLTS_LP2( EXTCYLM4, 2, speed );// 30000ns ->  33KHz
+
+
+  /********************************************************************************
+   *  Main APG
+   ********************************************************************************/
+    sprintf(outbuf,"-- MINORI Start --\n");
+    DataOut(Ffpt,outbuf);
+
+    //------ APG Setting ------//
+    SetVohVolVtt( vcc[0]/2, vcc[0]/2, daxs_trans.vtt, bistpoll_pins );
+    set_strobe_mask(bistpoll_pins);
+    
+    // Addr Setting
+    initial_addr  = 0x00000;
+    TS6_13_addr   = GetValue(IN_LDATA0,param);
+    TS13_15_addr  = GetValue(IN_LDATA1,param);
+    TS15_13_addr  = GetValue(IN_LDATA2,param);
+    end_addr      = GetValue(IN_LDATA3,param);
+
+    // Addr -> X-addr + Y-addr
+    initial_addr_yin =  initial_addr &  WORD_END;
+    initial_addr_xin =  initial_addr >> YDECNUM;
+    TS6_13_addr_yin  =  TS6_13_addr  &  WORD_END;
+    TS6_13_addr_xin  =  TS6_13_addr  >> YDECNUM;
+    TS13_15_addr_yin =  TS13_15_addr &  WORD_END;
+    TS13_15_addr_xin =  TS13_15_addr >> YDECNUM;
+    TS15_13_addr_yin =  TS15_13_addr &  WORD_END;
+    TS15_13_addr_xin =  TS15_13_addr >> YDECNUM;
+    end_addr_yin     =  end_addr     &  WORD_END;
+    end_addr_xin     =  end_addr     >> YDECNUM;
+
+    // X-addr/Y-addr -> Apg Loop Number
+    apg_1st_y_loop_be =  0;
+    apg_1st_x_loop    =  TS6_13_addr_xin - initial_addr_xin - 1;
+    apg_1st_y_loop_af =  TS6_13_addr_yin;
+
+    apg_2nd_y_loop_be =  0xFF - TS6_13_addr_yin + 1;
+    apg_2nd_x_loop    =  TS13_15_addr_xin - TS6_13_addr_xin - 2;
+    apg_2nd_y_loop_af =  TS13_15_addr_yin;
+
+    apg_3rd_y_loop_be =  0xFF - TS13_15_addr_yin + 1;
+    apg_3rd_x_loop    =  TS15_13_addr_xin - TS13_15_addr_xin - 2;
+    apg_3rd_y_loop_af =  TS15_13_addr_yin;
+
+    apg_4th_y_loop_be =  0xFF - TS15_13_addr_yin + 1;
+    apg_4th_x_loop    =  end_addr_xin     - TS15_13_addr_xin - 2;
+    apg_4th_y_loop_af =  end_addr_yin;
+
+    // Apg Loop Number Set
+    load_vlf_offset(_MINORI_LP_ALL, 0,apg_1st_x_loop);
+    load_vlf_offset(_MINORI_LP_ALL, 1,apg_2nd_x_loop);
+    load_vlf_offset(_MINORI_LP_ALL, 2,apg_3rd_x_loop);
+    load_vlf_offset(_MINORI_LP_ALL, 3,apg_4th_x_loop);
+
+    load_vlf_offset(_MINORI_LP_ALL,13,apg_1st_y_loop_af);
+    load_vlf_offset(_MINORI_LP_ALL,14,apg_2nd_y_loop_be);
+    load_vlf_offset(_MINORI_LP_ALL,18,apg_2nd_y_loop_af);
+    load_vlf_offset(_MINORI_LP_ALL,19,apg_3rd_y_loop_be);
+    load_vlf_offset(_MINORI_LP_ALL,23,apg_3rd_y_loop_af);
+    load_vlf_offset(_MINORI_LP_ALL,24,apg_4th_y_loop_be);
+//    load_vlf_offset(_MINORI_LP_ALL,28,apg_4th_y_loop_af);
+
+  //BM&ECR Clear
+  for( cnt=TS15_13_addr; cnt<=end_addr; cnt=cnt+4 ){
+      WriteEcrMode8( cnt, 0x01010101, SIZE_L );
+      WriteBmMode8( cnt, 0x00000000, SIZE_L );
+  }
+
+  sprintf(binpat,"%s%s%s.pat",glob_cdp,glob_binpat_bist,pat);
+
+  patsize = CheckPatLength(binpat) - PAT_FILE_HEADER_SIZE;
+
+/******** FILE BM WRITE **********/
+  datasize = comp_load_bm (binpat);   // comp_load_bm:file pattern => BM 
+  if(FAIL==datasize) {  // path/fail check 
+    sprintf(outbuf," !!! NOT OPEN FILE PATH -> %s (checksum:H'%X) !!!\n",binpat,datasize);
+    DataOut(Ffpt,outbuf);
+    //DeviceLevelsPowerDown();
+    return(NOPATFAIL);
+  }else{
+    sprintf(outbuf," LOAD FILE PATH -> %s (checksum:H'%X)\n",binpat,datasize);
+    DataOut(Ffpt,outbuf);
+  }
+
+  if(GetValue(IN_BDATA00,param) == 1){
+    // Apg Loop Number Set
+    load_vlf_offset(_MINORI_LP_ALL_REPEAT, 0,apg_1st_x_loop);
+    load_vlf_offset(_MINORI_LP_ALL_REPEAT, 1,apg_2nd_x_loop);
+    load_vlf_offset(_MINORI_LP_ALL_REPEAT, 2,apg_3rd_x_loop);
+    load_vlf_offset(_MINORI_LP_ALL_REPEAT, 4,apg_4th_x_loop);
+
+    load_vlf_offset(_MINORI_LP_ALL_REPEAT,14,apg_1st_y_loop_af);
+    load_vlf_offset(_MINORI_LP_ALL_REPEAT,15,apg_2nd_y_loop_be);
+    load_vlf_offset(_MINORI_LP_ALL_REPEAT,19,apg_2nd_y_loop_af);
+    load_vlf_offset(_MINORI_LP_ALL_REPEAT,20,apg_3rd_y_loop_be);
+    load_vlf_offset(_MINORI_LP_ALL_REPEAT,27,apg_3rd_y_loop_af);
+    load_vlf_offset(_MINORI_LP_ALL_REPEAT,28,apg_4th_y_loop_be);
+
+    //Loop Setting
+    load_vlf_offset(_MINORI_LP_ALL_REPEAT,3,waittime * (10 * speed / 31000));
+    
+    run_apg(_MINORI_LP_ALL_REPEAT);
+  }else{
+    run_apg(_MINORI_LP_ALL);
+  }
+
+    sprintf(outbuf,"<<  MINORI End  >>\n");
+    DataOut(Ffpt,outbuf);
+    //DeviceSpecificPowerDown();
+    //DeviceLevelsPowerDown();
+
+    if(( ReadEcrMode8(TS15_13_addr + 0x4C,SIZE_L) == 0x00 )&&
+       ( ReadEcrMode8(TS15_13_addr +0x93,SIZE_L)  == 0x00010101 )&&
+       ( ReadEcrMode8(TS15_13_addr +0x89,SIZE_L)  == 0x01010101 )&&
+       ( ReadEcrMode8(TS15_13_addr +0x85,SIZE_L)  == 0x01010101 )&&
+       ( ReadEcrMode8(TS15_13_addr +0x81,SIZE_L)  == 0x01010101 )&&
+       ( ReadEcrMode8(TS15_13_addr +0x7D,SIZE_L)  == 0x01010101 )&&
+       ( ReadEcrMode8(TS15_13_addr +0x79,SIZE_L)  == 0x01010101 )&&
+       ( ReadEcrMode8(TS15_13_addr +0x75,SIZE_L)  == 0x01010101 )
+       ){
+      sprintf(outbuf," ** Minori Read PASS **\n");
+      result = PASS;
+    }else{
+      sprintf(outbuf," -- Minori Read FAIL --\n");
+      result = FAIL;
+    }
+    DataOut(Ffpt,outbuf);
+
+	if(GetValue(IN_BDATA10,param) == 1){
+    printf("/// ----- Debug Mode ----- ///\n");
+    printf("0x%X = %X\n",TS15_13_addr + 0x4C,ReadEcrMode8(TS15_13_addr + 0x4C,SIZE_L));
+	  printf("0x%X = %X\n",TS15_13_addr + 0x93,ReadEcrMode8(TS15_13_addr +0x93,SIZE_L));
+    DispEcrBmData( TS15_13_addr,0x140 , DISP_BM |DISP_1 );
+    DispEcrBmData( TS15_13_addr,0x140 , DISP_ECR|DISP_1 );
+    printf("/// ----- Debug Mode ----- ///\n");
+  }
+
+  return(result);
+
+}
+
+
+int Minori_LPRead_loop(int mode,int vcc[NUM_POWERSUPPLY],int waittime,interface_t* param,char *pat,char *mess)
+{
+  int i, cnt,addr, cpuerr, datasize, patsize, vs0, vs1, vs2, speed, temp,vtemp[NUM_POWERSUPPLY];
+  int result, start_time,old_reg,addr_inc,fail_data,fail_adr;
+  int tempo0,tempo1,tempo2,tempo3;
+  int iparh,iparl,ipar_judge;
+  int ffpt_bak;
+  char mat_str[20];
+  char disp_addres[256];
+  int minori_ptn[1024];
+  int Ldata[6];
+  int runtotal,strat_time;
+  int initial_addr,TS6_13_addr,TS13_15_addr,TS15_13_addr,end_addr;
+  int initial_addr_yin,initial_addr_xin;
+  int TS6_13_addr_yin ,TS6_13_addr_xin;
+  int TS13_15_addr_yin,TS13_15_addr_xin;
+  int TS15_13_addr_yin,TS15_13_addr_xin;
+  int end_addr_yin,    end_addr_xin;
+  int apg_1st_x_loop,apg_1st_y_loop_be,apg_1st_y_loop_af;
+  int apg_2nd_x_loop,apg_2nd_y_loop_be,apg_2nd_y_loop_af;
+  int apg_3rd_x_loop,apg_3rd_y_loop_be,apg_3rd_y_loop_af;
+  int apg_4th_x_loop,apg_4th_y_loop_be,apg_4th_y_loop_af;
+
+  //#include "MINORI_ptn\RC04EX_MINORI.c"
+
+  Ldata[0] = Ldata[1] = Ldata[2] = Ldata[3] = Ldata[4] = Ldata[5] = 0;
+
+  /*--------------------------------------------------------------------------*/
+  /* Initialyze                                                               */
+  /*--------------------------------------------------------------------------*/
+
+  cnt = cpuerr = datasize = patsize = vs0 = vs1 = vs2 = speed = 0;
+  DispAddres(param,"",disp_addres);
+
+    DeviceSpecificPowerUp();
+
+/******* GET PARAMETER *******/
+  speed=GetValue(IN_EXTAL1,param);
+
+
+/******* DISP TAITOL *******/
+  //Vref��VrefH�̋L�q�ɕύX�K�v�H
+  sprintf(outbuf,"TEST:%d [ %s ] vcc=%dmV ext_Vrefh=%dmV ext_Vref=%dmV F=%2dns PLL=%d(X%d)\n ",
+    test++,mess,vcc[0],vcc[1],vcc[2],speed,GetValue(IN_PLLON,param),GetValue(IN_PLL_MULT,param));
+  DataOut(Ffpt,outbuf);
+  sprintf(outbuf,"Module:%s\n%s\n",
+          DispMatName(mat_str,param),disp_addres);
+  DataOut(Ffpt,outbuf);
+  
+/******** BGR Code Check *********/
+  BGR_REG_CHECK(vcc[0],param);  
+  
+/******* SETUP ECR/BM *******/
+  Ecrsetup8(ECR_OVERL);
+
+  /******** PowerUp *********/
+  if(GetValue(IN_BDATA11,param) == 1){
+    if(SelectPowerSupply(mode,vcc)) {//�e�d���̋�����Level�̐ݒ�(DAXS�]���p)
+      vcc[0]=vs0;
+      vcc[1]=vs1;
+      vcc[2]=vs2;
+      return(HWFAIL);
+    }
+  }else{
+    if(VccSlow(3300,vcc[0])){
+      return(HWFAIL);
+    }
+    comp_set_v3(vcc[2]);
+    set_vih2(vcc[1]);
+    delay_timer(1000); 
+  }
+
+  SetVohVolVtt( vcc[0]/2, vcc[0]/2, 0, no_pin );
+
+  /********************************************************************************
+   *  Pin Setting
+   ********************************************************************************/
+  select_vector_mode(all_pins,_PE_VECTOR_MODE);
+  
+  select_vector_mode(data_pins,_PE_APG_MODE);
+  select_vector_mode(vec_fly_pin,_PE_APG_MODE);
+  /********************************************************************************
+   *  Timming Setting
+   ********************************************************************************/
+  SetTimming_NS( 80 ); // 80ns->12.5MHz
+  ChangeTimming_GTSLTS_LP( EXTCYLJ , 1, 3000  );// 3000ns  -> 333KHz
+  //ChangeTimming_GTSLTS_LP( EXTCYLM4, 2, speed );// 30000ns ->  33KHz
+  ChangeTimming_GTSLTS_LP2( EXTCYLM4, 2, speed );// 30000ns ->  33KHz
+
+
+  /********************************************************************************
+   *  Main APG
+   ********************************************************************************/
+    sprintf(outbuf,"-- MINORI Start --\n");
+    DataOut(Ffpt,outbuf);
+
+
+    //------ APG Setting ------//
+    SetVohVolVtt( vcc[0]/2, vcc[0]/2, daxs_trans.vtt, bistpoll_pins );
+    set_strobe_mask(bistpoll_pins);
+    
+    // Addr Setting
+    initial_addr  = 0x00000;
+    TS6_13_addr   = GetValue(IN_LDATA0,param);
+    TS13_15_addr  = GetValue(IN_LDATA1,param);
+    TS15_13_addr  = GetValue(IN_LDATA2,param);
+    end_addr      = GetValue(IN_LDATA3,param);
+
+    // Addr -> X-addr + Y-addr
+    initial_addr_yin =  initial_addr &  WORD_END;
+    initial_addr_xin =  initial_addr >> YDECNUM;
+    TS6_13_addr_yin  =  TS6_13_addr  &  WORD_END;
+    TS6_13_addr_xin  =  TS6_13_addr  >> YDECNUM;
+    TS13_15_addr_yin =  TS13_15_addr &  WORD_END;
+    TS13_15_addr_xin =  TS13_15_addr >> YDECNUM;
+    TS15_13_addr_yin =  TS15_13_addr &  WORD_END;
+    TS15_13_addr_xin =  TS15_13_addr >> YDECNUM;
+    end_addr_yin     =  end_addr     &  WORD_END;
+    end_addr_xin     =  end_addr     >> YDECNUM;
+
+    // X-addr/Y-addr -> Apg Loop Number
+    apg_1st_y_loop_be =  0;
+    apg_1st_x_loop    =  TS6_13_addr_xin - initial_addr_xin - 1;
+    apg_1st_y_loop_af =  TS6_13_addr_yin;
+
+    apg_2nd_y_loop_be =  0xFF - TS6_13_addr_yin + 1;
+    apg_2nd_x_loop    =  TS13_15_addr_xin - TS6_13_addr_xin - 2;
+    apg_2nd_y_loop_af =  TS13_15_addr_yin;
+
+    apg_3rd_y_loop_be =  0xFF - TS13_15_addr_yin + 1;
+    apg_3rd_x_loop    =  TS15_13_addr_xin - TS13_15_addr_xin - 2;
+    apg_3rd_y_loop_af =  TS15_13_addr_yin;
+
+    apg_4th_y_loop_be =  0xFF - TS15_13_addr_yin + 1;
+    apg_4th_x_loop    =  end_addr_xin     - TS15_13_addr_xin - 2;
+    apg_4th_y_loop_af =  end_addr_yin;
+
+    // Apg Loop Number Set
+    load_vlf_offset(_MINORI_LP_ALL, 0,apg_1st_x_loop);
+    load_vlf_offset(_MINORI_LP_ALL, 1,apg_2nd_x_loop);
+    load_vlf_offset(_MINORI_LP_ALL, 2,apg_3rd_x_loop);
+    load_vlf_offset(_MINORI_LP_ALL, 3,apg_4th_x_loop);
+
+    load_vlf_offset(_MINORI_LP_ALL,13,apg_1st_y_loop_af);
+    load_vlf_offset(_MINORI_LP_ALL,14,apg_2nd_y_loop_be);
+    load_vlf_offset(_MINORI_LP_ALL,18,apg_2nd_y_loop_af);
+    load_vlf_offset(_MINORI_LP_ALL,19,apg_3rd_y_loop_be);
+    load_vlf_offset(_MINORI_LP_ALL,23,apg_3rd_y_loop_af);
+    load_vlf_offset(_MINORI_LP_ALL,24,apg_4th_y_loop_be);
+//    load_vlf_offset(_MINORI_LP_ALL,28,apg_4th_y_loop_af);
+
+  //BM&ECR Clear
+  for( cnt=TS15_13_addr; cnt<=end_addr; cnt=cnt+4 ){
+      WriteEcrMode8( cnt, 0x01010101, SIZE_L );
+  }
+  if(GetValue(IN_BDATA11,param) == 1){
+    //BM&ECR Clear
+    for( cnt=TS15_13_addr; cnt<=end_addr; cnt=cnt+4 ){
+        //WriteEcrMode8( cnt, 0x01010101, SIZE_L );
+        WriteBmMode8( cnt, 0x00000000, SIZE_L );
+    }
+  
+
+  sprintf(binpat,"%s%s%s.pat",glob_cdp,glob_binpat_bist,pat);
+
+  patsize = CheckPatLength(binpat) - PAT_FILE_HEADER_SIZE;
+
+/******** FILE BM WRITE **********/
+    datasize = comp_load_bm (binpat);   // comp_load_bm:file pattern => BM 
+    if(FAIL==datasize) {  // path/fail check 
+      sprintf(outbuf," !!! NOT OPEN FILE PATH -> %s (checksum:H'%X) !!!\n",binpat,datasize);
+      DataOut(Ffpt,outbuf);
+      //DeviceLevelsPowerDown();
+      return(NOPATFAIL);
+    }else{
+      sprintf(outbuf," LOAD FILE PATH -> %s (checksum:H'%X)\n",binpat,datasize);
+      DataOut(Ffpt,outbuf);
+    }
+  }
+
+    run_apg(_MINORI_LP_ALL);
+
+    sprintf(outbuf,"<<  MINORI End  >>\n");
+    DataOut(Ffpt,outbuf);
+    //DeviceSpecificPowerDown();
+    //DeviceLevelsPowerDown();
+
+    if(( ReadEcrMode8(TS15_13_addr + 0x4C,SIZE_L)  == 0x00 )&&
+       ( ReadEcrMode8(TS15_13_addr + 0x93,SIZE_L)  == 0x00010101 )&&
+       ( ReadEcrMode8(TS15_13_addr + 0x89,SIZE_L)  == 0x01010101 )&&
+       ( ReadEcrMode8(TS15_13_addr + 0x85,SIZE_L)  == 0x01010101 )&&
+       ( ReadEcrMode8(TS15_13_addr + 0x81,SIZE_L)  == 0x01010101 )&&
+       ( ReadEcrMode8(TS15_13_addr + 0x7D,SIZE_L)  == 0x01010101 )&&
+       ( ReadEcrMode8(TS15_13_addr + 0x79,SIZE_L)  == 0x01010101 )&&
+       ( ReadEcrMode8(TS15_13_addr + 0x75,SIZE_L)  == 0x01010101 )
+       ){
+      sprintf(outbuf," ** Minori Read PASS **\n");
+      result = PASS;
+    }else{
+      sprintf(outbuf," -- Minori Read FAIL --\n");
+      result = FAIL;
+    }
+
+	if(GetValue(IN_BDATA10,param) == 1){
+    printf("/// ----- Debug Mode ----- ///");
+    printf("0x%X = %X\n",TS15_13_addr + 0x4C,ReadEcrMode8(TS15_13_addr + 0x4C,SIZE_L));
+	  printf("0x%X = %X\n",TS15_13_addr + 0x93,ReadEcrMode8(TS15_13_addr +0x93,SIZE_L));
+    printf("/// ----- Debug Mode ----- ///");
+  }
+    DispEcrBmData( TS15_13_addr,0x140 , DISP_BM |DISP_1 );
+    DispEcrBmData( TS15_13_addr,0x140 , DISP_ECR|DISP_1 );
+
+    DataOut(Ffpt,outbuf);
+
+  return(result);
+
+}
+
+
+/************************************************************************
+ * Internal CPU use 2ndFunction
+ ************************************************************************/
+int CpuLPReadMode(int mode,int mode_sram,int vcc[NUM_POWERSUPPLY],int waittime,interface_t* param,char *pat,char *mess)
+{
+  /*--------------------------------------------------------------------------*/
+  /* Values                                                                   */
+  /*--------------------------------------------------------------------------*/
+  int i, cnt, cpuerr, datasize, patsize, vs0, vs1, vs2, speed, temp,vtemp[NUM_POWERSUPPLY];
+  int result, start_time,old_reg,tempo1,bm_data,ecr_data;
+  char mat_str[20];
+  char disp_addres[256];
+
+  /*--------------------------------------------------------------------------*/
+  /* Initialyze                                                               */
+  /*--------------------------------------------------------------------------*/
+  cnt = cpuerr = datasize = patsize = vs0 = vs1 = vs2 = speed = tempo1 = 0;
+  DispAddres(param,"",disp_addres);
+
+  for( cnt=RAM_TOP; cnt<=RAM_END; cnt=cnt+4 ){
+      WriteBmMode8( cnt, 0xFFFFFFFF, SIZE_L );
+      WriteEcrMode8( cnt, 0xFFFFFFFF, SIZE_L );
+  }
+
+
+/******* GET PARAMETER *******/
+  speed=GetValue(IN_EXTAL1,param);
+
+/******* DISP TAITOL *******/
+  //Vref��VrefH�̋L�q�ɕύX�K�v�H
+  sprintf(outbuf,"TEST:%d [ %s ] vcc=%dmV ext_Vrefh=%dmV ext_Vref=%dmV F=%2dns PLL=%d(X%d)\n ",
+    test++,mess,vcc[0],vcc[1],vcc[2],speed,GetValue(IN_PLLON,param),GetValue(IN_PLL_MULT,param));
+  DataOut(Ffpt,outbuf);
+  sprintf(outbuf,"Module:%s\n%s\n",
+          DispMatName(mat_str,param),disp_addres);
+  DataOut(Ffpt,outbuf);
+  //Ldata�̌����ɕύX����K�v�L
+  sprintf(outbuf,"BDATA00:%08X, LDATA0:%08X\n"
+    ,GetValue(IN_BDATA00,param),GetValue(IN_LDATA0,param));
+  DataOut(Ffpt,outbuf);
+  
+/******** BGR Code Check *********/
+  BGR_REG_CHECK(vcc[0],param);  
+
+/******* SETUP ECR/BM *******/
+  Ecrsetup8(ECR_OVERL);
+
+/******** RATE SetUp *********/
+  SetTimming_NS( daxs_trans.write_rate );
+
+/******** PowerUp *********/
+  vs0=vcc[0];
+  vs1=vcc[1];
+  vs2=vcc[2];
+  
+  vcc[0]=daxs_trans.vcc;
+  vcc[1]=daxs_trans.vrefh;
+  vcc[2]=daxs_trans.vref;
+  
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if((vcc[1] != 0) && (vcc[2] != 0)){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    sprintf(outbuf," Ext_Vref  ON  \n");
+    DataOut(Ffpt,outbuf);
+  }else{
+    sprintf(outbuf," Ext_Vref  OFF \n");
+    DataOut(Ffpt,outbuf);
+  }
+  
+
+  load_vlf_offset(_SUB_MODEENTRY_DAXS,4,tempo1);
+  
+  if(SelectPowerSupply(mode,vcc)) {//�e�d���̋�����Level�̐ݒ�(DAXS�]���p)
+    vcc[0]=vs0;
+    vcc[1]=vs1;
+    vcc[2]=vs2;
+    return(HWFAIL);
+  }
+  SetVohVolVtt( daxs_trans.voh, daxs_trans.vol, daxs_trans.vtt, daxs_datao_pin );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+  vcc[0]=vs0;
+  vcc[1]=vs1;
+  vcc[2]=vs2;
+
+/******************************************************************************/
+/*                                 Write BM                                   */
+/******************************************************************************/
+
+/******* MAKE ASM PATH *******/
+  strcpy( binpat, glob_cdp ); strcat( binpat, glob_binpat_at );
+  strcat( binpat, pat );
+
+  patsize = CheckPatLength(binpat) - PAT_FILE_HEADER_SIZE;
+
+/******** FILE BM WRITE **********/
+  datasize = comp_load_bm (binpat);   /* comp_load_bm:file pattern => BM */
+
+
+  if(FAIL==datasize) {  /* path/fail check */
+    sprintf(outbuf," !!! NOT OPEN FILE PATH -> %s (checksum:H'%X) !!!\n",binpat,datasize);
+    DataOut(Ffpt,outbuf);
+    DeviceLevelsPowerDown();
+    return(NOPATFAIL);
+  }else{
+    sprintf(outbuf," LOAD FILE PATH -> %s (checksum:H'%X)\n",binpat,datasize);
+    DataOut(Ffpt,outbuf);
+  }
+
+
+  /******** Parameter BM Write *********/
+  result = ParamTransBM(param);
+
+
+  /*** Trans Check ***/
+  if(PASS!=result){
+    sprintf(outbuf,"  TRANS ERROR!!  (param => BM) \n");
+    DataOut(Ffpt,outbuf);
+    return(RAMFAIL);
+  }else{
+    sprintf(outbuf,"  TRANS CHECK OK (param => BM) \n");
+    DataOut(Ffpt,outbuf);
+  }
+
+  
+
+  strcpy( binpat, glob_cdp ); strcat( binpat, glob_binpat_at );
+
+/*  
+  if(strcmp(pat,"devicefunction_at.pat")==0) strcat( binpat, "RC04EX_WT1_P1060_V000100.pat" );
+  else if(strcmp(pat,"readall_code_at.pat")==0) strcat( binpat, "RC04EX_WT1_P3011_V000100.pat" );
+  else if(strcmp(pat,"erase_code_at.pat")==0) strcat( binpat, "RC04EX_WT1_P2000_V000100.pat" );
+  else if(strcmp(pat,"programall_code_at.pat")==0) strcat( binpat, "RC04EX_WT1_P1920_V000100.pat" );
+  else if(strcmp(pat,"program55AA_code_at.pat")==0) strcat( binpat, "RC04EX_WT1_P1920_V000100.pat" );
+  else if(strcmp(pat,"readcount_code_at.pat")==0) strcat( binpat, "RC04EX_WT1_P3011_V000100.pat" );
+  else if(strcmp(pat,"settrimingdata_code_at.pat")==0) strcat( binpat, "RC04EX_WT1_P1100_V000100.pat" );
+  else if(strcmp(pat,"readdump_code_at.pat")==0) strcat( binpat, "RC04EX_WT1_P3011_V000100.pat" );
+  else {
+    printf("parameter file nothing!!\n");
+    return(FAIL);
+  }
+  CheckPatLength(binpat);
+  comp_load_bm (binpat);
+*/
+
+  WriteBmMode8( 0x3C00 , 0x00100000, SIZE_L );    /* Dummy Data 18/04/11 Aoki */  
+
+
+/******************************************************************************/
+/*                                 DAXS Transport                             */
+/******************************************************************************/
+  sprintf(outbuf," ----- RAM transfer Start -----");DataOut(Ffpt,outbuf); 
+
+  ParamConditionDisp(PDIN_ALL,0,param); //���͗pIF�̏o��
+
+  /******** Start tests *********/
+  printf("Write RAM \n"); /* Print Retry Count */
+
+    result = RAMRunApg( 0, RAM_TOP, RAM_END );   /* DAXS transport 0=write command */
+
+  if(PASS!=result){
+    return(RAMFAIL);
+  }
+  
+  
+  printf("Read RAM \n"); /* Print Retry Count */
+
+  SetTimming_NS( daxs_trans.read_rate );
+  
+  set_strobe_mask(daxs_datao_pin);  //Compare Setting command
+
+    result = RAMRunApg( 2, RAM_TOP, OUTPUTIF_END );   /* DAXS transport 0=write command */
+
+  for(i=RAM_TOP;i<=OUTPUTIF_END;i=i+4){
+    bm_data=ReadBmMode8(i,SIZE_L);
+    ecr_data=ReadEcrMode8(i,SIZE_L);
+    if(bm_data!=ecr_data){
+      printf("BM <=> ECR Comp ERROR!!! Addr = %X, BM = %X, ECR = %X \n",i,bm_data,ecr_data);
+      result = FAIL;
+    }
+  }
+
+  if(PASS!=result){
+    return(RAMFAIL);
+  }
+
+  sprintf(outbuf," <<<<< EXTRAM transfer OK >>>>>\n\n");
+  DataOut(Ffpt,outbuf); //CommentOut for RAMBOOT Check
+
+/******************************************************************************/
+/*                                 DAXS RAMBOOT                               */
+/******************************************************************************/
+  sprintf(outbuf," ----- RAMBOOT Start -----\n");
+  DataOut(Ffpt,outbuf); 
+
+  /*** Power Change ***/
+  vs0 = vcc[0];
+  vcc[0] = 3300;
+  if(SelectPowerSupply(mode,vcc)) {//�e�d���̋�����Level�̐ݒ�(RAMBoot�]���p)
+    return(HWFAIL);
+  }
+
+  if(VccSlow(vs0,vcc[0])){
+    return(HWFAIL);
+  }
+  vcc[0] = vs0;
+
+  /*** Comp Pin SetUp ***/
+  set_strobe_mask(bistpoll_pins);  /* ��rPin�̐ݒ�(RAMBoot�����܂ł̑ҋ@���ԂɎg�p) */
+  select_vector_mode(poll_pins,_PE_VECTOR_MODE);  //180314 Add-morioka For RamBoot
+  reconnect_pin(poll_pins);                       //180314 Add-morioka For RamBoot
+  select_vector_mode(lp_clk,_PE_VECTOR_MODE);    /* APG mode select */
+
+
+  /*** Test Speed SetUp ***/
+  //SetTimming_NS(speed);
+  ChangeTimming_GTSLTS( EXTCYLJ, 1, MODEENTRY_SPEED ); // ModeEntry���g���ݒ� GTS=1,20MHz
+  ChangeTimming_GTSLTS( EXTCYLM, 0, speed ); // ModeEntry���g���ݒ� GTS=1,20MHz
+
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if((vcc[1] != 0) && (vcc[2] != 0)){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    sprintf(outbuf," Ext_Vref  ON  \n");
+    DataOut(Ffpt,outbuf);
+  }else{
+    sprintf(outbuf," Ext_Vref  OFF \n");
+    DataOut(Ffpt,outbuf);
+  }
+
+/******** APG SetUp(Wait) *********/
+  load_vlf_offset(_SUB_MODEENTRY_RAM,6,  1000/MODEENTRY_SPEED);    /*   1us Wait */
+  load_vlf_offset(_SUB_MODEENTRY_RAM,1,300000/2/MODEENTRY_SPEED);    /* 300us Wait */
+  load_vlf_offset(_SUB_MODEENTRY_RAM,2, 70000/MODEENTRY_SPEED);    /*  70ms Wait */
+  load_vlf_offset(_SUB_MODEENTRY_RAM,3,tempo1);          /* Vdd/Vddh On/Off */
+  load_vlf_offset(_SUB_RAMBT_END_LPREAD,0,waittime); /* RAMBootEnd Wait = waittime x(500x200x2000ns) */
+
+  SetVohVolVtt( 2*vcc[0]/10, 2*vcc[0]/10, 5*vcc[0]/10 , bistpoll_pins );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+
+/******** Test Start *********/
+	//disconnect_pin(lp_clk_out);
+
+    start_time = bentime(); /* Get Test Start Time */
+    run_apg (_RAM_BOOT_LPREAD);                /* Execute Test Pattern   */
+
+  Cputotal = (bentime()-start_time-init_bentime())/1000; /* Get Test Total Time */
+
+  cpuerr = check_pin_errors( bistpoll_pins, _CHECK_FERR ); /* Boot����Error�o�͂�APG�p�^�����璊�o(DPASSDEND_CP�̔�r����) */
+  sprintf(outbuf,"cpuerr=%d \n",cpuerr); DataOut(Ffpt,outbuf);
+  sprintf(outbuf," ----- RAMBOOT End  -----\n\n"); DataOut(Ffpt,outbuf);
+
+
+  set_vlimit(0);
+
+  select_vector_mode(poll_pins,_PE_APG_MODE);
+  reconnect_pin(poll_pins);
+
+/******************************************************************************/
+/*                                 DAXS Read                                  */
+/******************************************************************************/
+  sprintf(outbuf," ----- Result RAM Read Start -----\n");DataOut(Ffpt,outbuf); 
+
+
+/******** PowerUp *********/
+  vs0=vcc[0];
+  vs1=vcc[1];
+  vs2=vcc[2];
+
+  vcc[0]=daxs_trans.vcc;
+  vcc[1]=daxs_trans.vrefh;
+  vcc[2]=daxs_trans.vref;
+
+  if(VccSlow(3300,vs0)){
+    return(HWFAIL);
+  }
+
+  if(SelectPowerSupply(MNORMAL,vcc)) {//�e�d���̋�����Level�̐ݒ�(DAXS�]���p)
+    vcc[0]=vs0;
+    vcc[1]=vs1;
+    vcc[2]=vs2;
+    return(HWFAIL);
+  }
+
+  /*** Daxs Speed SetUp ***/
+  SetVohVolVtt( daxs_trans.voh, daxs_trans.vol, daxs_trans.vtt, daxs_datao_pin );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+
+  set_strobe_mask(daxs_datao_pin);/* ��rPin�̐ݒ�(RAMBoot�����܂ł̑ҋ@���ԂɎg�p) */
+  SetTimming_NS( daxs_trans.read_rate );
+
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if((vcc[1] != 0) && (vcc[2] != 0)){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    sprintf(outbuf," Ext_Vref  ON  \n");
+    DataOut(Ffpt,outbuf);
+  }else{
+    sprintf(outbuf," Ext_Vref  OFF \n");
+    DataOut(Ffpt,outbuf);
+  }
+  load_vlf_offset(_SUB_MODEENTRY_DAXS,4,tempo1);
+
+
+  vcc[0]=vs0;
+  vcc[1]=vs1;
+  vcc[2]=vs2;
+
+  /******** Read RAM data *********/
+  
+  for( cnt=RAM_TOP; cnt<=RAM_END; cnt=cnt+4 ){
+      WriteEcrMode8( cnt, 0xFFFFFFFF, SIZE_L );
+  }
+  
+    result = RAMRunApg( 2, 0x2A00, OUTPUTIF_END );   /* DAXS transport 0=write command */
+    RAMRunApg( 2, FBM_READTOP ,(FBM_READTOP + FBM_READSIZE - 1) ); /* Daxs Trans For FBM */
+  sprintf(outbuf," ----- Result RAM Read End -----\n\n");DataOut(Ffpt,outbuf); 
+
+
+	if((ReadEcrMode8(0x3D00,SIZE_B)==0xAA) &&
+	   (ReadEcrMode8(0x3D01,SIZE_B)==0xAA) &&
+	   (ReadEcrMode8(0x3D02,SIZE_B)==0xAA) &&
+	   (ReadEcrMode8(0x3D03,SIZE_B)==0xAA) ){
+       printf("WT mode Test FAIL!!!\n");
+	}else if((ReadEcrMode8(0x3D00,SIZE_B)==0x55) &&
+	   (ReadEcrMode8(0x3D01,SIZE_B)==0x55) &&
+	   (ReadEcrMode8(0x3D02,SIZE_B)==0x55) &&
+	   (ReadEcrMode8(0x3D03,SIZE_B)==0x55) ){
+       printf("WT mode Test PASS!!!\n");
+	}else{
+       printf("WT mode Test ECR data ERROR!!!\n");
+       DispEcrBmData(0x3D00 , 0x00FF, DISP_ECR|DISP_1 );
+	}
+  
+
+  //DeviceLevelsPowerDown(); //�e�d��OFF�R�}���h
+
+/******************************************************************************/
+/*                                 EndManage                                  */
+/******************************************************************************/
+/******** get data *********/
+  //ECR => param
+  for(cnt=IN_LWORDEND+1;cnt<OUT_BYTEEND;cnt++){
+    (param + cnt) -> value = ReadEcrMode8((param + cnt) -> addr,(param + cnt) -> size);
+  }
+  for(cnt=OUT_BYTEEND+1;cnt<OUT_LWORDEND;cnt++){
+    (param + cnt) -> value = ReadEcrMode8((param + cnt) -> addr,(param + cnt) -> size);
+  }
+  CpuModeOutput(mode,param);
+
+/******** end manage *********/
+  sprintf(outbuf,"cpuerr=%d \n",cpuerr); DataOut(Ffpt,outbuf);
+  if(cpuerr == 1) {
+    switch(GetValue(OUT_JUDGE1,param)) {
+    case CPASS:
+      sprintf(outbuf,"** PASS ** Cpu Total=%dms\n",Cputotal);
+      DataOut(Ffpt,outbuf);
+      return(PASS);
+    case CFAIL:
+      sprintf(outbuf,"-- FAIL -- Cpu total=%dms\n",Cputotal);
+      DataOut(Ffpt,outbuf);
+      return(FAIL);
+    case CFLAG:
+      sprintf(outbuf,"-- FLAG_FAIL -- Cpu Total=%dms\n",Cputotal);
+      DataOut(Ffpt,outbuf);
+      return(FLGFAIL);
+    case READFAIL:
+      sprintf(outbuf,"-- READ_FAIL -- Cpu Total=%dms\n",Cputotal);
+      DataOut(Ffpt,outbuf);
+      return(FAIL);
+    default:
+      sprintf(outbuf,"-- FAIL -- None (%04X) %dms\n",((0x00FF&GetValue(OUT_JUDGE1,param))<<8)|((0xFF00&GetValue(OUT_JUDGE1,param))>>8),Cputotal);
+      DataOut(Ffpt,outbuf);
+      return(CPUFAIL);
+    }
+  }
+  sprintf(outbuf,"-- FAIL -- !!! TimeOver !!! total=%dms\n",Cputotal);
+  DataOut(Ffpt,outbuf);
+
+  return(CPUFAIL);
+}
+
+
+
+
+/************************************************************************
+ * Internal CPU use triming Function TM0->TM2(F) Mode
+ ************************************************************************/
+int CpuModeMonitor_ALL(int mode,int vcc[NUM_POWERSUPPLY],interface_t* param,int waittime,char *pat,char *mess,int selvol[])
+{
+  int cnt,cpuerr,failflag,datasize,patsize,speed;
+  int i,min_vol,max_vol,delta,center;
+  int flg,tempo1;                              /*** CPU drive recklessly flg ***/
+  int result;                           /* Test Result */
+  int selmode,pmu_range,bm_data,ecr_data;
+  char mat_value[100];
+  int start_time;                       /* Start Time For bentime */
+  int vs0,vs1,vs2;    // Power bak
+  int old_reg;
+  char mat_str[20];
+  char disp_addres[256];
+
+  flg = 0;
+  selmode=GetValue(IN_TESTSEL,param);
+
+  DispAddres(param,"",disp_addres);
+
+  for( cnt=RAM_TOP; cnt<=RAM_END; cnt=cnt+4 ){
+      //WriteBmMode8( cnt, 0xFFFFFFFF, SIZE_L );
+      WriteEcrMode8( cnt, 0xFFFFFFFF, SIZE_L );
+  }
+
+  /******* GET PARAMETER *******/
+  speed=GetValue(IN_EXTAL1,param);
+
+  if(GetValue(IN_BDATA15,param) == 0)pmu_range = UA250;
+  else pmu_range = GetValue(IN_BDATA15,param);
+
+  /******* DISP TAITOL *******/
+  //Vref��VrefH�̋L�q�ɕύX�K�v�H
+  sprintf(outbuf,"TEST:%d [ %s ] vcc=%dmV ext_Vrefh=%dmV ext_Vref=%dmV F=%2dns PLL=%d(X%d)\n ",
+    test++,mess,vcc[0],vcc[1],vcc[2],speed,GetValue(IN_PLLON,param),GetValue(IN_PLL_MULT,param));
+  DataOut(Ffpt,outbuf);
+  sprintf(outbuf,"Module:%s\n%s\n",
+          DispMatName(mat_str,param),disp_addres);
+  DataOut(Ffpt,outbuf);
+  //Ldata�̌����ɕύX����K�v�L
+  sprintf(outbuf,"BDATA00:%08X, LDATA0:%08X\n"
+    ,GetValue(IN_BDATA00,param),GetValue(IN_LDATA0,param));
+  DataOut(Ffpt,outbuf);
+
+  /******* SETUP ECR/BM *******/
+  Ecrsetup8(ECR_OVERL);
+
+  /******** RATE SetUp *********/
+  SetTimming_NS( daxs_trans.write_rate );
+
+  /******** PowerUp *********/
+  vs0=vcc[0];
+  vs1=vcc[1];
+  vs2=vcc[2];
+  
+  vcc[0]=daxs_trans.vcc;
+  vcc[1]=daxs_trans.vrefh;
+  vcc[2]=daxs_trans.vref;
+  
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if((vcc[1] != 0) && (vcc[2] != 0)){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    sprintf(outbuf," Ext_Vref  ON  \n");
+    DataOut(Ffpt,outbuf);
+  }else{
+    sprintf(outbuf," Ext_Vref  OFF \n");
+    DataOut(Ffpt,outbuf);
+  }
+
+  load_vlf_offset(_SUB_MODEENTRY_DAXS,4,tempo1);
+  
+  if(SelectPowerSupply(mode,vcc)) {//�e�d���̋�����Level�̐ݒ�(DAXS�]���p)
+    vcc[0]=vs0;
+    vcc[1]=vs1;
+    vcc[2]=vs2;
+    return(HWFAIL);
+  }
+  SetVohVolVtt( daxs_trans.voh, daxs_trans.vol, daxs_trans.vtt, daxs_datao_pin );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+  vcc[0]=vs0;
+  vcc[1]=vs1;
+  vcc[2]=vs2;
+
+/******************************************************************************/
+/*                                 Write BM                                   */
+/******************************************************************************/
+
+  /******* MAKE ASM PATH *******/
+  strcpy( binpat, glob_cdp ); strcat( binpat, glob_binpat_at );
+  strcat( binpat, pat );
+
+  patsize = CheckPatLength(binpat) - PAT_FILE_HEADER_SIZE;
+
+  /******** FILE BM WRITE **********/
+  datasize = comp_load_bm (binpat);   /* comp_load_bm:file pattern => BM */
+
+
+  if(FAIL==datasize) {  /* path/fail check */
+    sprintf(outbuf," !!! NOT OPEN FILE PATH -> %s (checksum:H'%X) !!!\n",binpat,datasize);
+    DataOut(Ffpt,outbuf);
+    DeviceLevelsPowerDown();
+    return(NOPATFAIL);
+  }else{
+    sprintf(outbuf," LOAD FILE PATH -> %s (checksum:H'%X)\n",binpat,datasize);
+    DataOut(Ffpt,outbuf);
+  }
+
+
+  /******** Parameter BM Write *********/
+  result = ParamTransBM(param);
+
+  WriteBmMode8( 0x3C00 , 0x00100000, SIZE_L );    /* Dummy Data 18/04/11 Aoki */  
+
+  /*** Trans Check ***/
+  if(PASS!=result){
+    sprintf(outbuf,"  TRANS ERROR!!  (param => BM) \n");
+    DataOut(Ffpt,outbuf);
+    return(RAMFAIL);
+  }else{
+    sprintf(outbuf,"  TRANS CHECK OK (param => BM) \n");
+    DataOut(Ffpt,outbuf);
+  }
+
+/******************************************************************************/
+/*                                 DAXS Transport                             */
+/******************************************************************************/
+  sprintf(outbuf," ----- RAM transfer Start -----");DataOut(Ffpt,outbuf); 
+
+  ParamConditionDisp(PDIN_ALL,0,param); //���͗pIF�̏o��
+  /******** Start tests *********/
+  printf("Write RAM \n"); /* Print Retry Count */
+
+    result = RAMRunApg( 0, RAM_TOP, OUTPUTIF_END );   /* DAXS transport 0=write command */
+  
+  if(PASS!=result){
+    return(RAMFAIL);
+  }
+  
+  
+  printf("Read RAM \n"); /* Print Retry Count */
+
+  SetTimming_NS( daxs_trans.read_rate );
+  
+  set_strobe_mask(daxs_datao_pin);  //Compare Setting command
+
+    result = RAMRunApg( 2, RAM_TOP, OUTPUTIF_END );   /* DAXS transport 0=write command */
+  
+  for(i=RAM_TOP;i<=OUTPUTIF_END;i=i+4){
+    bm_data=ReadBmMode8(i,SIZE_L);
+    ecr_data=ReadEcrMode8(i,SIZE_L);
+    if(bm_data!=ecr_data){
+      printf("BM <=> ECR Comp ERROR!!! Addr = %X, BM = %X, ECR = %X \n",i,bm_data,ecr_data);
+      result = FAIL;
+    }
+  }
+  
+
+  if(PASS!=result){
+    return(RAMFAIL);
+  }
+
+  sprintf(outbuf," <<<<< EXTRAM transfer OK >>>>>\n");
+  DataOut(Ffpt,outbuf); //CommentOut for RAMBOOT Check
+
+/******************************************************************************/
+/*                                 DAXS RAMBOOT                               */
+/******************************************************************************/
+  /*** Power Change ***/
+  vs0 = vcc[0];
+  vcc[0] = 3300;
+  if(SelectPowerSupply(mode,vcc)) {//�e�d���̋�����Level�̐ݒ�(RAMBoot�]���p)
+    return(HWFAIL);
+  }
+
+  if(VccSlow(vs0,vcc[0])){
+    return(HWFAIL);
+  }
+  vcc[0] = vs0;
+    
+  /*** Comp Pin SetUp ***/
+  set_strobe_mask(bistpoll_pins);  /* ��rPin�̐ݒ�(RAMBoot�����܂ł̑ҋ@���ԂɎg�p) */
+  select_vector_mode(poll_pins,_PE_VECTOR_MODE);  //180314 Add-morioka For RamBoot
+  reconnect_pin(poll_pins);                       //180314 Add-morioka For RamBoot
+
+  /*** Test Speed SetUp ***/
+  SetTimming_NS(speed);
+  ChangeTimming_GTSLTS( EXTCYLJ, 1, MODEENTRY_SPEED ); // ModeEntry���g���ݒ� GTS=1,20MHz
+
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if((vcc[1] != 0) && (vcc[2] != 0)){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    sprintf(outbuf," Ext_Vref  ON  \n");
+    DataOut(Ffpt,outbuf);
+  }else{
+    sprintf(outbuf," Ext_Vref  OFF \n");
+    DataOut(Ffpt,outbuf);
+  }
+
+  /******** APG SetUp(Wait) *********/
+  load_vlf_offset(_SUB_MODEENTRY_RAM,6,  1000/MODEENTRY_SPEED);    /*   1us Wait */
+  load_vlf_offset(_SUB_MODEENTRY_RAM,1,300000/2/MODEENTRY_SPEED);    /* 300us Wait */
+  load_vlf_offset(_SUB_MODEENTRY_RAM,2, 70000/MODEENTRY_SPEED);    /*  70ms Wait */
+  load_vlf_offset(_SUB_MODEENTRY_RAM,3,tempo1);          /* Vdd/Vddh On/Off */
+  load_vlf_offset(_SUB_RAMBT_END,0,500*waittime/speed); /* RAMBootEnd Wait = waittime x(500x200x2000ns) */
+  load_vlf_offset(_SUB_RAMBT_POLL,0,500*waittime/speed);/* RAMBootPoll Wait = waittime x(500x200x200ns) */
+  SetVohVolVtt( 2*vcc[0]/10, 2*vcc[0]/10, 5*vcc[0]/10 , bistpoll_pins );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+
+  /*************** PMU Setting ********************/ //PMU�����ݒ�
+
+  set_vlimit(0);           // Set V = 0V
+  comp_set_ilimit(250000); // I-Limit = 250000nA(250uA) 
+  delay_timer( 1000 );
+  connect_ps(PPS_CON_VNN1,PPS_CMODE_PMU);
+  set_pmu_range(pmu_range);// max = 250uA
+  delay_timer( 10000 );
+  comp_set_ilimit(0);      // I-Limit = 0 �d����Chip������������邽�� 
+
+  /*** Comp Pin SetUp ***/
+  set_strobe_mask(dpass_pins);  /* ��rPin�̐ݒ�(RAMBoot�����܂ł̑ҋ@���ԂɎg�p) */
+  select_vector_mode(dpass_pins,_PE_VECTOR_MODE);  //180314 Add-morioka For RamBoot
+  SetVohVolVtt( 75*vcc[0]/100, 75*vcc[0]/100, 5*vcc[0]/10 , bistpoll_pins );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+  reconnect_pin(dpass_pins);
+  /*************************** Run APG & Monitor(Apply) ******************************/
+    start_time = bentime(); /* Get Test Start Time */
+    printf("  APG Start\n");
+
+    comp_set_ilimit(0);
+    load_vlf_offset(_SUB_RAMBT_POLL,0,500/speed); /* 20ms fix(2000*200*200ns) */
+    load_vlf_offset(_SUB_RAMBT_DPASS_H_POLL,0,0xFF/speed); /* 20ms fix(2000*200*200ns) */
+    load_vlf_offset(_SUB_RAMBT_DPASS_H_POLL,1,100*0x5FB/100); /* 20ms fix(2000*200*200ns) */
+    load_vlf_offset(_SUB_RAMBT_DPASS_L_POLL,0,0xFF/speed); /* 20ms fix(2000*200*200ns) */
+    load_vlf_offset(_SUB_RAMBT_DPASS_L_POLL,1,100*0x5FB/100); /* 20ms fix(2000*200*200ns) */
+    run_apg(_RAM_BOOT_MONITOR_CTRL);
+    delay_timer( 2000 );
+
+    for(i=0;i<=GetValue(IN_BDATA05,param);i++){//Bdata05�̐��l�����j�^�[���[�v�����s����
+	    if(i == GetValue(IN_LDATA1,param)){     //LDATA1�̃^�C�~���O��VCCMON����VSSMON�̐ڑ��ɕύX����
+	      comp_write_lbreg_pe(RVSSMON);
+	    }
+	    if(i >= GetValue(IN_LDATA0,param)){     //LDATA0�ȏ�̎���Iref���j�^�[�ɐ؂�ւ���
+	      set_pmu_range(UA25);
+		    comp_set_ilimit(25000);	 // 25000nA = 25uA
+		    set_vlimit(650);         // Set V = 0.65V
+	  	  delay_timer( 100 );
+	    }
+      run_apg(_RAM_BOOT_DPASS_H_POLL);        //DPASS�M����H�҂�
+      delay_timer( 1000 );
+      if(i < GetValue(IN_LDATA0,param)){      //LDATA0�������͓d�����j�^�[
+        SITE_MASK (1, read_pmu_status(0x20));              /* V measurement */
+        SITE_MASK (1, selvol[i]=read_adc_ave(ADC_VMEAS,0,100));
+      }else{                                  //LDATA0�ȏ��Iref���j�^�[
+        SITE_MASK (1, read_pmu_status(0x08));              /* I measurement */
+        SITE_MASK (1, selvol[i]=read_adc_ave(ADC_IMEAS,0,100));
+		    if(selvol[i]>=24000){                 //�d���l��24uA�ȏ�̎��͓d�����j�^�[�����Up���đ���
+	        set_pmu_range(UA250);
+		      comp_set_ilimit(250000);	 // 250000nA = 250uA
+	  	    delay_timer( 100 );
+          SITE_MASK (1, read_pmu_status(0x08));              /* I measurement */
+          SITE_MASK (1, selvol[i]=read_adc_ave(ADC_IMEAS,0,100));
+		    }
+	    }
+	    printf("Monitor %04d : %d\n",i,selvol[i]);
+      run_apg(_RAM_BOOT_DPASS_L_POLL);         //DPASS�M����L�҂�
+    }
+
+    /************************** RAMBoot End Manage ************************************/
+    /*** Comp Pin SetUp ***/
+    set_strobe_mask(bistpoll_pins);  /* ��rPin�̐ݒ�(RAMBoot�����܂ł̑ҋ@���ԂɎg�p) */
+    select_vector_mode(poll_pins,_PE_VECTOR_MODE);  //180314 Add-morioka For RamBoot
+    SetVohVolVtt( 2*vcc[0]/10, 2*vcc[0]/10, 5*vcc[0]/10 , bistpoll_pins );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+    
+      //load_vlf_offset(_SUB_RAMBT_END,1,1000); // 50*cycle
+      load_vlf_offset(_SUB_RAMBT_END,0,500*waittime/speed); /* RAMBootEnd Wait = waittime x(500x200x2000ns) */
+      run_apg(_RAM_BOOT_MONITOR_END); // RAM Boot End(APG)
+    set_vlimit(0);                  // PMU 0V
+    reconnect_pin(v5_pin);          // PMU reconnect PNN
+    set_invert_mask(no_pin);        // �K�v�����H
+
+    cpuerr = check_pin_errors( bistpoll_pins, 4 ); /* Boot����Error�o�͂�APG�p�^�����璊�o(DPASSDEND_CP�̔�r����) */
+    Cputotal = (bentime()-start_time-init_bentime())/1000; /* Get Test Total Time */
+
+/******************************************************************************/
+/*                                 DAXS Read                                  */
+/******************************************************************************/
+
+  set_strobe_mask(daxs_datao_pin);
+  SetTimming_NS( daxs_trans.read_rate );
+  select_vector_mode(poll_pins,_PE_APG_MODE);
+  reconnect_pin(poll_pins);
+
+  /******** PowerUp *********/
+  vs0=vcc[0];
+  vs1=vcc[1];
+  vs2=vcc[2];
+
+  vcc[0]=daxs_trans.vcc;
+  vcc[1]=daxs_trans.vrefh;
+  vcc[2]=daxs_trans.vref;
+
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if((vcc[1] != 0) && (vcc[2] != 0)){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    sprintf(outbuf," Ext_Vref  ON  \n");
+    DataOut(Ffpt,outbuf);
+  }else{
+    sprintf(outbuf," Ext_Vref  OFF \n");
+    DataOut(Ffpt,outbuf);
+  }
+
+  load_vlf_offset(_SUB_MODEENTRY_DAXS,4,tempo1);
+  
+  if(VccSlow(3300,vs0)){
+    return(HWFAIL);
+  }
+
+
+  if(SelectPowerSupply(mode,vcc)) {//�e�d���̋�����Level�̐ݒ�(DAXS�]���p)
+    vcc[0]=vs0;
+    vcc[1]=vs1;
+    vcc[2]=vs2;
+    return(HWFAIL);
+  }
+  SetVohVolVtt( daxs_trans.voh, daxs_trans.vol, daxs_trans.vtt, daxs_datao_pin );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+  vcc[0]=vs0;
+  vcc[1]=vs1;
+  vcc[2]=vs2;
+
+  /******** Read RAM data *********/
+
+  for( cnt=RAM_TOP; cnt<=RAM_END; cnt++ ){
+      WriteEcrMode8( cnt, 0xFF, SIZE_B );
+  }  
+
+  result = RAMRunApg( 2, 0x2A00, OUTPUTIF_END );   /* DAXS transport 0=write command */
+  RAMRunApg( 2, FBM_READTOP ,(FBM_READTOP + FBM_READSIZE - 1) ); /* Daxs Trans For FBM */
+
+  if((ReadEcrMode8(0x3D00,SIZE_B)==0xAA) &&
+     (ReadEcrMode8(0x3D01,SIZE_B)==0xAA) &&
+     (ReadEcrMode8(0x3D02,SIZE_B)==0xAA) &&
+     (ReadEcrMode8(0x3D03,SIZE_B)==0xAA) ){
+      printf("WT mode Test FAIL!!!\n");
+  }else if((ReadEcrMode8(0x3D00,SIZE_B)==0x55) &&
+           (ReadEcrMode8(0x3D01,SIZE_B)==0x55) &&
+           (ReadEcrMode8(0x3D02,SIZE_B)==0x55) &&
+           (ReadEcrMode8(0x3D03,SIZE_B)==0x55) ){
+      printf("WT mode Test PASS!!!\n");
+  }else{
+      printf("WT mode Test ECR data ERROR!!!\n");
+      DispEcrBmData(0x3D00 , 0x00FF, DISP_ECR|DISP_1 );
+  }
+
+  DeviceLevelsPowerDown(); //�e�d��OFF�R�}���h
+
+/******************************************************************************/
+/*                                 EndManage                                  */
+/******************************************************************************/
+
+  /******** get data *********/
+  //ECR => param
+  for(cnt=IN_LWORDEND+1;cnt<OUT_BYTEEND;cnt++){
+    (param + cnt) -> value = ReadEcrMode8((param + cnt) -> addr,(param + cnt) -> size);
+  }
+  for(cnt=OUT_BYTEEND+1;cnt<OUT_LWORDEND;cnt++){
+    (param + cnt) -> value = ReadEcrMode8((param + cnt) -> addr,(param + cnt) -> size);
+  }
+  CpuModeOutput(mode,param);
+
+  if(cpuerr == 1) {
+    switch(GetValue(OUT_JUDGE1,param)) {
+      case CPASS:
+        sprintf(outbuf,"** PASS ** Cpu Total=%dms\n",Cputotal);
+        DataOut(Ffpt,outbuf);
+        break;
+      case CFAIL:
+        sprintf(outbuf,"-- FAIL -- Cpu total=%dms\n",Cputotal);
+        DataOut(Ffpt,outbuf);
+        break;
+      case CFLAG:
+        sprintf(outbuf,"-- FLAG_FAIL -- Cpu Total=%dms\n",Cputotal);
+        DataOut(Ffpt,outbuf);
+        break;
+      case READFAIL:
+        sprintf(outbuf,"-- READ_FAIL -- Cpu Total=%dms\n",Cputotal);
+        DataOut(Ffpt,outbuf);
+        break;
+      default:
+        sprintf(outbuf,"-- FAIL -- None (%04X) %dms\n",((0x00FF&GetValue(OUT_JUDGE1,param))<<8)|((0xFF00&GetValue(OUT_JUDGE1,param))>>8),Cputotal);
+        DataOut(Ffpt,outbuf);
+        break;
+    }
+  }else{
+    sprintf(outbuf,"-- FAIL -- !!! TimeOver !!! total=%dms\n",Cputotal);
+    DataOut(Ffpt,outbuf);
+    //return(FAIL);
+  }
+
+  /******** Monitor Result *********/
+
+  if(mode & MONITOR_MODE){
+    switch(mode & 0x0000FFFF){
+      case  MVSSMON:
+      case  MVSSMON_CH:
+      case  MVSSMON_20K:
+        sprintf(outbuf,"  Monitor Result VSSMON = %dmV\n",*selvol);
+        DataOut(Ffpt,outbuf);
+        break;
+      case  MVCCMON:
+        sprintf(outbuf,"  Monitor Result VCCMON = %dmV\n",*selvol);
+        DataOut(Ffpt,outbuf);
+        break;
+      case  MVRSGMON:                                               
+        sprintf(outbuf,"  Monitor Result VRSGMON = %dmV\n",*selvol);   
+        DataOut(Ffpt,outbuf);                                         
+        break;                                                        
+      case  MVCLMON:
+        sprintf(outbuf,"  Monitor Result VCLMON = %dmV\n",*selvol);
+        DataOut(Ffpt,outbuf);
+        break;
+      default:
+        printf("Result Setting Error!! mode code = %X\n",mode);
+        return(FAIL);      
+        break;
+    }
+    selvol = center;
+  }else if(mode & APPLY_MODE){
+    switch(selmode){
+      case  AUTOTRIM_VDD:
+        break;
+      case  AUTOTRIM_READDELAY8:
+      case  AUTOTRIM_READDELAY10:
+        sprintf(outbuf,"  Target Read Delay = %dns\n",*selvol);
+        DataOut(Ffpt,outbuf);
+        break;
+    }
+    if(GetValue(OUT_JUDGE1,param) == 0x00){
+      sprintf(outbuf," AutoTrim Pass Input Voltage = %d\n",*selvol);
+      DataOut(Ffpt,outbuf);      
+    }else if(GetValue(OUT_JUDGE1,param) == FAIL_TAP_TOP ){
+      sprintf(outbuf," AutoTrim Error!!! Tap Top Hit\n");
+      DataOut(Ffpt,outbuf);      
+    }else if(GetValue(OUT_JUDGE1,param) == FAIL_TAP_END ){
+      sprintf(outbuf," AutoTrim Error!!! Tap Top Hit\n");
+      DataOut(Ffpt,outbuf);      
+    }else if(GetValue(OUT_JUDGE1,param) == PASS ){
+      sprintf(outbuf," AutoTrim PASS Tap Middle Hit\n");
+      DataOut(Ffpt,outbuf);      
+    }else{
+      sprintf(outbuf," AutoTrim JUDGE = 0x%04X\n",((0x00FF&GetValue(OUT_JUDGE1,param))<<8)|((0xFF00&GetValue(OUT_JUDGE1,param))>>8));
+      DataOut(Ffpt,outbuf);      
+    }
+    if( ( ReadEcrMode8( 0x3D00, SIZE_L )==0x55555555/*TEST_PASS*/ )||( ReadEcrMode8( 0x3D00, SIZE_L )==0xAAAAAAAA/*TEST_FAIL*/ ) ){
+      switch( selmode ){
+        case AUTOTRIM_VREF10:    printf( " ETLR11 = 0x%02X ->> 0x%02X \n", GetValue(IN_ETLR11,param), GetValue(OUT_ETLR11,param) );
+                                 SetValue(IN_ETLR11,param,GetValue(OUT_ETLR11,param)); break;
+        case AUTOTRIM_VPP_E:     printf( " ETLR20 = 0x%02X ->> 0x%02X \n", GetValue(IN_ETLR20,param), GetValue(OUT_ETLR20,param) );
+                                 SetValue(IN_ETLR20,param,GetValue(OUT_ETLR20,param)); break;
+        case AUTOTRIM_VPP_P:     printf( " ETLR20 = 0x%02X ->> 0x%02X \n", GetValue(IN_ETLR20,param), GetValue(OUT_ETLR20,param) );
+                                 SetValue(IN_ETLR20,param,GetValue(OUT_ETLR20,param)); break;
+        case AUTOTRIM_VPP_PW:    printf( " ETLR21 = 0x%02X ->> 0x%02X \n", GetValue(IN_ETLR21,param), GetValue(OUT_ETLR21,param) );
+                                 SetValue(IN_ETLR21,param,GetValue(OUT_ETLR21,param)); break;
+        case AUTOTRIM_VHH_E:     printf( " ETLR16 = 0x%02X ->> 0x%02X \n", GetValue(IN_ETLR16,param), GetValue(OUT_ETLR16,param) );
+                                 SetValue(IN_ETLR16,param,GetValue(OUT_ETLR16,param)); break;
+        case AUTOTRIM_VHH_P:     printf( " ETLR17 = 0x%02X ->> 0x%02X \n", GetValue(IN_ETLR17,param), GetValue(OUT_ETLR17,param) );
+                                 SetValue(IN_ETLR17,param,GetValue(OUT_ETLR17,param)); break;
+        case AUTOTRIM_VRSG:      printf( " ETLR18 = 0x%02X ->> 0x%02X \n", GetValue(IN_ETLR18,param), GetValue(OUT_ETLR18,param) );
+                                 SetValue(IN_ETLR18,param,GetValue(OUT_ETLR18,param)); break;
+        case AUTOTRIM_V33R:      printf( " ETLR24 = 0x%02X ->> 0x%02X \n", GetValue(IN_ETLR24,param), GetValue(OUT_ETLR24,param) );
+                                 SetValue(IN_ETLR24,param,GetValue(OUT_ETLR24,param)); break;
+        case AUTOTRIM_VWI:       printf( " ETLR19 = 0x%02X ->> 0x%02X \n", GetValue(IN_ETLR19,param), GetValue(OUT_ETLR19,param) );
+                                 SetValue(IN_ETLR19,param,GetValue(OUT_ETLR19,param)); break;
+        case AUTOTRIM_VNOEMI_PE: printf( " ETLR19 = 0x%02X ->> 0x%02X \n", GetValue(IN_ETLR19,param), GetValue(OUT_ETLR19,param) );
+                                 SetValue(IN_ETLR19,param,GetValue(OUT_ETLR19,param)); break;
+        case AUTOTRIM_IMONI_I01U_NOTEMP:
+        case AUTOTRIM_IMONI_FLASH_NOTEMP:
+        case AUTOTRIM_IMONI_I01U_TEMP:
+        case AUTOTRIM_IMONI_FLASH_TEMP:
+          printf( " ETLR08 = 0x%02X ->> 0x%02X \n", GetValue(IN_ETLR08,param), GetValue(OUT_ETLR08,param) );
+          SetValue(IN_ETLR08,param,GetValue(OUT_ETLR08,param));
+          printf( " ETLR09 = 0x%02X ->> 0x%02X \n", GetValue(IN_ETLR09,param), GetValue(OUT_ETLR09,param) );
+          SetValue(IN_ETLR09,param,GetValue(OUT_ETLR09,param));
+          break;
+      }
+    }
+  }else{
+    printf("Result Setting Error!! mode code = %X\n",mode);
+    return(FAIL);      
+  }
+
+  return(PASS);
+}
+
+int CpuMode_VthRead(int mode,int vcc[NUM_POWERSUPPLY],interface_t* param,int waittime,char *pat,char *mess,int *selvol)
+{
+  int cnt,cpuerr,failflag,datasize,patsize,speed;
+  int i,j,vol,vol_s,vol_d,center;
+  int flg,tempo1;                              /*** CPU drive recklessly flg ***/
+  int result;                           /* Test Result */
+  int selmode,pmu_range,bm_data,ecr_data;
+  char mat_value[100];
+  int start_time;                       /* Start Time For bentime */
+  int vs0,vs1,vs2;    // Power bak
+  int old_reg;
+  char mat_str[20];
+  char disp_addres[256];
+
+  flg = 0;
+  DispAddres(param,"",disp_addres);
+
+  for( cnt=RAM_TOP; cnt<=(RAM_TOP+0x100); cnt=cnt+4 ){
+      //WriteBmMode8( cnt, 0xFFFFFFFF, SIZE_L );
+      WriteEcrMode8( cnt, 0xFFFFFFFF, SIZE_L );
+  }
+
+  /******* GET PARAMETER *******/
+  speed=GetValue(IN_EXTAL1,param);
+
+  pmu_range = UA250;
+  /******* DISP TAITOL *******/
+  //Vref��VrefH�̋L�q�ɕύX�K�v�H
+  sprintf(outbuf,"TEST:%d [ %s ] vcc=%dmV ext_Vrefh=%dmV ext_Vref=%dmV F=%2dns PLL=%d(X%d)\n ",
+    test++,mess,vcc[0],vcc[1],vcc[2],speed,GetValue(IN_PLLON,param),GetValue(IN_PLL_MULT,param));
+  DataOut(Ffpt,outbuf);
+  sprintf(outbuf,"Module:%s\n%s\n",
+          DispMatName(mat_str,param),disp_addres);
+  DataOut(Ffpt,outbuf);
+  //Ldata�̌����ɕύX����K�v�L
+  sprintf(outbuf,"BDATA00:%08X, LDATA0:%08X\n"
+    ,GetValue(IN_BDATA00,param),GetValue(IN_LDATA0,param));
+  DataOut(Ffpt,outbuf);
+
+  /******* SETUP ECR/BM *******/
+  Ecrsetup8(ECR_OVERL);
+
+  /******** RATE SetUp *********/
+  SetTimming_NS( daxs_trans.write_rate );
+
+  /******** PowerUp *********/
+  vs0=vcc[0];
+  vs1=vcc[1];
+  vs2=vcc[2];
+  
+  vcc[0]=daxs_trans.vcc;
+  vcc[1]=daxs_trans.vrefh;
+  vcc[2]=daxs_trans.vref;
+  
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if((vcc[1] != 0) && (vcc[2] != 0)){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    sprintf(outbuf," Ext_Vref  ON  \n");
+    DataOut(Ffpt,outbuf);
+  }else{
+    sprintf(outbuf," Ext_Vref  OFF \n");
+    DataOut(Ffpt,outbuf);
+  }
+
+  load_vlf_offset(_SUB_MODEENTRY_DAXS,4,tempo1);
+  
+  if(SelectPowerSupply(mode,vcc)) {//�e�d���̋�����Level�̐ݒ�(DAXS�]���p)
+    vcc[0]=vs0;
+    vcc[1]=vs1;
+    vcc[2]=vs2;
+    return(HWFAIL);
+  }
+  SetVohVolVtt( daxs_trans.voh, daxs_trans.vol, daxs_trans.vtt, daxs_datao_pin );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+  vcc[0]=vs0;
+  vcc[1]=vs1;
+  vcc[2]=vs2;
+
+/******************************************************************************/
+/*                                 Write BM                                   */
+/******************************************************************************/
+
+  /******* MAKE ASM PATH *******/
+  strcpy( binpat, glob_cdp ); strcat( binpat, glob_binpat_at );
+  strcat( binpat, pat );
+
+  patsize = CheckPatLength(binpat) - PAT_FILE_HEADER_SIZE;
+
+  /******** FILE BM WRITE **********/
+  datasize = comp_load_bm (binpat);   /* comp_load_bm:file pattern => BM */
+
+
+  if(FAIL==datasize) {  /* path/fail check */
+    sprintf(outbuf," !!! NOT OPEN FILE PATH -> %s (checksum:H'%X) !!!\n",binpat,datasize);
+    DataOut(Ffpt,outbuf);
+    DeviceLevelsPowerDown();
+    return(NOPATFAIL);
+  }else{
+    sprintf(outbuf," LOAD FILE PATH -> %s (checksum:H'%X)\n",binpat,datasize);
+    DataOut(Ffpt,outbuf);
+  }
+
+
+  /******** Parameter BM Write *********/
+  result = ParamTransBM(param);
+
+  WriteBmMode8( 0x3C00 , 0x00100000, SIZE_L );    /* Dummy Data 18/04/11 Aoki */  
+
+  /*** Trans Check ***/
+  if(PASS!=result){
+    sprintf(outbuf,"  TRANS ERROR!!  (param => BM) \n");
+    DataOut(Ffpt,outbuf);
+    return(RAMFAIL);
+  }else{
+    sprintf(outbuf,"  TRANS CHECK OK (param => BM) \n");
+    DataOut(Ffpt,outbuf);
+  }
+
+/******************************************************************************/
+/*                                 DAXS Transport                             */
+/******************************************************************************/
+  sprintf(outbuf," ----- RAM transfer Start -----");DataOut(Ffpt,outbuf); 
+
+  ParamConditionDisp(PDIN_ALL,0,param); //���͗pIF�̏o��
+  /******** Start tests *********/
+  printf("Write RAM \n"); /* Print Retry Count */
+
+    result = RAMRunApg( 0, RAM_TOP, OUTPUTIF_END );   /* DAXS transport 0=write command */
+  
+  if(PASS!=result){
+    return(RAMFAIL);
+  }
+  
+  
+  printf("Read RAM \n"); /* Print Retry Count */
+
+  SetTimming_NS( daxs_trans.read_rate );
+  
+  set_strobe_mask(daxs_datao_pin);  //Compare Setting command
+
+    result = RAMRunApg( 2, RAM_TOP, OUTPUTIF_END );   /* DAXS transport 0=write command */
+  
+  for(i=RAM_TOP;i<=(RAM_TOP + 0x100);i=i+4){
+    bm_data=ReadBmMode8(i,SIZE_L);
+    ecr_data=ReadEcrMode8(i,SIZE_L);
+    if(bm_data!=ecr_data){
+      printf("BM <=> ECR Comp ERROR!!! Addr = %X, BM = %X, ECR = %X \n",i,bm_data,ecr_data);
+      result = FAIL;
+    }
+  }
+  
+
+  if(PASS!=result){
+    return(RAMFAIL);
+  }
+
+  sprintf(outbuf," <<<<< EXTRAM transfer OK >>>>>\n");
+  DataOut(Ffpt,outbuf); //CommentOut for RAMBOOT Check
+
+/******************************************************************************/
+/*                                 DAXS RAMBOOT                               */
+/******************************************************************************/
+  /*** Power Change ***/
+  vs0 = vcc[0];
+  vcc[0] = 3300;
+  if(SelectPowerSupply(mode,vcc)) {//�e�d���̋�����Level�̐ݒ�(RAMBoot�]���p)
+    return(HWFAIL);
+  }
+
+  if(VccSlow(vs0,vcc[0])){
+    return(HWFAIL);
+  }
+  vcc[0] = vs0;
+    
+  /*** Comp Pin SetUp ***/
+  set_strobe_mask(bistpoll_pins);  /* ��rPin�̐ݒ�(RAMBoot�����܂ł̑ҋ@���ԂɎg�p) */
+  select_vector_mode(poll_pins,_PE_VECTOR_MODE);  //180314 Add-morioka For RamBoot
+  reconnect_pin(poll_pins);                       //180314 Add-morioka For RamBoot
+
+  /*** Test Speed SetUp ***/
+  SetTimming_NS(speed);
+  ChangeTimming_GTSLTS( EXTCYLJ, 1, MODEENTRY_SPEED ); // ModeEntry���g���ݒ� GTS=1,20MHz
+
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if((vcc[1] != 0) && (vcc[2] != 0)){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    sprintf(outbuf," Ext_Vref  ON  \n");
+    DataOut(Ffpt,outbuf);
+  }else{
+    sprintf(outbuf," Ext_Vref  OFF \n");
+    DataOut(Ffpt,outbuf);
+  }
+
+  /******** APG SetUp(Wait) *********/
+  load_vlf_offset(_SUB_MODEENTRY_RAM,6,  1000/MODEENTRY_SPEED);    /*   1us Wait */
+  load_vlf_offset(_SUB_MODEENTRY_RAM,1,300000/2/MODEENTRY_SPEED);    /* 300us Wait */
+  load_vlf_offset(_SUB_MODEENTRY_RAM,2, 70000/MODEENTRY_SPEED);    /*  70ms Wait */
+  load_vlf_offset(_SUB_MODEENTRY_RAM,3,tempo1);          /* Vdd/Vddh On/Off */
+  load_vlf_offset(_SUB_RAMBT_END,0,500*waittime/speed); /* RAMBootEnd Wait = waittime x(500x200x2000ns) */
+
+  /*************** PMU Setting ********************/ //PMU�����ݒ�
+
+  set_vlimit(0);           // Set V = 0V
+  comp_set_ilimit(250000); // I-Limit = 250000nA(250uA) 
+  delay_timer( 1000 );
+  connect_ps(PPS_CON_VNN1,PPS_CMODE_PMU);
+  set_pmu_range(pmu_range);// max = 250uA
+  delay_timer( 10000 );
+
+  /*** Comp Pin SetUp ***/
+  set_strobe_mask(dend_pass_pin);  /* ��rPin�̐ݒ�(RAMBoot�����܂ł̑ҋ@���ԂɎg�p) */
+  select_vector_mode(dpass_pins,_PE_VECTOR_MODE);  //180314 Add-morioka For RamBoot
+  set_pe_resource(dpass_pins,PE_VOH,vcc[0]*7/10);
+  set_pe_resource(dpass_pins,PE_VOL,vcc[0]*7/10);
+  set_pe_resource(dpass_pins,PE_VTT,vcc[0]*7/10);
+  //set_vtt_mask(dpass_pins);
+  reconnect_pin(dpass_pins);
+  set_pe_resource(dend_pin,PE_VOH,vcc[0]*3/10);
+  set_pe_resource(dend_pin,PE_VOL,vcc[0]*3/10);
+  set_pe_resource(dend_pin,PE_VTT,vcc[0]*3/10);
+  //set_vtt_mask(dend_pin);
+  reconnect_pin(dend_pin);
+
+  /*************************** Run APG & Monitor(Apply) ******************************/
+    start_time = bentime(); /* Get Test Start Time */
+    load_vlf_offset(_SUB_RAMBT_POLL,0,5); /* 20ms fix(2000*200*200ns) */
+    load_vlf_offset(_SUB_RAMBT_DEND_H_POLL,0,6666/speed); /* 1ms fix */
+    load_vlf_offset(_SUB_RAMBT_DEND_H_POLL,1,700);         /* 50*1ms  */
+    load_vlf_offset(_SUB_RAMBT_DEND_L_POLL,0,6666/speed); /* 1ms fix */
+    load_vlf_offset(_SUB_RAMBT_DEND_L_POLL,1,700);         /* 50*1ms  */
+
+    run_apg(_RAM_BOOT_MONITOR_CTRL);
+    delay_timer( 2000 );
+	vol_s = GetValue(IN_LDATA0,param);
+	vol_d = GetValue(IN_LDATA1,param);
+    set_vlimit(GetValue(IN_LDATA0,param));           // Set V = 0V
+    comp_set_ilimit(250000); // I-Limit = 250000nA(250uA) 
+
+    if(GetValue(IN_TESTSEL,param) == 0){//Vthsearch  Mode
+
+    for(j=0;j<3;j++){
+      if(j==0){
+        vol_s = GetValue(IN_LDATA0,param);
+	      vol_d = GetValue(IN_LDATA1,param);
+      }else{
+        vol_s = vol - vol_d;
+	      vol_d = vol_d / 5;
+      }
+
+	  if(absolute(vol_d) <= absolute(GetValue(IN_LDATA2,param))){//Last Loop�p
+	    vol_d = GetValue(IN_LDATA2,param);
+		j = 2;
+	  }
+      for(i=0;i<7;i++){
+	      vol = vol_s +(i * vol_d);
+		    if(vol > 1250){
+		    comp_write_lbreg_pe(RVCCMON);               //1.25V�ȏ��VccMon�Ɉ��
+		  }else{
+		    comp_write_lbreg_pe(RVSSMON);               //1.25V�ȉ���VccMon�Ɉ��
+		  }
+      sprintf(outbuf,"Voltage = %d\n",vol);
+      DataOut(Ffpt,outbuf);
+		  set_vlimit(vol);
+		  delay_timer(500);                             //�d���ύX��̈��莞��(�e�X�^�[��)
+      run_apg(_RAM_BOOT_DEND_L_WAIT);               //DPASS�M����L�҂�
+		  delay_timer(500);
+      run_apg(_RAM_BOOT_DENDWAIT_POLLCHECK);        //DPASS�M����H�҂�
+      sprintf(outbuf,"RESULT = %X\n",check_pin_errors( dpass_pins, 4 ));
+      DataOut(Ffpt,outbuf);
+
+		  if(check_pin_errors( dpass_pins, 4 ) == 1)break;
+      }
+    }
+	  *selvol = vol - vol_d;
+
+    }else if(GetValue(IN_TESTSEL,param) == 1){//VthCount Mode
+      for(i = 0;i < GetValue(IN_BDATA00,param);i++){
+        vol = vol_s + vol_d * i;
+		    if(vol > 1250){
+		      comp_write_lbreg_pe(RVCCMON);               //1.25V�ȏ��VccMon�Ɉ��
+		    }else{
+		      comp_write_lbreg_pe(RVSSMON);               //1.25V�ȉ���VccMon�Ɉ��
+		    }
+        sprintf(outbuf,"Voltage = %d\n",vol);
+        DataOut(Ffpt,outbuf);
+		    set_vlimit(vol);
+		    delay_timer(500);                             //�d���ύX��̈��莞��(�e�X�^�[��)
+        run_apg(_RAM_BOOT_DEND_L_WAIT);               //DPASS�M����L�҂�
+		    delay_timer(500);
+        run_apg(_RAM_BOOT_DENDWAIT_POLLCHECK);        //DPASS�M����H�҂�
+		    //printf("RESULT = %X\n",check_pin_errors( dpass_pins, 4 ));
+		    if(check_pin_errors( dpass_pins, 4 ) == 1)break;
+      }
+    }
+    run_apg(_RAM_BOOT_DEND_L_WAIT);        //DPASS�M����H�҂�
+
+    /************************** RAMBoot End Manage ************************************/
+    /*** Comp Pin SetUp ***/
+    set_strobe_mask(bistpoll_pins);  /* ��rPin�̐ݒ�(RAMBoot�����܂ł̑ҋ@���ԂɎg�p) */
+    select_vector_mode(poll_pins,_PE_VECTOR_MODE);  //180314 Add-morioka For RamBoot
+    SetVohVolVtt( 2*vcc[0]/10, 2*vcc[0]/10, 5*vcc[0]/10 , bistpoll_pins );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+    
+      //load_vlf_offset(_SUB_RAMBT_END,1,1000); // 50*cycle
+      load_vlf_offset(_SUB_RAMBT_END,0,500*W1SEC*2/speed); /* RAMBootEnd Wait = waittime x(500x200x2000ns) */
+      run_apg(_RAM_BOOT_MONITOR_END); // RAM Boot End(APG)
+    set_vlimit(0);                  // PMU 0V
+    reconnect_pin(v5_pin);          // PMU reconnect PNN
+    set_invert_mask(no_pin);        // �K�v�����H
+
+    cpuerr = check_pin_errors( bistpoll_pins, 4 ); /* Boot����Error�o�͂�APG�p�^�����璊�o(DPASSDEND_CP�̔�r����) */
+    Cputotal = (bentime()-start_time-init_bentime())/1000; /* Get Test Total Time */
+
+/******************************************************************************/
+/*                                 DAXS Read                                  */
+/******************************************************************************/
+
+  set_strobe_mask(daxs_datao_pin);
+  SetTimming_NS( daxs_trans.read_rate );
+  select_vector_mode(poll_pins,_PE_APG_MODE);
+  reconnect_pin(poll_pins);
+
+  /******** PowerUp *********/
+  vs0=vcc[0];
+  vs1=vcc[1];
+  vs2=vcc[2];
+
+  vcc[0]=daxs_trans.vcc;
+  vcc[1]=daxs_trans.vrefh;
+  vcc[2]=daxs_trans.vref;
+
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if((vcc[1] != 0) && (vcc[2] != 0)){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    sprintf(outbuf," Ext_Vref  ON  \n");
+    DataOut(Ffpt,outbuf);
+  }else{
+    sprintf(outbuf," Ext_Vref  OFF \n");
+    DataOut(Ffpt,outbuf);
+  }
+
+  load_vlf_offset(_SUB_MODEENTRY_DAXS,4,tempo1);
+  
+  if(VccSlow(3300,vs0)){
+    return(HWFAIL);
+  }
+
+
+  if(SelectPowerSupply(mode,vcc)) {//�e�d���̋�����Level�̐ݒ�(DAXS�]���p)
+    vcc[0]=vs0;
+    vcc[1]=vs1;
+    vcc[2]=vs2;
+    return(HWFAIL);
+  }
+  SetVohVolVtt( daxs_trans.voh, daxs_trans.vol, daxs_trans.vtt, daxs_datao_pin );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+  vcc[0]=vs0;
+  vcc[1]=vs1;
+  vcc[2]=vs2;
+
+  /******** Read RAM data *********/
+
+  for( cnt=0x2000; cnt<=OUTPUTIF_END; cnt++ ){
+      WriteEcrMode8( cnt, 0xFF, SIZE_B );
+  }  
+
+  result = RAMRunApg( 2, 0x2000, OUTPUTIF_END );   /* DAXS transport 0=write command */
+
+  if((ReadEcrMode8(0x3D00,SIZE_B)==0xAA) &&
+     (ReadEcrMode8(0x3D01,SIZE_B)==0xAA) &&
+     (ReadEcrMode8(0x3D02,SIZE_B)==0xAA) &&
+     (ReadEcrMode8(0x3D03,SIZE_B)==0xAA) ){
+      printf("WT mode Test FAIL!!!\n");
+  }else if((ReadEcrMode8(0x3D00,SIZE_B)==0x55) &&
+           (ReadEcrMode8(0x3D01,SIZE_B)==0x55) &&
+           (ReadEcrMode8(0x3D02,SIZE_B)==0x55) &&
+           (ReadEcrMode8(0x3D03,SIZE_B)==0x55) ){
+      printf("WT mode Test PASS!!!\n");
+  }else{
+      printf("WT mode Test ECR data ERROR!!!\n");
+      DispEcrBmData(0x3D00 , 0x00FF, DISP_ECR|DISP_1 );
+  }
+
+  DeviceLevelsPowerDown(); //�e�d��OFF�R�}���h
+
+/******************************************************************************/
+/*                                 EndManage                                  */
+/******************************************************************************/
+
+  /******** get data *********/
+  //ECR => param
+  for(cnt=IN_LWORDEND+1;cnt<OUT_BYTEEND;cnt++){
+    (param + cnt) -> value = ReadEcrMode8((param + cnt) -> addr,(param + cnt) -> size);
+  }
+  for(cnt=OUT_BYTEEND+1;cnt<OUT_LWORDEND;cnt++){
+    (param + cnt) -> value = ReadEcrMode8((param + cnt) -> addr,(param + cnt) -> size);
+  }
+  SetValue(OUT_LDATA0,param,vol);
+  CpuModeOutput(mode,param);
+
+  if(cpuerr == 1) {
+    switch(GetValue(OUT_JUDGE1,param)) {
+      case CPASS:
+        sprintf(outbuf,"** PASS ** Cpu Total=%dms\n",Cputotal);
+        DataOut(Ffpt,outbuf);
+        break;
+      case CFAIL:
+        sprintf(outbuf,"-- FAIL -- Cpu total=%dms\n",Cputotal);
+        DataOut(Ffpt,outbuf);
+        break;
+      case CFLAG:
+        sprintf(outbuf,"-- FLAG_FAIL -- Cpu Total=%dms\n",Cputotal);
+        DataOut(Ffpt,outbuf);
+        break;
+      case READFAIL:
+        sprintf(outbuf,"-- READ_FAIL -- Cpu Total=%dms\n",Cputotal);
+        DataOut(Ffpt,outbuf);
+        break;
+      default:
+        sprintf(outbuf,"-- FAIL -- None (%04X) %dms\n",((0x00FF&GetValue(OUT_JUDGE1,param))<<8)|((0xFF00&GetValue(OUT_JUDGE1,param))>>8),Cputotal);
+        DataOut(Ffpt,outbuf);
+        break;
+    }
+  }else{
+    sprintf(outbuf,"-- FAIL -- !!! TimeOver !!! total=%dms\n",Cputotal);
+    DataOut(Ffpt,outbuf);
+    //return(FAIL);
+  }
+
+  /******** Monitor Result *********/
+
+
+  return(PASS);
+}
+
+
+
+int CpuMode_CPcurrentALL(int mode,int vcc[NUM_POWERSUPPLY],interface_t* param,int waittime,char *pat,char *mess,int *selvol)
+{
+  int cnt,cpuerr,failflag,datasize,patsize,speed;
+  int i,j,vol,vol_s,vol_d,center;
+  int flg,tempo1,tempo2;                              /*** CPU drive recklessly flg ***/
+  int result;                           /* Test Result */
+  int selmode,pmu_range,bm_data,ecr_data;
+  char mat_value[100];
+  int start_time;                       /* Start Time For bentime */
+  int vs0,vs1,vs2;    // Power bak
+  int old_reg,ilimit;
+  char mat_str[20];
+  char disp_addres[256];
+
+  flg = 0;
+  DispAddres(param,"",disp_addres);
+
+  for( cnt=RAM_TOP; cnt<=(RAM_TOP+0x100); cnt=cnt+4 ){
+      //WriteBmMode8( cnt, 0xFFFFFFFF, SIZE_L );
+      WriteEcrMode8( cnt, 0xFFFFFFFF, SIZE_L );
+  }
+
+  /******* GET PARAMETER *******/
+  speed=GetValue(IN_EXTAL1,param);
+
+  pmu_range = UA250;
+  /******* DISP TAITOL *******/
+  //Vref��VrefH�̋L�q�ɕύX�K�v�H
+  sprintf(outbuf,"TEST:%d [ %s ] vcc=%dmV ext_Vrefh=%dmV ext_Vref=%dmV F=%2dns PLL=%d(X%d)\n ",
+    test++,mess,vcc[0],vcc[1],vcc[2],speed,GetValue(IN_PLLON,param),GetValue(IN_PLL_MULT,param));
+  DataOut(Ffpt,outbuf);
+  sprintf(outbuf,"Module:%s\n%s\n",
+          DispMatName(mat_str,param),disp_addres);
+  DataOut(Ffpt,outbuf);
+
+  /******* SETUP ECR/BM *******/
+  Ecrsetup8(ECR_OVERL);
+
+  /******** RATE SetUp *********/
+  SetTimming_NS( daxs_trans.write_rate );
+
+  /******** PowerUp *********/
+  vs0=vcc[0];
+  vs1=vcc[1];
+  vs2=vcc[2];
+  
+  vcc[0]=daxs_trans.vcc;
+  vcc[1]=daxs_trans.vrefh;
+  vcc[2]=daxs_trans.vref;
+  
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if((vcc[1] != 0) && (vcc[2] != 0)){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    sprintf(outbuf," Ext_Vref  ON  \n");
+    DataOut(Ffpt,outbuf);
+  }else{
+    sprintf(outbuf," Ext_Vref  OFF \n");
+    DataOut(Ffpt,outbuf);
+  }
+
+  load_vlf_offset(_SUB_MODEENTRY_DAXS,4,tempo1);
+  
+  if(SelectPowerSupply(mode,vcc)) {//�e�d���̋�����Level�̐ݒ�(DAXS�]���p)
+    vcc[0]=vs0;
+    vcc[1]=vs1;
+    vcc[2]=vs2;
+    return(HWFAIL);
+  }
+  SetVohVolVtt( daxs_trans.voh, daxs_trans.vol, daxs_trans.vtt, daxs_datao_pin );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+  vcc[0]=vs0;
+  vcc[1]=vs1;
+  vcc[2]=vs2;
+
+/******************************************************************************/
+/*                                 Write BM                                   */
+/******************************************************************************/
+
+  /******* MAKE ASM PATH *******/
+  strcpy( binpat, glob_cdp ); strcat( binpat, glob_binpat_at );
+  strcat( binpat, pat );
+
+  patsize = CheckPatLength(binpat) - PAT_FILE_HEADER_SIZE;
+
+  /******** FILE BM WRITE **********/
+  datasize = comp_load_bm (binpat);   /* comp_load_bm:file pattern => BM */
+
+
+  if(FAIL==datasize) {  /* path/fail check */
+    sprintf(outbuf," !!! NOT OPEN FILE PATH -> %s (checksum:H'%X) !!!\n",binpat,datasize);
+    DataOut(Ffpt,outbuf);
+    DeviceLevelsPowerDown();
+    return(NOPATFAIL);
+  }else{
+    sprintf(outbuf," LOAD FILE PATH -> %s (checksum:H'%X)\n",binpat,datasize);
+    DataOut(Ffpt,outbuf);
+  }
+
+
+  /******** Parameter BM Write *********/
+  result = ParamTransBM(param);
+
+  WriteBmMode8( 0x3C00 , 0x00100000, SIZE_L );    /* Dummy Data 18/04/11 Aoki */  
+
+  /*** Trans Check ***/
+  if(PASS!=result){
+    sprintf(outbuf,"  TRANS ERROR!!  (param => BM) \n");
+    DataOut(Ffpt,outbuf);
+    return(RAMFAIL);
+  }else{
+    sprintf(outbuf,"  TRANS CHECK OK (param => BM) \n");
+    DataOut(Ffpt,outbuf);
+  }
+
+/******************************************************************************/
+/*                                 DAXS Transport                             */
+/******************************************************************************/
+  sprintf(outbuf," ----- RAM transfer Start -----");DataOut(Ffpt,outbuf); 
+
+  ParamConditionDisp(PDIN_ALL,0,param); //���͗pIF�̏o��
+  /******** Start tests *********/
+  printf("Write RAM \n"); /* Print Retry Count */
+
+    result = RAMRunApg( 0, RAM_TOP, OUTPUTIF_END );   /* DAXS transport 0=write command */
+  
+  if(PASS!=result){
+    return(RAMFAIL);
+  }
+  
+  
+  printf("Read RAM \n"); /* Print Retry Count */
+
+  SetTimming_NS( daxs_trans.read_rate );
+  
+  set_strobe_mask(daxs_datao_pin);  //Compare Setting command
+
+    result = RAMRunApg( 2, RAM_TOP, OUTPUTIF_END );   /* DAXS transport 0=write command */
+  
+  for(i=RAM_TOP;i<=(RAM_TOP + 0x100);i=i+4){
+    bm_data=ReadBmMode8(i,SIZE_L);
+    ecr_data=ReadEcrMode8(i,SIZE_L);
+    if(bm_data!=ecr_data){
+      printf("BM <=> ECR Comp ERROR!!! Addr = %X, BM = %X, ECR = %X \n",i,bm_data,ecr_data);
+      result = FAIL;
+    }
+  }
+  
+
+  if(PASS!=result){
+    return(RAMFAIL);
+  }
+
+  sprintf(outbuf," <<<<< EXTRAM transfer OK >>>>>\n");
+  DataOut(Ffpt,outbuf); //CommentOut for RAMBOOT Check
+
+/******************************************************************************/
+/*                                 DAXS RAMBOOT                               */
+/******************************************************************************/
+  /*** Power Change ***/
+  vs0 = vcc[0];
+  vcc[0] = 3300;
+  if(SelectPowerSupply(mode,vcc)) {//�e�d���̋�����Level�̐ݒ�(RAMBoot�]���p)
+    return(HWFAIL);
+  }
+
+  if(VccSlow(vs0,vcc[0])){
+    return(HWFAIL);
+  }
+  vcc[0] = vs0;
+    
+  /*** Comp Pin SetUp ***/
+  set_strobe_mask(bistpoll_pins);  /* ��rPin�̐ݒ�(RAMBoot�����܂ł̑ҋ@���ԂɎg�p) */
+  select_vector_mode(poll_pins,_PE_VECTOR_MODE);  //180314 Add-morioka For RamBoot
+  reconnect_pin(poll_pins);                       //180314 Add-morioka For RamBoot
+
+  /*** Test Speed SetUp ***/
+  SetTimming_NS(speed);
+  ChangeTimming_GTSLTS( EXTCYLJ, 1, MODEENTRY_SPEED ); // ModeEntry���g���ݒ� GTS=1,20MHz
+
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if((vcc[1] != 0) && (vcc[2] != 0)){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    sprintf(outbuf," Ext_Vref  ON  \n");
+    DataOut(Ffpt,outbuf);
+  }else{
+    sprintf(outbuf," Ext_Vref  OFF \n");
+    DataOut(Ffpt,outbuf);
+  }
+
+  /******** APG SetUp(Wait) *********/
+  load_vlf_offset(_SUB_MODEENTRY_RAM,6,  1000/MODEENTRY_SPEED);    /*   1us Wait */
+  load_vlf_offset(_SUB_MODEENTRY_RAM,1,300000/2/MODEENTRY_SPEED);    /* 300us Wait */
+  load_vlf_offset(_SUB_MODEENTRY_RAM,2, 70000/MODEENTRY_SPEED);    /*  70ms Wait */
+  load_vlf_offset(_SUB_MODEENTRY_RAM,3,tempo1);          /* Vdd/Vddh On/Off */
+  load_vlf_offset(_SUB_RAMBT_END,0,500*waittime/speed); /* RAMBootEnd Wait = waittime x(500x200x2000ns) */
+
+  /*************** PMU Setting ********************/ //PMU�����ݒ�
+
+  set_vlimit(0);           // Set V = 0V
+  comp_set_ilimit(250000); // I-Limit = 250000nA(250uA) 
+  delay_timer( 1000 );
+  connect_ps(PPS_CON_VNN1,PPS_CMODE_PMU);
+  set_pmu_range(pmu_range);// max = 250uA
+  delay_timer( 1000 );
+  comp_set_ilimit(0);
+
+  /*** Comp Pin SetUp ***/
+  set_strobe_mask(dend_pass_pin);  /* ��rPin�̐ݒ�(RAMBoot�����܂ł̑ҋ@���ԂɎg�p) */
+  select_vector_mode(dpass_pins,_PE_VECTOR_MODE);  //180314 Add-morioka For RamBoot
+  set_pe_resource(dpass_pins,PE_VOH,vcc[0]*7/10);
+  set_pe_resource(dpass_pins,PE_VOL,vcc[0]*7/10);
+  set_pe_resource(dpass_pins,PE_VTT,vcc[0]*7/10);
+  //set_vtt_mask(dpass_pins);
+  reconnect_pin(dpass_pins);
+  set_pe_resource(dend_pin,PE_VOH,vcc[0]*3/10);
+  set_pe_resource(dend_pin,PE_VOL,vcc[0]*3/10);
+  set_pe_resource(dend_pin,PE_VTT,vcc[0]*3/10);
+  //set_vtt_mask(dend_pin);
+  reconnect_pin(dend_pin);
+
+  /*************************** Run APG & Monitor(Apply) ******************************/
+    start_time = bentime(); /* Get Test Start Time */
+    load_vlf_offset(_SUB_RAMBT_POLL,0,5); /* 20ms fix(2000*200*200ns) */
+    load_vlf_offset(_SUB_RAMBT_END_RES_H,0,5); /* 20ms fix(2000*200*200ns) */
+    load_vlf_offset(_SUB_RAMBT_END_RES_H,2,0xFF); /* 20ms fix(2000*200*200ns) */
+
+    run_apg(_RAM_BOOT_MONITOR_CTRL);
+    delay_timer( 2000 );
+	  vol_s = GetValue(IN_LDATA0,param);
+	  vol_d = GetValue(IN_LDATA1,param);
+
+//    if(GetValue(IN_TESTSEL,param) == 0){//CPcurrent ALL Mode
+      for(j=0;j<GetValue(IN_BDATA01,param);j++){
+        switch(pmu_range){
+          case UA25:    ilimit = 25*1000;  break;
+          case UA250:   ilimit = 250*1000;  break;
+          case UA2500:  ilimit = 2500*1000;  break;
+          default: 
+            printf("Error!!! PMU range Setting = 0x%X\n",pmu_range);
+            return(FAIL);
+          break;
+        }
+        comp_set_ilimit(ilimit);
+        set_vlimit(vol_s + (vol_d * j));                   // CP Voltage
+        SITE_MASK (1, read_pmu_status(0x08));              // I measurement
+        SITE_MASK (1, *(selvol+j)=read_adc_ave(ADC_IMEAS,0,100));
+        tempo2 = 0;
+        printf("--- Debug --- PMU range : 0x%X ,Voltage : %dmV, First : %dnA , ",pmu_range,vol_s + (vol_d * j),*(selvol+j));
+
+        if((ilimit/25*24) <= absolute((*(selvol+j)))){     //Current Result limit over(+side)
+          pmu_range++;
+          ilimit = ilimit*10;
+          tempo2 = 1;
+        }else if((ilimit/25*2) >= absolute((*(selvol+j)))){ //Current Result limit over(-side)
+          pmu_range--;
+          ilimit = ilimit/10;
+          tempo2 = 1;
+        }
+
+        if(tempo2 == 1){//CP current retry
+          comp_set_ilimit(ilimit);
+          SITE_MASK (1, read_pmu_status(0x08));              // I measurement
+          SITE_MASK (1, *(selvol+j)=read_adc_ave(ADC_IMEAS,0,100));
+          printf("Limit Change : %dnA",*(selvol+j));
+        }
+        printf("\n");
+      }
+//      }
+
+    /************************** RAMBoot End Manage ************************************/
+    /*** Comp Pin SetUp ***/
+    set_strobe_mask(bistpoll_pins);  /* ��rPin�̐ݒ�(RAMBoot�����܂ł̑ҋ@���ԂɎg�p) */
+    select_vector_mode(poll_pins,_PE_VECTOR_MODE);  //180314 Add-morioka For RamBoot
+    SetVohVolVtt( 2*vcc[0]/10, 2*vcc[0]/10, 5*vcc[0]/10 , bistpoll_pins );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+    
+    //load_vlf_offset(_SUB_RAMBT_END,1,1000); // 50*cycle
+    load_vlf_offset(_SUB_RAMBT_END,0,500*W1SEC*2/speed); /* RAMBootEnd Wait = waittime x(500x200x2000ns) */
+    run_apg(_RAM_BOOT_MONITOR_END); // RAM Boot End(APG)
+    set_vlimit(0);                  // PMU 0V
+    reconnect_pin(v5_pin);          // PMU reconnect PNN
+    set_invert_mask(no_pin);        // �K�v�����H
+
+    cpuerr = check_pin_errors( bistpoll_pins, 4 ); /* Boot����Error�o�͂�APG�p�^�����璊�o(DPASSDEND_CP�̔�r����) */
+    Cputotal = (bentime()-start_time-init_bentime())/1000; /* Get Test Total Time */
+
+/******************************************************************************/
+/*                                 DAXS Read                                  */
+/******************************************************************************/
+
+  set_strobe_mask(daxs_datao_pin);
+  SetTimming_NS( daxs_trans.read_rate );
+  select_vector_mode(poll_pins,_PE_APG_MODE);
+  reconnect_pin(poll_pins);
+
+  /******** PowerUp *********/
+  vs0=vcc[0];
+  vs1=vcc[1];
+  vs2=vcc[2];
+
+  vcc[0]=daxs_trans.vcc;
+  vcc[1]=daxs_trans.vrefh;
+  vcc[2]=daxs_trans.vref;
+
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if((vcc[1] != 0) && (vcc[2] != 0)){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    sprintf(outbuf," Ext_Vref  ON  \n");
+    DataOut(Ffpt,outbuf);
+  }else{
+    sprintf(outbuf," Ext_Vref  OFF \n");
+    DataOut(Ffpt,outbuf);
+  }
+
+  load_vlf_offset(_SUB_MODEENTRY_DAXS,4,tempo1);
+  
+  if(VccSlow(3300,vs0)){
+    return(HWFAIL);
+  }
+
+
+  if(SelectPowerSupply(mode,vcc)) {//�e�d���̋�����Level�̐ݒ�(DAXS�]���p)
+    vcc[0]=vs0;
+    vcc[1]=vs1;
+    vcc[2]=vs2;
+    return(HWFAIL);
+  }
+  SetVohVolVtt( daxs_trans.voh, daxs_trans.vol, daxs_trans.vtt, daxs_datao_pin );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+  vcc[0]=vs0;
+  vcc[1]=vs1;
+  vcc[2]=vs2;
+
+  /******** Read RAM data *********/
+
+  for( cnt=0x2000; cnt<=OUTPUTIF_END; cnt++ ){
+      WriteEcrMode8( cnt, 0xFF, SIZE_B );
+  }  
+
+  result = RAMRunApg( 2, 0x2000, OUTPUTIF_END );   /* DAXS transport 0=write command */
+
+  if((ReadEcrMode8(0x3D00,SIZE_B)==0xAA) &&
+     (ReadEcrMode8(0x3D01,SIZE_B)==0xAA) &&
+     (ReadEcrMode8(0x3D02,SIZE_B)==0xAA) &&
+     (ReadEcrMode8(0x3D03,SIZE_B)==0xAA) ){
+      printf("WT mode Test FAIL!!!\n");
+  }else if((ReadEcrMode8(0x3D00,SIZE_B)==0x55) &&
+           (ReadEcrMode8(0x3D01,SIZE_B)==0x55) &&
+           (ReadEcrMode8(0x3D02,SIZE_B)==0x55) &&
+           (ReadEcrMode8(0x3D03,SIZE_B)==0x55) ){
+      printf("WT mode Test PASS!!!\n");
+  }else{
+      printf("WT mode Test ECR data ERROR!!!\n");
+      DispEcrBmData(0x3D00 , 0x00FF, DISP_ECR|DISP_1 );
+  }
+
+  DeviceLevelsPowerDown(); //�e�d��OFF�R�}���h
+
+/******************************************************************************/
+/*                                 EndManage                                  */
+/******************************************************************************/
+
+  /******** get data *********/
+  //ECR => param
+  for(cnt=IN_LWORDEND+1;cnt<OUT_BYTEEND;cnt++){
+    (param + cnt) -> value = ReadEcrMode8((param + cnt) -> addr,(param + cnt) -> size);
+  }
+  for(cnt=OUT_BYTEEND+1;cnt<OUT_LWORDEND;cnt++){
+    (param + cnt) -> value = ReadEcrMode8((param + cnt) -> addr,(param + cnt) -> size);
+  }
+  SetValue(OUT_LDATA0,param,vol);
+  CpuModeOutput(mode,param);
+
+  if(cpuerr == 1) {
+    switch(GetValue(OUT_JUDGE1,param)) {
+      case CPASS:
+        sprintf(outbuf,"** PASS ** Cpu Total=%dms\n",Cputotal);
+        DataOut(Ffpt,outbuf);
+        break;
+      case CFAIL:
+        sprintf(outbuf,"-- FAIL -- Cpu total=%dms\n",Cputotal);
+        DataOut(Ffpt,outbuf);
+        break;
+      case CFLAG:
+        sprintf(outbuf,"-- FLAG_FAIL -- Cpu Total=%dms\n",Cputotal);
+        DataOut(Ffpt,outbuf);
+        break;
+      case READFAIL:
+        sprintf(outbuf,"-- READ_FAIL -- Cpu Total=%dms\n",Cputotal);
+        DataOut(Ffpt,outbuf);
+        break;
+      default:
+        sprintf(outbuf,"-- FAIL -- None (%04X) %dms\n",((0x00FF&GetValue(OUT_JUDGE1,param))<<8)|((0xFF00&GetValue(OUT_JUDGE1,param))>>8),Cputotal);
+        DataOut(Ffpt,outbuf);
+        break;
+    }
+  }else{
+    sprintf(outbuf,"-- FAIL -- !!! TimeOver !!! total=%dms\n",Cputotal);
+    DataOut(Ffpt,outbuf);
+    //return(FAIL);
+  }
+
+  /******** Monitor Result *********/
+
+
+  return(PASS);
+}
+
+int CpuMode_Monitor_PC(int mode,interface_t* param,int waittime,char *pat,char *mess,
+                       int *vc1,int *vc2,int *vc3,int *selvol){
+  int cnt,cpuerr,failflag,datasize,patsize,speed;
+  int i,j,vol,vol_s,vol_d,center;
+  int flg,tempo1;                              /*** CPU drive recklessly flg ***/
+  int result;                           /* Test Result */
+  int selmode,pmu_range,bm_data,ecr_data;
+  char mat_value[100];
+  int start_time;                       /* Start Time For bentime */
+  int vs0,vs1,vs2,vcc[NUM_POWERSUPPLY];    // Power bak
+  int old_reg;
+  char mat_str[20];
+  char disp_addres[256];
+
+  flg = 0;
+  vcc[0] = 3300;
+  vcc[1] = vcc[2] = 500;
+  DispAddres(param,"",disp_addres);
+
+  for( cnt=RAM_TOP; cnt<=(RAM_TOP+0x100); cnt=cnt+4 ){
+      //WriteBmMode8( cnt, 0xFFFFFFFF, SIZE_L );
+      WriteEcrMode8( cnt, 0xFFFFFFFF, SIZE_L );
+  }
+
+  /******* GET PARAMETER *******/
+  speed=GetValue(IN_EXTAL1,param);
+
+  pmu_range = UA250;
+  /******* DISP TAITOL *******/
+  //Vref��VrefH�̋L�q�ɕύX�K�v�H
+  sprintf(outbuf,"TEST:%d [ %s ] vcc=%dmV ext_Vrefh=%dmV ext_Vref=%dmV F=%2dns PLL=%d(X%d)\n ",
+    test++,mess,vcc[0],vcc[1],vcc[2],speed,GetValue(IN_PLLON,param),GetValue(IN_PLL_MULT,param));
+  DataOut(Ffpt,outbuf);
+  sprintf(outbuf,"Module:%s\n%s\n",
+          DispMatName(mat_str,param),disp_addres);
+  DataOut(Ffpt,outbuf);
+  //Ldata�̌����ɕύX����K�v�L
+  sprintf(outbuf,"BDATA00:%08X, LDATA0:%08X\n"
+    ,GetValue(IN_BDATA00,param),GetValue(IN_LDATA0,param));
+  DataOut(Ffpt,outbuf);
+
+  /******* SETUP ECR/BM *******/
+  Ecrsetup8(ECR_OVERL);
+
+  /******** RATE SetUp *********/
+  SetTimming_NS( daxs_trans.write_rate );
+
+  /******** PowerUp *********/
+  vs0=vcc[0];
+  vs1=vcc[1];
+  vs2=vcc[2];
+  
+  vcc[0]=daxs_trans.vcc;
+  vcc[1]=daxs_trans.vrefh;
+  vcc[2]=daxs_trans.vref;
+  
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if((vcc[1] != 0) && (vcc[2] != 0)){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    sprintf(outbuf," Ext_Vref  ON  \n");
+    DataOut(Ffpt,outbuf);
+  }else{
+    sprintf(outbuf," Ext_Vref  OFF \n");
+    DataOut(Ffpt,outbuf);
+  }
+
+  load_vlf_offset(_SUB_MODEENTRY_DAXS,4,tempo1);
+  
+  if(SelectPowerSupply(mode,vcc)) {//�e�d���̋�����Level�̐ݒ�(DAXS�]���p)
+    vcc[0]=vs0;
+    vcc[1]=vs1;
+    vcc[2]=vs2;
+    return(HWFAIL);
+  }
+  SetVohVolVtt( daxs_trans.voh, daxs_trans.vol, daxs_trans.vtt, daxs_datao_pin );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+  vcc[0]=vs0;
+  vcc[1]=vs1;
+  vcc[2]=vs2;
+
+/******************************************************************************/
+/*                                 Write BM                                   */
+/******************************************************************************/
+
+  /******* MAKE ASM PATH *******/
+  strcpy( binpat, glob_cdp ); strcat( binpat, glob_binpat_at );
+  strcat( binpat, pat );
+
+  patsize = CheckPatLength(binpat) - PAT_FILE_HEADER_SIZE;
+
+  /******** FILE BM WRITE **********/
+  datasize = comp_load_bm (binpat);   /* comp_load_bm:file pattern => BM */
+
+
+  if(FAIL==datasize) {  /* path/fail check */
+    sprintf(outbuf," !!! NOT OPEN FILE PATH -> %s (checksum:H'%X) !!!\n",binpat,datasize);
+    DataOut(Ffpt,outbuf);
+    DeviceLevelsPowerDown();
+    return(NOPATFAIL);
+  }else{
+    sprintf(outbuf," LOAD FILE PATH -> %s (checksum:H'%X)\n",binpat,datasize);
+    DataOut(Ffpt,outbuf);
+  }
+
+
+  /******** Parameter BM Write *********/
+  result = ParamTransBM(param);
+
+  WriteBmMode8( 0x3C00 , 0x00100000, SIZE_L );    /* Dummy Data 18/04/11 Aoki */  
+
+  /*** Trans Check ***/
+  if(PASS!=result){
+    sprintf(outbuf,"  TRANS ERROR!!  (param => BM) \n");
+    DataOut(Ffpt,outbuf);
+    return(RAMFAIL);
+  }else{
+    sprintf(outbuf,"  TRANS CHECK OK (param => BM) \n");
+    DataOut(Ffpt,outbuf);
+  }
+
+/******************************************************************************/
+/*                                 DAXS Transport                             */
+/******************************************************************************/
+  sprintf(outbuf," ----- RAM transfer Start -----");DataOut(Ffpt,outbuf); 
+
+  ParamConditionDisp(PDIN_ALL,0,param); //���͗pIF�̏o��
+  /******** Start tests *********/
+  printf("Write RAM \n"); /* Print Retry Count */
+
+    result = RAMRunApg( 0, RAM_TOP, OUTPUTIF_END );   /* DAXS transport 0=write command */
+  
+  if(PASS!=result){
+    return(RAMFAIL);
+  }
+  
+  
+  printf("Read RAM \n"); /* Print Retry Count */
+
+  SetTimming_NS( daxs_trans.read_rate );
+  
+  set_strobe_mask(daxs_datao_pin);  //Compare Setting command
+
+    result = RAMRunApg( 2, RAM_TOP, OUTPUTIF_END );   /* DAXS transport 0=write command */
+  
+  for(i=RAM_TOP;i<=(RAM_TOP + 0x100);i=i+4){
+    bm_data=ReadBmMode8(i,SIZE_L);
+    ecr_data=ReadEcrMode8(i,SIZE_L);
+    if(bm_data!=ecr_data){
+      printf("BM <=> ECR Comp ERROR!!! Addr = %X, BM = %X, ECR = %X \n",i,bm_data,ecr_data);
+      result = FAIL;
+    }
+  }
+  
+
+  if(PASS!=result){
+    return(RAMFAIL);
+  }
+
+  sprintf(outbuf," <<<<< EXTRAM transfer OK >>>>>\n");
+  DataOut(Ffpt,outbuf); //CommentOut for RAMBOOT Check
+
+/******************************************************************************/
+/*                                 DAXS RAMBOOT                               */
+/******************************************************************************/
+  /*** Power Change ***/
+  vs0 = vcc[0];
+  vcc[0] = 3300;
+  if(SelectPowerSupply(mode,vcc)) {//�e�d���̋�����Level�̐ݒ�(RAMBoot�]���p)
+    return(HWFAIL);
+  }
+
+  if(VccSlow(vs0,vcc[0])){
+    return(HWFAIL);
+  }
+  vcc[0] = vs0;
+    
+  /*** Comp Pin SetUp ***/
+  set_strobe_mask(bistpoll_pins);  /* ��rPin�̐ݒ�(RAMBoot�����܂ł̑ҋ@���ԂɎg�p) */
+  select_vector_mode(poll_pins,_PE_VECTOR_MODE);  //180314 Add-morioka For RamBoot
+  reconnect_pin(poll_pins);                       //180314 Add-morioka For RamBoot
+
+  /*** Test Speed SetUp ***/
+  SetTimming_NS(speed);
+  ChangeTimming_GTSLTS( EXTCYLJ, 1, MODEENTRY_SPEED ); // ModeEntry���g���ݒ� GTS=1,20MHz
+
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if((vcc[1] != 0) && (vcc[2] != 0)){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    sprintf(outbuf," Ext_Vref  ON  \n");
+    DataOut(Ffpt,outbuf);
+  }else{
+    sprintf(outbuf," Ext_Vref  OFF \n");
+    DataOut(Ffpt,outbuf);
+  }
+
+  /******** APG SetUp(Wait) *********/
+  load_vlf_offset(_SUB_MODEENTRY_RAM,6,  1000/MODEENTRY_SPEED);    /*   1us Wait */
+  load_vlf_offset(_SUB_MODEENTRY_RAM,1,300000/2/MODEENTRY_SPEED);    /* 300us Wait */
+  load_vlf_offset(_SUB_MODEENTRY_RAM,2, 70000/MODEENTRY_SPEED);    /*  70ms Wait */
+  load_vlf_offset(_SUB_MODEENTRY_RAM,3,tempo1);          /* Vdd/Vddh On/Off */
+  load_vlf_offset(_SUB_RAMBT_END,0,500*waittime/speed); /* RAMBootEnd Wait = waittime x(500x200x2000ns) */
+
+  /*************** PMU Setting ********************/ //PMU�����ݒ�
+  //Iref Monitor setting
+  connect_ps(PPS_CON_VNN1,PPS_CMODE_PMU);
+  pmu_range = UA25;
+	set_pmu_range(pmu_range);
+	comp_set_ilimit(25000);	 // 25000nA = 25uA
+	set_vlimit(650);         // Set V = 0.65V
+	delay_timer( 100 );
+  
+  /*** Comp Pin SetUp ***/
+  set_strobe_mask(dpass_pins);  /* ��rPin�̐ݒ�(RAMBoot�����܂ł̑ҋ@���ԂɎg�p) */
+  select_vector_mode(dpass_pins,_PE_VECTOR_MODE);  //180314 Add-morioka For RamBoot
+  SetVohVolVtt( 75*vcc[0]/100, 75*vcc[0]/100, 5*vcc[0]/10 , bistpoll_pins );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+  reconnect_pin(dpass_pins);
+
+  /*************************** Run APG & Monitor(Apply) ******************************/
+    start_time = bentime(); /* Get Test Start Time */
+    load_vlf_offset(_SUB_RAMBT_POLL,0,500/speed); /* 20ms fix(2000*200*200ns) */
+    load_vlf_offset(_SUB_RAMBT_DPASS_H_POLL,0,0xFF/speed); /* 20ms fix(2000*200*200ns) */
+    load_vlf_offset(_SUB_RAMBT_DPASS_H_POLL,1,100*0x5FB/100); /* 20ms fix(2000*200*200ns) */
+    load_vlf_offset(_SUB_RAMBT_DPASS_L_POLL,0,0xFF/speed); /* 20ms fix(2000*200*200ns) */
+    load_vlf_offset(_SUB_RAMBT_DPASS_L_POLL,1,100*0x5FB/100); /* 20ms fix(2000*200*200ns) */
+
+
+    run_apg(_RAM_BOOT_MONITOR_CTRL);
+    delay_timer( 2000 );
+    
+    run_apg(_RAM_BOOT_DPASS_H_POLL);        //DPASS�M����H�҂�
+    delay_timer( 1000 );
+    
+    SITE_MASK (1, read_pmu_status(0x08));              /* I measurement */
+    SITE_MASK (1, *(selvol)=read_adc_ave(ADC_IMEAS,0,100));
+	printf("1st : Iref = %dnA\n",*(selvol));
+
+    run_apg(_RAM_BOOT_DPASS_L_POLL);        //DPASS�M����L�҂�
+    delay_timer( 1000 );
+
+    for(i=0;i<GetValue(IN_BDATA00,param);i++){
+      set_vlimit(650);
+      run_apg(_RAM_BOOT_DPASS_H_POLL);        //DPASS�M����H�҂�
+      delay_timer( 1000 );
+    
+      SITE_MASK (1, read_pmu_status(0x08));              /* I measurement */
+      SITE_MASK (1, *(selvol+i+1)=read_adc_ave(ADC_IMEAS,0,100));
+		  
+      if((*(selvol+i+1) >= 24000) && (pmu_range == UA25)){                 //�d���l��24uA�ȏ�̎��͓d�����j�^�[�����Up���đ���
+	      pmu_range = UA250;
+        set_pmu_range(pmu_range);
+		    comp_set_ilimit(250000);	 // 250000nA = 250uA
+	  	  delay_timer( 100 );
+        SITE_MASK (1, read_pmu_status(0x08));              /* I measurement */
+        SITE_MASK (1, *(selvol+i+1)=read_adc_ave(ADC_IMEAS,0,100));
+		  }
+	  printf("%dkai : Iref_T = %dnA\n",i,*(selvol+1+i));
+      
+      run_apg(_RAM_BOOT_DPASS_L_POLL);        //DPASS�M����L�҂�
+      delay_timer( 1000 );
+	  set_vlimit(0);
+      for(j=0;j<GetValue(IN_BDATA01,param);j++){
+        run_apg(_RAM_BOOT_DPASS_H_POLL);        //DPASS�M����H�҂�
+        delay_timer( 1000 );
+
+        if((j+1) == GetValue(IN_BDATA01,param)){
+          VccSlow(*(vc1+0),*(vc1+j));
+          set_vih2(*(vc2+0));
+          comp_set_v3(*(vc3+0));
+	    printf("%dkai : PowerChange Vcc = %d, Vddh = %d, Vdd = %d\n",j,*(vc1),*(vc2),*(vc3));
+        }else{
+          VccSlow(*(vc1+j+1),*(vc1+j));
+          set_vih2(*(vc2+j+1));
+          comp_set_v3(*(vc3+j+1));
+	    printf("%dkai : PowerChange Vcc = %d, Vddh = %d, Vdd = %d\n",j,*(vc1+j+1),*(vc2+j+1),*(vc3+j+1));
+        }
+        delay_timer( 1000 );
+
+        run_apg(_RAM_BOOT_DPASS_L_POLL);        //DPASS�M����L�҂�
+        delay_timer( 1000 );
+      }
+    }
+
+
+    /************************** RAMBoot End Manage ************************************/
+    /*** Comp Pin SetUp ***/
+    set_strobe_mask(bistpoll_pins);  /* ��rPin�̐ݒ�(RAMBoot�����܂ł̑ҋ@���ԂɎg�p) */
+    select_vector_mode(poll_pins,_PE_VECTOR_MODE);  //180314 Add-morioka For RamBoot
+    SetVohVolVtt( 2*vcc[0]/10, 2*vcc[0]/10, 5*vcc[0]/10 , bistpoll_pins );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+    
+      //load_vlf_offset(_SUB_RAMBT_END,1,1000); // 50*cycle
+      load_vlf_offset(_SUB_RAMBT_END,0,500*W1SEC*2/speed); /* RAMBootEnd Wait = waittime x(500x200x2000ns) */
+      run_apg(_RAM_BOOT_MONITOR_END); // RAM Boot End(APG)
+    set_vlimit(0);                  // PMU 0V
+    reconnect_pin(v5_pin);          // PMU reconnect PNN
+    set_invert_mask(no_pin);        // �K�v�����H
+
+    cpuerr = check_pin_errors( bistpoll_pins, 4 ); /* Boot����Error�o�͂�APG�p�^�����璊�o(DPASSDEND_CP�̔�r����) */
+    Cputotal = (bentime()-start_time-init_bentime())/1000; /* Get Test Total Time */
+
+/******************************************************************************/
+/*                                 DAXS Read                                  */
+/******************************************************************************/
+
+  set_strobe_mask(daxs_datao_pin);
+  SetTimming_NS( daxs_trans.read_rate );
+  select_vector_mode(poll_pins,_PE_APG_MODE);
+  reconnect_pin(poll_pins);
+
+  /******** PowerUp *********/
+  vs0=vcc[0];
+  vs1=vcc[1];
+  vs2=vcc[2];
+
+  vcc[0]=daxs_trans.vcc;
+  vcc[1]=daxs_trans.vrefh;
+  vcc[2]=daxs_trans.vref;
+
+  /******** APG SetUp(Power) *********/
+  tempo1=0;
+  if((vcc[1] != 0) && (vcc[2] != 0)){
+    tempo1 = tempo1 + 0x01;  //ext_vref ON
+    sprintf(outbuf," Ext_Vref  ON  \n");
+    DataOut(Ffpt,outbuf);
+  }else{
+    sprintf(outbuf," Ext_Vref  OFF \n");
+    DataOut(Ffpt,outbuf);
+  }
+
+  load_vlf_offset(_SUB_MODEENTRY_DAXS,4,tempo1);
+  
+  if(VccSlow(3300,vs0)){
+    return(HWFAIL);
+  }
+
+
+  if(SelectPowerSupply(mode,vcc)) {//�e�d���̋�����Level�̐ݒ�(DAXS�]���p)
+    vcc[0]=vs0;
+    vcc[1]=vs1;
+    vcc[2]=vs2;
+    return(HWFAIL);
+  }
+  SetVohVolVtt( daxs_trans.voh, daxs_trans.vol, daxs_trans.vtt, daxs_datao_pin );//�I�[��R�⃍�W�J��Pin��H/L����̓d���ݒ�(DAXS�]���p)
+  vcc[0]=vs0;
+  vcc[1]=vs1;
+  vcc[2]=vs2;
+
+  /******** Read RAM data *********/
+
+  for( cnt=0x2000; cnt<=OUTPUTIF_END; cnt+=4 ){
+      WriteEcrMode8( cnt, 0xFFFFFFFF, SIZE_L );
+  }  
+
+  result = RAMRunApg( 2, 0x2000, OUTPUTIF_END );   /* DAXS transport 0=write command */
+
+  if((ReadEcrMode8(0x3D00,SIZE_B)==0xAA) &&
+     (ReadEcrMode8(0x3D01,SIZE_B)==0xAA) &&
+     (ReadEcrMode8(0x3D02,SIZE_B)==0xAA) &&
+     (ReadEcrMode8(0x3D03,SIZE_B)==0xAA) ){
+      printf("WT mode Test FAIL!!!\n");
+  }else if((ReadEcrMode8(0x3D00,SIZE_B)==0x55) &&
+           (ReadEcrMode8(0x3D01,SIZE_B)==0x55) &&
+           (ReadEcrMode8(0x3D02,SIZE_B)==0x55) &&
+           (ReadEcrMode8(0x3D03,SIZE_B)==0x55) ){
+      printf("WT mode Test PASS!!!\n");
+  }else{
+      printf("WT mode Test ECR data ERROR!!!\n");
+      DispEcrBmData(0x3D00 , 0x00FF, DISP_ECR|DISP_1 );
+  }
+
+  DeviceLevelsPowerDown(); //�e�d��OFF�R�}���h
+
+/******************************************************************************/
+/*                                 EndManage                                  */
+/******************************************************************************/
+
+  /******** get data *********/
+  //ECR => param
+  for(cnt=IN_LWORDEND+1;cnt<OUT_BYTEEND;cnt++){
+    (param + cnt) -> value = ReadEcrMode8((param + cnt) -> addr,(param + cnt) -> size);
+  }
+  for(cnt=OUT_BYTEEND+1;cnt<OUT_LWORDEND;cnt++){
+    (param + cnt) -> value = ReadEcrMode8((param + cnt) -> addr,(param + cnt) -> size);
+  }
+  SetValue(OUT_LDATA0,param,vol);
+  CpuModeOutput(mode,param);
+
+  if(cpuerr == 1) {
+    switch(GetValue(OUT_JUDGE1,param)) {
+      case CPASS:
+        sprintf(outbuf,"** PASS ** Cpu Total=%dms\n",Cputotal);
+        DataOut(Ffpt,outbuf);
+        break;
+      case CFAIL:
+        sprintf(outbuf,"-- FAIL -- Cpu total=%dms\n",Cputotal);
+        DataOut(Ffpt,outbuf);
+        break;
+      case CFLAG:
+        sprintf(outbuf,"-- FLAG_FAIL -- Cpu Total=%dms\n",Cputotal);
+        DataOut(Ffpt,outbuf);
+        break;
+      case READFAIL:
+        sprintf(outbuf,"-- READ_FAIL -- Cpu Total=%dms\n",Cputotal);
+        DataOut(Ffpt,outbuf);
+        break;
+      default:
+        sprintf(outbuf,"-- FAIL -- None (%04X) %dms\n",((0x00FF&GetValue(OUT_JUDGE1,param))<<8)|((0xFF00&GetValue(OUT_JUDGE1,param))>>8),Cputotal);
+        DataOut(Ffpt,outbuf);
+        break;
+    }
+  }else{
+    sprintf(outbuf,"-- FAIL -- !!! TimeOver !!! total=%dms\n",Cputotal);
+    DataOut(Ffpt,outbuf);
+    //return(FAIL);
+  }
+
+  /******** Monitor Result *********/
+
+
+  return(PASS);
+}
+}

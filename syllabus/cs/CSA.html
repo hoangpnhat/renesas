@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scratch Basic</title>
+
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        /* background: #ffc371;
+        background: linear-gradient(to right, #ff5f6d, #ffc371); */
+        font-family: "Quicksand", sans-serif;
+        color: #ffffff;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      .container {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 10px 10px 100px 10px;
+      }
+      .container h1 {
+        text-align: center;
+        margin-bottom: 30px;
+        font-weight: 500;
+      }
+      .container h2 {
+        font-weight: 500;
+      }
+      .accordion {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: auto;
+      }
+      .accordion .a-container {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        padding-bottom: 5px;
+      }
+      .accordion .a-container .a-btn {
+        margin: 0;
+        position: relative;
+        padding: 15px 30px;
+        width: 100%;
+        color: #ffffff;
+        font-weight: 400;
+        display: block;
+        font-weight: 500;
+        background-color: #c00;
+        cursor: pointer;
+        transition: all 0.3s ease-in-out;
+        border-radius: 5px;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15),
+          0 10px 10px -5px rgba(163, 37, 37, 0.1) !important;
+      }
+      .accordion .a-container .a-btn span {
+        display: block;
+        position: absolute;
+        height: 14px;
+        width: 14px;
+        right: 20px;
+        top: 18px;
+      }
+      .accordion .a-container .a-btn span:after {
+        content: "";
+        width: 14px;
+        height: 3px;
+        border-radius: 2px;
+        background-color: rgb(255, 255, 255);
+        position: absolute;
+        top: 6px;
+      }
+      .accordion .a-container .a-btn span:before {
+        content: "";
+        width: 14px;
+        height: 3px;
+        border-radius: 2px;
+        background-color: rgb(255, 255, 255);
+        position: absolute;
+        top: 6px;
+        transform: rotate(90deg);
+        transition: all 0.3s ease-in-out;
+      }
+      .accordion .a-container .a-panel {
+        width: 100%;
+        color: #000000;
+        transition: all 0.2s ease-in-out;
+        opacity: 0;
+        height: auto;
+        max-height: 0;
+        overflow: hidden;
+        padding: 0px 10px;
+      }
+      .accordion .a-container.active .a-btn {
+        color: #fff;
+      }
+      .accordion .a-container.active .a-btn span::before {
+        transform: rotate(0deg);
+      }
+      .accordion .a-container.active .a-panel {
+        padding: 15px 10px 10px 10px;
+        opacity: 1;
+        max-height: 500px;
+      }
+    </style>
+  </head>
+  <body>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <div class="container">
+      <div class="accordion v1">
+        <div class="a-container">
+          <p class="a-btn">
+            Lesson 1: Giới thiệu về OOP
+            <span></span>
+          </p>
+          <div class="a-panel">
+            <h4>Lesson 1.1: Giới thiệu về OOP</h4>
+            <h4>Lesson 1.2: Thực hành online</h4>
+            <p>- Luyện các bài tập về OOP</p>
+          </div>
+        </div>
+        <div class="a-container">
+          <p class="a-btn">
+            Lesson 2: Special Method và Kế thừa
+            <span></span>
+          </p>
+          <div class="a-panel">
+            <h4>Lesson 2.1: Special Method và Kế thừa</h4>
+            <h4>Lesson 2.2: Thực hành online</h4>
+            <p>- Ôn tập và thực hành kiến thức Kế thừa trong OOP</p>
+          </div>
+        </div>
+        <div class="a-container">
+          <p class="a-btn">
+            Lesson 3: Luyện tập về Class
+            <span></span>
+          </p>
+          <div class="a-panel">
+            <h4>Lesson 3.1: Luyện tập về Class</h4>
+            <h4>Lesson 3.2: Thực hành online</h4>
+            <p>- Phân tích Pong game</p>
+          </div>
+        </div>
+        <div class="a-container">
+          <p class="a-btn">
+            Lesson 4: Xây dựng Pong game
+            <span></span>
+          </p>
+          <div class="a-panel">
+            <h4>Lesson 4.1: Xây dựng Pong game</h4>
+            <h4>Lesson 4.2: Thực hành online</h4>
+            <p>- Hoàn thiện Pong game</p>
+          </div>
+        </div>
+        <div class="a-container">
+          <p class="a-btn">
+            Lesson 5: Giới thiệu về cơ sở dữ liệu Database
+            <span></span>
+          </p>
+          <div class="a-panel">
+            <h4>Lesson 5.1: Giới thiệu về cơ sở dữ liệu Database</h4>
+            <h4>Lesson 5.2: Thực hành online</h4>
+            <p>- Tạo sơ đồ dữ liệu và dữ liệu</p>
+          </div>
+        </div>
+        <div class="a-container">
+          <p class="a-btn">
+            Lesson 6: Truy xuất dữ liệu bằng SQL
+            <span></span>
+          </p>
+          <div class="a-panel">
+            <h4>Lesson 6.1: Truy xuất dữ liệu bằng SQL</h4>
+            <h4>Lesson 6.2: Thực hành online</h4>
+            <p>- Query với Database</p>
+          </div>
+        </div>
+        <div class="a-container">
+          <p class="a-btn">
+            Lesson 7: Các hàm có sẵn trong SQL
+            <span></span>
+          </p>
+          <div class="a-panel">
+            <h4>Lesson 7.1: Các hàm có sẵn trong sql</h4>
+            <h4>Lesson 7.2: Thực hành online</h4>
+            <p>- Sử dụng các mệnh đề bổ sung trong SQL</p>
+          </div>
+        </div>
+        <div class="a-container">
+          <p class="a-btn">
+            Lesson 8: Query dữ liệu từ nhiều bảng
+            <span></span>
+          </p>
+          <div class="a-panel">
+            <h4>Lesson 8.1: Query dữ liệu từ nhiều bảng</h4>
+            <h4>Lesson 8.2: Thực hành online</h4>
+            <p>- Thực hành kiến thức JOIN, WITH, UNION table trong SQL</p>
+          </div>
+        </div>
+        <div class="a-container">
+          <p class="a-btn">
+            Lesson 9: Giới thiệu thư viện pandas
+            <span></span>
+          </p>
+          <div class="a-panel">
+            <h4>Lesson 9.1: Giới thiệu thư viện pandas</h4>
+            <h4>Lesson 9.2: Thực hành online</h4>
+            <p>- Tạo data template, Import và Export Pandas</p>
+          </div>
+        </div>
+        <div class="a-container">
+          <p class="a-btn">
+            Lesson 10: Truy cập dữ liệu với pandas
+            <span></span>
+          </p>
+          <div class="a-panel">
+            <h4>Lesson 10.1: Truy cập dữ liệu với pandas</h4>
+            <h4>Lesson 10.2: Thực hành online</h4>
+            <p>- Thực hành tuy xuất dữ liệu</p>
+          </div>
+        </div>
+        <div class="a-container">
+          <p class="a-btn">
+            Lesson 11: Manipulating data bằng pandas
+            <span></span>
+          </p>
+          <div class="a-panel">
+            <h4>Lesson 11.1: Manipulating data bằng pandas</h4>
+            <h4>Lesson 11.2: Thực hành online</h4>
+            <p>- Thực hành thao tác với dataframe trong Pandas</p>
+          </div>
+        </div>
+        <div class="a-container">
+          <p class="a-btn">
+            Lesson 12: Visualizing data
+            <span></span>
+          </p>
+          <div class="a-panel">
+            <h4>Lesson 12.1: Visualizing data</h4>
+            <h4>Lesson 12.2: Thực hành online</h4>
+            <p>- Thực hành vẽ biểu đồ phân tích với matplotlib</p>
+          </div>
+        </div>
+        <div class="a-container">
+          <p class="a-btn">
+            Lesson 13: Hackathon tạo Dashboard mô tả data
+            <span></span>
+          </p>
+          <div class="a-panel">
+            <h4>Lesson 13.1: Hackathon tạo Dashboard mô tả data</h4>
+            <h4>Lesson 13.2: Workshop online:</h4>
+            <p>- Workshop thuyết trình</p>
+          </div>
+        </div>
+        <div class="a-container">
+          <p class="a-btn">
+            Lesson 14: Thuyết trình sản phẩm hackathon
+            <span></span>
+          </p>
+          <div class="a-panel">
+            <h4>Thuyết trình sản phẩm hackathon</h4>
+            <h4>Ôn tập online</h4>
+            <p>- Workshop trao đổi, đánh giá, định hướng học tập</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function initAcc(elem, option) {
+        document.addEventListener("click", function (e) {
+          if (!e.target.matches(elem + " .a-btn")) return;
+          else {
+            if (!e.target.parentElement.classList.contains("active")) {
+              if (option == true) {
+                var elementList = document.querySelectorAll(
+                  elem + " .a-container"
+                );
+                Array.prototype.forEach.call(elementList, function (e) {
+                  e.classList.remove("active");
+                });
+              }
+              e.target.parentElement.classList.add("active");
+            } else {
+              e.target.parentElement.classList.remove("active");
+            }
+          }
+        });
+      }
+
+      initAcc(".accordion.v1", true);
+    </script>
+  </body>
+</html>

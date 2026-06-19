@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="html-slides v0.9.4">
+<title>RICA CLI — Handover</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* === THEME: Dark Interactive (Obsidian) === */
+:root {
+  --font-body: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --bg: #0b0e14;
+  --bg-card: #131720;
+  --bg-card-hover: #1a1f2e;
+  --text: #e6edf3;
+  --text-muted: #8b949e;
+  --text-dim: #6e7681;
+  --accent-blue: #58a6ff;
+  --accent-green: #3fb950;
+  --accent-orange: #f0883e;
+  --accent-red: #f85149;
+  --accent-purple: #a371f7;
+  --accent-yellow: #d29922;
+  --border: rgba(255,255,255,0.07);
+  --border-hover: rgba(255,255,255,0.18);
+}
+
+.deck::before {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse at 15% 85%, rgba(88, 166, 255, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 15%, rgba(163, 113, 247, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(63, 185, 80, 0.04) 0%, transparent 60%);
+  pointer-events: none; z-index: 0;
+}
+.deck::after {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 6px 6px;
+  pointer-events: none; z-index: 0;
+}
+
+.slide.active .anim-1 { animation: blurFadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both !important; }
+.slide.active .anim-2 { animation: blurFadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both !important; }
+.slide.active .anim-3 { animation: blurFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both !important; }
+.slide.active .anim-4 { animation: blurFadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.55s both !important; }
+.slide.active .anim-5 { animation: blurFadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.7s both !important; }
+.slide.active .bounce-1 { animation: bounceIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both !important; }
+.slide.active .bounce-2 { animation: bounceIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both !important; }
+.slide.active .bounce-3 { animation: bounceIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both !important; }
+.slide.active .bounce-4 { animation: bounceIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.65s both !important; }
+.slide.active .pop-1 { animation: countPop 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both !important; }
+.slide.active .pop-2 { animation: countPop 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.45s both !important; }
+.slide.active .pop-3 { animation: countPop 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.6s both !important; }
+
+/* === COMPONENTS CSS === */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  height: 100%;
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.deck { position: relative; width: 100vw; height: 100vh; }
+.slide {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  padding: 36px 48px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.45s cubic-bezier(.4,0,.2,1);
+  overflow: hidden;
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+.particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+.particle {
+  position: absolute; width: 2px; height: 2px; border-radius: 50%;
+  background: rgba(255,255,255,0.12); animation: floatP linear infinite;
+}
+@keyframes floatP {
+  0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+  10% { opacity: 0.8; } 90% { opacity: 0.8; }
+  100% { transform: translateY(-10vh) translateX(25px); opacity: 0; }
+}
+
+.branding {
+  position: fixed; top: 24px; right: 32px; z-index: 100;
+  font-size: 13px; font-weight: 600; color: var(--text-dim);
+  display: flex; align-items: center; gap: 8px;
+}
+.branding-icon {
+  width: 20px; height: 20px; border: 2px solid var(--text-dim);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 800;
+}
+.progress-bar {
+  position: fixed; bottom: 0; left: 0; height: 3px; z-index: 100;
+  background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple), var(--accent-green));
+  transition: width 0.4s ease;
+}
+.slide-counter {
+  position: fixed; bottom: 20px; right: 32px; font-size: 13px;
+  font-weight: 500; color: var(--text-dim); z-index: 100; font-variant-numeric: tabular-nums;
+}
+.nav-hints {
+  position: fixed; bottom: 20px; left: 32px; font-size: 12px;
+  color: var(--text-dim); z-index: 100;
+}
+.nav-hints kbd {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 24px; height: 22px; padding: 0 6px;
+  background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+  border-radius: 4px; font-size: 11px; margin: 0 2px;
+}
+.slide-nav {
+  position: fixed; right: 16px; top: 50%; transform: translateY(-50%);
+  z-index: 100; display: flex; flex-direction: column; gap: 6px;
+}
+.slide-nav-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(255,255,255,0.15); cursor: pointer; transition: all 0.3s ease;
+}
+.slide-nav-dot.active {
+  background: var(--accent-blue); transform: scale(1.6);
+  box-shadow: 0 0 8px var(--accent-blue);
+}
+.slide-nav-dot:hover { background: rgba(255,255,255,0.4); transform: scale(1.3); }
+
+.slide-tag {
+  font-size: clamp(13px, 1.2vw, 15px); font-weight: 600; letter-spacing: 2.5px;
+  text-transform: uppercase; color: var(--accent-blue); margin-bottom: 16px;
+}
+h1 { font-size: clamp(36px,5vw,64px); font-weight: 900; line-height: 1.1; letter-spacing: -1px; margin-bottom: 20px; text-align: center; }
+h2 { font-size: clamp(28px,3.5vw,48px); font-weight: 800; line-height: 1.15; letter-spacing: -0.5px; margin-bottom: 12px; text-align: center; }
+.subtitle { font-size: clamp(17px, 1.8vw, 24px); color: var(--text-muted); font-weight: 400; line-height: 1.5; text-align: center; max-width: 800px; }
+
+.highlight-orange { color: var(--accent-orange); }
+.highlight-blue { color: var(--accent-blue); }
+.highlight-green { color: var(--accent-green); }
+.highlight-purple { color: var(--accent-purple); }
+.highlight-red { color: var(--accent-red); }
+.gradient-text { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.rainbow-line { width: 200px; height: 2px; background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple), var(--accent-green), var(--accent-yellow), var(--accent-orange)); border-radius: 2px; margin: 20px 0; }
+
+.mt-16 { margin-top: 16px; }
+.mt-24 { margin-top: 24px; }
+
+.glow-blob { position: absolute; width: 400px; height: 400px; border-radius: 50%; filter: blur(120px); opacity: 0.12; pointer-events: none; }
+.glow-blue { background: var(--accent-blue); }
+.glow-purple { background: var(--accent-purple); }
+.glow-green { background: var(--accent-green); }
+
+@keyframes fadeInUp { from { opacity:0; transform:translateY(28px); } to { opacity:1; transform:translateY(0); } }
+@keyframes bounceIn {
+  0% { opacity:0; transform: scale(0.3) translateY(40px); }
+  50% { opacity:1; transform: scale(1.05) translateY(-8px); }
+  70% { transform: scale(0.95) translateY(4px); }
+  100% { opacity:1; transform: scale(1) translateY(0); }
+}
+@keyframes bounceInSoft {
+  0% { opacity:0; transform: translateY(30px); }
+  60% { opacity:1; transform: translateY(-6px); }
+  80% { transform: translateY(3px); }
+  100% { opacity:1; transform: translateY(0); }
+}
+@keyframes countPop {
+  0% { opacity:0; transform: scale(0.5); }
+  60% { transform: scale(1.1); }
+  100% { opacity:1; transform: scale(1); }
+}
+@keyframes blurFadeIn {
+  from { opacity: 0; filter: blur(8px); transform: translateY(20px); }
+  to { opacity: 1; filter: blur(0); transform: translateY(0); }
+}
+@keyframes driftOrb {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(15px, -20px); }
+  50% { transform: translate(-10px, -35px); }
+  75% { transform: translate(-20px, -15px); }
+}
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 rgba(88,166,255,0); }
+  50% { box-shadow: 0 0 20px rgba(88,166,255,0.15); }
+}
+@keyframes floatBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* === ARCHITECTURE FLOW === */
+.arch-flow {
+  display: flex; align-items: center; gap: 16px;
+  width: 100%; max-width: 1000px; margin-top: 32px;
+}
+.arch-box {
+  flex: 1; min-width: 0; background: var(--bg-card);
+  border: 1.5px solid var(--border); border-radius: 14px;
+  padding: 28px 16px; text-align: center;
+  transition: all 0.35s cubic-bezier(.4,0,.2,1); cursor: pointer;
+}
+.arch-box:hover { transform: translateY(-6px); box-shadow: 0 16px 48px rgba(0,0,0,0.4); border-color: var(--border-hover); }
+.arch-box.box-blue { border-color: rgba(88,166,255,0.4); }
+.arch-box.box-yellow { border-color: rgba(210,153,34,0.4); }
+.arch-box.box-green { border-color: rgba(63,185,80,0.4); }
+.arch-box:hover.box-blue { border-color: rgba(88,166,255,0.8); box-shadow: 0 16px 48px rgba(88,166,255,0.08); }
+.arch-box:hover.box-yellow { border-color: rgba(210,153,34,0.8); box-shadow: 0 16px 48px rgba(210,153,34,0.08); }
+.arch-box:hover.box-green { border-color: rgba(63,185,80,0.8); box-shadow: 0 16px 48px rgba(63,185,80,0.08); }
+.arch-icon { font-size: 40px; margin-bottom: 14px; transition: transform 0.3s ease; }
+.arch-box:hover .arch-icon { transform: scale(1.15); animation: floatBob 1.5s ease infinite; }
+.arch-label { font-size: clamp(20px, 1.8vw, 24px); font-weight: 800; }
+.arch-label.text-blue { color: var(--accent-blue); }
+.arch-label.text-yellow { color: var(--accent-yellow); }
+.arch-label.text-green { color: var(--accent-green); }
+.arch-role { font-size: clamp(14px, 1.2vw, 16px); color: var(--text-muted); margin-top: 4px; font-weight: 500; }
+.arch-detail {
+  font-size: clamp(12px, 1vw, 14px); color: var(--text-dim); margin-top: 10px;
+  font-family: var(--font-mono); background: rgba(255,255,255,0.03); padding: 6px 10px; border-radius: 6px;
+}
+.arch-arrow {
+  font-size: 14px; color: var(--text-dim);
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  flex-shrink: 0; min-width: 60px;
+}
+.arch-arrow span { font-size: clamp(11px, 1vw, 13px); white-space: nowrap; }
+.arrow-line { width: 40px; height: 2px; background: var(--text-dim); position: relative; }
+.arrow-line::after {
+  content: ''; position: absolute; right: -1px; top: -4px;
+  border: 5px solid transparent; border-left: 6px solid var(--text-dim);
+}
+
+/* === CODE BLOCKS === */
+.code-window {
+  width: 100%; max-width: 780px; background: #0d1117;
+  border-radius: 12px; overflow: hidden; margin-top: 24px;
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5); text-align: left;
+}
+.code-titlebar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px 16px; background: rgba(255,255,255,0.025);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.code-dot { width: 12px; height: 12px; border-radius: 50%; }
+.code-dot.red { background: #ff5f56; }
+.code-dot.yellow { background: #ffbd2e; }
+.code-dot.green { background: #27c93f; }
+.code-filename {
+  font-size: clamp(12px, 1.1vw, 14px); color: var(--text-dim);
+  font-family: var(--font-mono); margin-left: 8px;
+}
+.code-body {
+  padding: 18px 24px; font-family: var(--font-mono);
+  font-size: clamp(12px, 1.1vw, 14px); line-height: 1.7; overflow-x: auto;
+  white-space: pre; text-align: left; color: #abb2bf;
+}
+.code-body .kw { color: #c678dd; }
+.code-body .fn { color: #61afef; }
+.code-body .str { color: #98c379; }
+.code-body .comment { color: #5c6370; font-style: italic; }
+.code-body .prop { color: #e5c07b; }
+
+/* === TABLE === */
+.table-wrap {
+  width: 100%; max-width: 920px; margin-top: 24px;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 14px; overflow: hidden;
+}
+.table-wrap table { width: 100%; border-collapse: collapse; font-size: clamp(13px, 1.2vw, 15px); }
+.table-wrap thead th {
+  padding: 14px 20px; text-align: left;
+  font-weight: 600; font-size: clamp(12px, 1.1vw, 14px);
+  color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;
+  background: rgba(255,255,255,0.03); border-bottom: 1px solid var(--border);
+}
+.table-wrap tbody td { padding: 12px 20px; border-bottom: 1px solid var(--border); color: var(--text); }
+.table-wrap tbody tr:last-child td { border-bottom: none; }
+.table-wrap tbody tr { transition: background 0.2s ease; }
+.table-wrap tbody tr:hover { background: var(--bg-card-hover); }
+
+/* === STATUS TIMELINE === */
+.status-timeline { width: 100%; max-width: 800px; margin-top: 28px; display: flex; flex-direction: column; gap: 12px; }
+.status-item {
+  display: flex; align-items: center; gap: 16px;
+  padding: 14px 20px; background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 10px; transition: all 0.3s ease; cursor: default;
+}
+.status-item:hover { transform: translateX(8px); border-color: var(--border-hover); background: var(--bg-card-hover); }
+.status-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.status-dot.green { background: var(--accent-green); box-shadow: 0 0 8px var(--accent-green); }
+.status-dot.yellow { background: var(--accent-yellow); box-shadow: 0 0 8px var(--accent-yellow); }
+.status-dot.orange { background: var(--accent-orange); box-shadow: 0 0 8px var(--accent-orange); }
+.status-dot.red { background: var(--accent-red); box-shadow: 0 0 8px var(--accent-red); }
+.status-text { font-size: clamp(15px, 1.3vw, 18px); font-weight: 500; }
+.status-text strong { font-weight: 700; color: var(--text); }
+.slide.active .stag-1 { animation: bounceInSoft 0.5s ease 0.15s both; }
+.slide.active .stag-2 { animation: bounceInSoft 0.5s ease 0.25s both; }
+.slide.active .stag-3 { animation: bounceInSoft 0.5s ease 0.35s both; }
+.slide.active .stag-4 { animation: bounceInSoft 0.5s ease 0.45s both; }
+.slide.active .stag-5 { animation: bounceInSoft 0.5s ease 0.55s both; }
+.slide.active .stag-6 { animation: bounceInSoft 0.5s ease 0.65s both; }
+
+/* === STATS === */
+.stats-row { display: flex; gap: 24px; margin-top: 32px; width: 100%; max-width: 1000px; }
+.stat-card {
+  flex: 1; background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 14px; padding: 32px 24px; transition: all 0.35s ease; text-align: left;
+}
+.stat-card:hover { transform: translateY(-6px) scale(1.02); border-color: var(--border-hover); box-shadow: 0 16px 48px rgba(0,0,0,0.35); }
+.stat-number { font-size: clamp(42px,6vw,64px); font-weight: 900; line-height: 1; margin-bottom: 8px; }
+.stat-number.blue { color: var(--accent-blue); }
+.stat-number.green { color: var(--accent-green); }
+.stat-number.orange { color: var(--accent-orange); }
+.stat-label { font-size: clamp(16px, 1.5vw, 20px); font-weight: 700; margin-bottom: 4px; }
+.stat-desc { font-size: clamp(13px, 1.1vw, 15px); color: var(--text-muted); }
+
+/* === CUSTOM: Feature grid === */
+.feature-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+  width: 100%; max-width: 920px; margin-top: 24px;
+}
+.feature-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px; transition: all 0.3s ease;
+}
+.feature-card:hover { border-color: var(--border-hover); background: var(--bg-card-hover); transform: translateY(-2px); }
+.feature-card .fc-icon { font-size: 24px; margin-bottom: 8px; }
+.feature-card .fc-title { font-size: clamp(14px, 1.3vw, 17px); font-weight: 700; margin-bottom: 4px; }
+.feature-card .fc-desc { font-size: clamp(12px, 1.1vw, 14px); color: var(--text-muted); line-height: 1.4; }
+.feature-card.done { border-color: rgba(63,185,80,0.3); }
+.feature-card.pending { border-color: rgba(210,153,34,0.3); }
+.feature-card.blocked { border-color: rgba(248,81,73,0.3); }
+
+@media (max-width: 700px) {
+  .feature-grid { grid-template-columns: 1fr; }
+  .arch-flow { flex-direction: column; }
+  .stats-row { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+  <div class="particles" id="particles"></div>
+  <div class="branding"><div class="branding-icon">R</div>RICA CLI</div>
+  <div class="progress-bar" id="progress"></div>
+  <div class="slide-counter" id="counter"></div>
+  <div class="nav-hints"><kbd>&larr;</kbd><kbd>&rarr;</kbd> navigate</div>
+  <div class="slide-nav" id="slideNav"></div>
+
+  <!-- === SLIDE 0: Title === -->
+  <div class="slide active" data-slide="0">
+    <div class="glow-blob glow-blue" style="top:-20%;left:-10%;"></div>
+    <div class="glow-blob glow-purple" style="bottom:-20%;right:-10%;"></div>
+    <div class="slide-tag anim-1">ADADAI Renesas</div>
+    <h1 class="anim-2">RICA <span class="gradient-text">CLI</span></h1>
+    <div class="rainbow-line anim-3"></div>
+    <p class="subtitle anim-4">Handover & Architecture Overview</p>
+    <p class="subtitle anim-5" style="font-size:clamp(14px,1.3vw,17px);margin-top:12px;color:var(--text-dim);">Branch: <code style="font-family:var(--font-mono);color:var(--accent-blue);">rica/cli</code> &mdash; June 2026</p>
+    <script type="application/json" class="slide-notes">
+    {"title":"RICA CLI Handover","script":"This presentation covers the RICA CLI architecture, what's been implemented, how it compares to the VS Code extension features, and what remains for future development.","notes":["Branch: rica/cli","Based on Continue CLI with overlay pattern","June 2026 status snapshot"]}
+    </script>
+  </div>
+
+  <!-- === SLIDE 1: What is RICA CLI === -->
+  <div class="slide" data-slide="1">
+    <div class="slide-tag anim-1">Overview</div>
+    <h2 class="anim-2">What is <span class="highlight-blue">RICA CLI</span>?</h2>
+    <p class="subtitle anim-3" style="max-width:700px;">A rebranded overlay of Continue CLI using the same shim pattern as the VS Code extension. RICA-specific logic lives in <code style="font-family:var(--font-mono);color:var(--accent-green);">rica/cli/</code> and is injected at build time.</p>
+    <div class="stats-row anim-4">
+      <div class="stat-card">
+        <div class="stat-number blue pop-1">11</div>
+        <div class="stat-label">Shim Modules</div>
+        <div class="stat-desc">Build-time replacements via esbuild onResolve</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number green pop-2">5</div>
+        <div class="stat-label">Upstream Patches</div>
+        <div class="stat-desc">Minimal changes to extensions/cli/</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number orange pop-3">0</div>
+        <div class="stat-label">Core Modifications</div>
+        <div class="stat-desc">No changes to core/ directory</div>
+      </div>
+    </div>
+    <script type="application/json" class="slide-notes">
+    {"title":"What is RICA CLI","script":"The RICA CLI follows the same overlay pattern as the VS Code extension. All RICA logic lives in rica/cli/ and gets injected through esbuild's module resolution at build time. We only patch 5 upstream files, all minimal.","notes":["11 shim modules replace upstream modules at build time","Only 5 files patched in extensions/cli/","Zero modifications to core/ directory"]}
+    </script>
+  </div>
+
+  <!-- === SLIDE 2: Architecture === -->
+  <div class="slide" data-slide="2">
+    <div class="slide-tag anim-1">Architecture</div>
+    <h2 class="anim-2">Build-Time <span class="highlight-green">Module Replacement</span></h2>
+    <div class="arch-flow anim-3">
+      <div class="arch-box box-blue">
+        <div class="arch-icon">📦</div>
+        <div class="arch-label text-blue">Upstream CLI</div>
+        <div class="arch-role">extensions/cli/src/</div>
+        <div class="arch-detail">import "./auth/workos.js"</div>
+      </div>
+      <div class="arch-arrow">
+        <span>esbuild</span>
+        <div class="arrow-line"></div>
+        <span>onResolve</span>
+      </div>
+      <div class="arch-box box-yellow">
+        <div class="arch-icon">🔀</div>
+        <div class="arch-label text-yellow">Shim Plugin</div>
+        <div class="arch-role">rica/scripts/build-cli.mjs</div>
+        <div class="arch-detail">redirect to shim path</div>
+      </div>
+      <div class="arch-arrow">
+        <span>resolves</span>
+        <div class="arrow-line"></div>
+        <span>to</span>
+      </div>
+      <div class="arch-box box-green">
+        <div class="arch-icon">✨</div>
+        <div class="arch-label text-green">RICA Shim</div>
+        <div class="arch-role">rica/cli/shim/</div>
+        <div class="arch-detail">workosShim.ts (21 exports)</div>
+      </div>
+    </div>
+    <script type="application/json" class="slide-notes">
+    {"title":"Build-Time Module Replacement","script":"Instead of patching 50 files that import workos or env, we use esbuild's onResolve plugin. When the bundler encounters an import like auth/workos.js, our plugin redirects it to rica/cli/shim/workosShim.ts which has the same 21 exports but with RICA logic.","notes":["esbuild onResolve plugin intercepts imports","Redirects to RICA shim files with same export signatures","No upstream files need changing for auth, env, config, etc."]}
+    </script>
+  </div>
+
+  <!-- === SLIDE 3: Shim Map === -->
+  <div class="slide" data-slide="3">
+    <div class="slide-tag anim-1">Architecture</div>
+    <h2 class="anim-2">Shim <span class="highlight-orange">Resolution Map</span></h2>
+    <div class="table-wrap anim-3">
+      <table>
+        <thead>
+          <tr><th>Upstream Module</th><th>RICA Shim</th><th>Purpose</th></tr>
+        </thead>
+        <tbody>
+          <tr><td style="font-family:var(--font-mono);font-size:13px;">auth/workos.js</td><td style="color:var(--accent-green);">workosShim.ts</td><td>API key auth (21 exports)</td></tr>
+          <tr><td style="font-family:var(--font-mono);font-size:13px;">./env.js</td><td style="color:var(--accent-green);">envShim.ts</td><td>RICA URLs & home dir</td></tr>
+          <tr><td style="font-family:var(--font-mono);font-size:13px;">./config.js</td><td style="color:var(--accent-green);">configShim.ts</td><td>RicaProxyAdapter for LLM</td></tr>
+          <tr><td style="font-family:var(--font-mono);font-size:13px;">./configLoader.js</td><td style="color:var(--accent-green);">configLoaderShim.ts</td><td>Config from ~/.rica/</td></tr>
+          <tr><td style="font-family:var(--font-mono);font-size:13px;">./version.js</td><td style="color:var(--accent-green);">versionShim.ts</td><td>Version from brand.json</td></tr>
+          <tr><td style="font-family:var(--font-mono);font-size:13px;">posthogService.js</td><td style="color:var(--accent-green);">posthogShim.ts</td><td>Telemetry disabled (no-op)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <script type="application/json" class="slide-notes">
+    {"title":"Shim Resolution Map","script":"Here's the mapping of upstream modules to RICA shims. The workos shim is the largest with 21 exports covering login, logout, token access, and org management stubs. Each shim maintains the exact same export signature.","notes":["workosShim has 21 exports matching upstream interface","envShim points to RICA backend URLs","configShim wires RicaProxyAdapter for Databricks endpoints","posthogShim is a no-op: CLI sends no telemetry"]}
+    </script>
+  </div>
+
+  <!-- === SLIDE 4: Auth Flow === -->
+  <div class="slide" data-slide="4">
+    <div class="slide-tag anim-1">Authentication</div>
+    <h2 class="anim-2">Token <span class="highlight-purple">Exchange Flow</span></h2>
+    <div class="code-window anim-3">
+      <div class="code-titlebar">
+        <div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div>
+        <span class="code-filename">rica login &rarr; LLM request</span>
+      </div>
+      <div class="code-body"><span class="comment">// 1. Login: user pastes API key</span>
+<span class="fn">rica login</span>
+  &rarr; POST /api/extension/token
+    Headers: { <span class="str">"X-API-Key"</span>: <span class="prop">rc_...</span> }
+  &rarr; Response: { <span class="prop">access_token</span>: <span class="str">"&lt;MDP_TOKEN&gt;"</span> }
+  &rarr; Save API key to <span class="str">~/.rica/config.json</span>
+
+<span class="comment">// 2. Every LLM request: fresh token exchange</span>
+<span class="fn">ensureValidToken</span>()
+  &rarr; if cached &amp;&amp; !expired: <span class="kw">return</span> cached
+  &rarr; else: <span class="fn">exchangeApiKeyForToken</span>(apiKey)
+    &rarr; Bearer <span class="prop">&lt;MDP_TOKEN&gt;</span> for Databricks</div>
+    </div>
+    <p class="subtitle anim-4" style="font-size:clamp(13px,1.2vw,16px);margin-top:16px;"><span class="highlight-red">Security:</span> MDP tokens are <strong>never persisted to disk</strong>. Memory-only, exchanged fresh each session.</p>
+    <script type="application/json" class="slide-notes">
+    {"title":"Token Exchange Flow","script":"The CLI uses API key auth instead of EntraID browser flow. User pastes their API key once during rica login. The key is saved to disk but the MDP token used for Databricks is only kept in memory and re-exchanged each session.","notes":["API key saved to ~/.rica/config.json","MDP token never written to disk","Token auto-refreshes when expired","Same /api/extension/token endpoint as VS Code extension"]}
+    </script>
+  </div>
+
+  <!-- === SLIDE 5: TUI Fixes === -->
+  <div class="slide" data-slide="5">
+    <div class="slide-tag anim-1">Implementation</div>
+    <h2 class="anim-2">TUI Fixes <span class="highlight-green">Applied</span></h2>
+    <div class="status-timeline">
+      <div class="status-item stag-1">
+        <div class="status-dot green"></div>
+        <div class="status-text"><strong>parseAsync()</strong> &mdash; Commander returns before async action completes</div>
+      </div>
+      <div class="status-item stag-2">
+        <div class="status-dot green"></div>
+        <div class="status-text"><strong>Keepalive timer</strong> &mdash; Prevent event loop drain before Ink activates stdin</div>
+      </div>
+      <div class="status-item stag-3">
+        <div class="status-dot green"></div>
+        <div class="status-text"><strong>SIGINT handler</strong> &mdash; Use process.off() instead of removeAllListeners</div>
+      </div>
+      <div class="status-item stag-4">
+        <div class="status-dot green"></div>
+        <div class="status-text"><strong>ScreenContent fix</strong> &mdash; Don't block UI during "checking" update state</div>
+      </div>
+    </div>
+    <script type="application/json" class="slide-notes">
+    {"title":"TUI Fixes Applied","script":"We had to fix four issues to make the Ink-based TUI work correctly with RICA's overlay. The most subtle was the ScreenContent bug where the update service's checking state was hiding the entire UI including the input component.","notes":["Fix 1: program.parseAsync() in src/index.ts","Fix 2: setInterval keepalive in src/ui/index.ts","Fix 3: Targeted SIGINT removal in src/index.ts","Fix 4: hideScreenContent condition in ScreenContent.tsx"]}
+    </script>
+  </div>
+
+  <!-- === SLIDE 6: Build === -->
+  <div class="slide" data-slide="6">
+    <div class="slide-tag anim-1">Build</div>
+    <h2 class="anim-2">How to <span class="highlight-blue">Build & Run</span></h2>
+    <div class="code-window anim-3">
+      <div class="code-titlebar">
+        <div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div>
+        <span class="code-filename">terminal</span>
+      </div>
+      <div class="code-body"><span class="comment"># Build</span>
+<span class="fn">node</span> rica/scripts/build-cli.mjs            <span class="comment"># Production (14 MB)</span>
+<span class="fn">node</span> rica/scripts/build-cli.mjs --no-minify <span class="comment"># Debug (28 MB)</span>
+
+<span class="comment"># Run</span>
+<span class="fn">node</span> extensions/cli/dist/rica.js              <span class="comment"># Interactive TUI</span>
+<span class="fn">node</span> extensions/cli/dist/rica.js -p <span class="str">"hello"</span>   <span class="comment"># Headless</span>
+<span class="fn">node</span> extensions/cli/dist/rica.js login        <span class="comment"># Authenticate</span>
+<span class="fn">node</span> extensions/cli/dist/rica.js --version    <span class="comment"># Version</span>
+
+<span class="comment"># Environment (dot files in ~/.rica/)</span>
+touch ~/.rica/.staging  <span class="comment"># Use UAT backend</span>
+touch ~/.rica/.local    <span class="comment"># Use localhost:8082</span></div>
+    </div>
+    <script type="application/json" class="slide-notes">
+    {"title":"How to Build and Run","script":"The build script runs esbuild with the shim plugin and outputs to extensions/cli/dist/rica.js. Environment switching uses dot files in ~/.rica/ — same mechanism as the VS Code extension.","notes":["Single command build via build-cli.mjs","Output: extensions/cli/dist/rica.js","Environment via dot files: .staging, .local","Or environment variables: RICA_APP_URL, RICA_API_KEY"]}
+    </script>
+  </div>
+
+  <!-- === SLIDE 7: VS Code Feature Parity === -->
+  <div class="slide" data-slide="7">
+    <div class="slide-tag anim-1">RICA Features</div>
+    <h2 class="anim-2">VS Code <span class="highlight-orange">Feature Parity</span></h2>
+    <p class="subtitle anim-3" style="font-size:clamp(14px,1.2vw,16px);margin-bottom:8px;">From REFORK_PLAN.md &mdash; VS Code features and CLI adaptation status</p>
+    <div class="feature-grid anim-4">
+      <div class="feature-card done">
+        <div class="fc-icon">🔐</div>
+        <div class="fc-title">Authentication (Phase 3)</div>
+        <div class="fc-desc">API key login, token exchange, in-memory MDP. Different method (no EntraID browser flow) but same backend endpoint.</div>
+      </div>
+      <div class="feature-card done">
+        <div class="fc-icon">🏷️</div>
+        <div class="fc-title">Branding (Phase 2)</div>
+        <div class="fc-desc">RICA name, ASCII art, cliStrings from brand.json. No Continue references in output.</div>
+      </div>
+      <div class="feature-card done">
+        <div class="fc-icon">🌍</div>
+        <div class="fc-title">Environment Switching (Phase 7)</div>
+        <div class="fc-desc">Prod/Staging/Local via dot files and env vars. Same mechanism as VS Code extension.</div>
+      </div>
+      <div class="feature-card done">
+        <div class="fc-icon">🤖</div>
+        <div class="fc-title">LLM via Databricks (Phase 6)</div>
+        <div class="fc-desc">RicaProxyAdapter sends requests to Databricks serving endpoints with MDP Bearer token.</div>
+      </div>
+      <div class="feature-card pending">
+        <div class="fc-icon">⚙️</div>
+        <div class="fc-title">Dynamic Config (Phase 4)</div>
+        <div class="fc-desc">Infrastructure ready (configLoaderShim) but RICA API endpoint not yet serving CLI configs.</div>
+      </div>
+      <div class="feature-card pending">
+        <div class="fc-icon">📄</div>
+        <div class="fc-title">Online Documents (Phase 5)</div>
+        <div class="fc-desc">@rica-docs context provider exists in core/. Not yet wired in CLI config loading — needs activation.</div>
+      </div>
+    </div>
+    <script type="application/json" class="slide-notes">
+    {"title":"VS Code Feature Parity","script":"The REFORK_PLAN.md documents all RICA-specific features for the VS Code extension. For the CLI, we've adapted authentication, branding, environment switching, and LLM calling. Dynamic config infra is ready but the API isn't serving CLI configs yet. Online Documents context provider exists at core level but hasn't been wired for CLI.","notes":["4 features fully adapted for CLI","Dynamic Config: infrastructure ready, blocked on API","Online Documents: @rica-docs context provider in core/, not yet activated for CLI"]}
+    </script>
+  </div>
+
+  <!-- === SLIDE 8: Features Roadmap (cont.) === -->
+  <div class="slide" data-slide="8">
+    <div class="slide-tag anim-1">Roadmap</div>
+    <h2 class="anim-2">Future <span class="highlight-purple">Adaptations</span></h2>
+    <p class="subtitle anim-3" style="font-size:clamp(14px,1.2vw,16px);margin-bottom:8px;">RICA features from REFORK_PLAN.md to adapt for CLI</p>
+    <div class="feature-grid anim-4">
+      <div class="feature-card pending">
+        <div class="fc-icon">📊</div>
+        <div class="fc-title">Token Consumption (Phase 6)</div>
+        <div class="fc-desc">Track usage per model, threshold-based auto-switch. VS Code has it, CLI needs adapter.</div>
+      </div>
+      <div class="feature-card pending">
+        <div class="fc-icon">🧠</div>
+        <div class="fc-title">Multi-Agent (Phase 11)</div>
+        <div class="fc-desc">Orchestration system by Rakibul. 15 commits. Needs evaluation for CLI feasibility.</div>
+      </div>
+      <div class="feature-card pending">
+        <div class="fc-icon">👁️</div>
+        <div class="fc-title">Vision Models (Phase 10)</div>
+        <div class="fc-desc">GPT/Gemini image processing. CLI can support via clipboard/file path input.</div>
+      </div>
+      <div class="feature-card pending">
+        <div class="fc-icon">📦</div>
+        <div class="fc-title">Package & Distribute</div>
+        <div class="fc-desc">npm publish @renesas/rica-cli, global install, PATH setup, auto-update.</div>
+      </div>
+    </div>
+    <script type="application/json" class="slide-notes">
+    {"title":"Future Adaptations","script":"Looking at the REFORK_PLAN, these are the remaining features that should be adapted for the CLI. Token consumption tracking is straightforward. Multi-agent needs evaluation. Vision models can work via file paths. Distribution needs npm package setup.","notes":["Token consumption: add tracking hooks to RicaProxyAdapter","Multi-agent: 15 commits from Rakibul, evaluate feasibility","Vision: support image file paths as input","Distribution: @renesas/rica-cli on internal registry"]}
+    </script>
+  </div>
+
+  <!-- === SLIDE 9: Key Design Decisions === -->
+  <div class="slide" data-slide="9">
+    <div class="slide-tag anim-1">Design</div>
+    <h2 class="anim-2">Key <span class="highlight-green">Decisions</span></h2>
+    <div class="status-timeline">
+      <div class="status-item stag-1">
+        <div class="status-dot green"></div>
+        <div class="status-text"><strong>Build-time shims over runtime patches</strong> &mdash; Zero upstream merge conflicts</div>
+      </div>
+      <div class="status-item stag-2">
+        <div class="status-dot green"></div>
+        <div class="status-text"><strong>API key auth (not EntraID)</strong> &mdash; No browser needed, works in headless/SSH</div>
+      </div>
+      <div class="status-item stag-3">
+        <div class="status-dot green"></div>
+        <div class="status-text"><strong>MDP token never on disk</strong> &mdash; Security constraint, fresh exchange each session</div>
+      </div>
+      <div class="status-item stag-4">
+        <div class="status-dot green"></div>
+        <div class="status-text"><strong>PostHog disabled</strong> &mdash; CLI does not send telemetry to external services</div>
+      </div>
+      <div class="status-item stag-5">
+        <div class="status-dot green"></div>
+        <div class="status-text"><strong>Same brand.json source</strong> &mdash; Version, name, URLs shared with VS Code extension</div>
+      </div>
+    </div>
+    <script type="application/json" class="slide-notes">
+    {"title":"Key Design Decisions","script":"Five key decisions shaped the CLI architecture. Build-time shims mean we never conflict with upstream merges. API key auth works anywhere without a browser. MDP tokens stay in memory for security. Telemetry is disabled. And we share brand.json with the VS Code extension for consistency.","notes":["Shims = no merge conflicts on upstream sync","API key = works in CI, SSH, containers","MDP in memory = compliance requirement","PostHog disabled = no external data leak","brand.json = single source of truth for both products"]}
+    </script>
+  </div>
+
+  <!-- === SLIDE 10: Dev Workflow === -->
+  <div class="slide" data-slide="10">
+    <div class="slide-tag anim-1">Development</div>
+    <h2 class="anim-2">Developer <span class="highlight-blue">Workflow</span></h2>
+    <div class="code-window anim-3">
+      <div class="code-titlebar">
+        <div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div>
+        <span class="code-filename">adding a new shim</span>
+      </div>
+      <div class="code-body"><span class="comment">// 1. Create shim file</span>
+rica/cli/shim/<span class="fn">myShim</span>.ts  <span class="comment">// same exports as upstream</span>
+
+<span class="comment">// 2. Add onResolve rule in build script</span>
+<span class="comment">// rica/scripts/build-cli.mjs</span>
+build.onResolve({ filter: <span class="str">/myModule\.js$/</span> }, () => ({
+  path: resolve(<span class="str">"rica/cli/shim/myShim.ts"</span>)
+}));
+
+<span class="comment">// 3. Rebuild & test</span>
+<span class="fn">node</span> rica/scripts/build-cli.mjs --no-minify
+<span class="fn">node</span> extensions/cli/dist/rica.js</div>
+    </div>
+    <p class="subtitle anim-4" style="font-size:clamp(13px,1.2vw,16px);margin-top:16px;">Key files: <code style="font-family:var(--font-mono);color:var(--accent-blue);font-size:13px;">rica/cli/auth/index.ts</code> (auth) &bull; <code style="font-family:var(--font-mono);color:var(--accent-green);font-size:13px;">rica/branding/brand.json</code> (branding) &bull; <code style="font-family:var(--font-mono);color:var(--accent-orange);font-size:13px;">rica/scripts/build-cli.mjs</code> (build)</p>
+    <script type="application/json" class="slide-notes">
+    {"title":"Developer Workflow","script":"Adding a new shim is three steps: create the file with matching exports, add the onResolve rule in the build script, then rebuild and test. Most development work happens in rica/cli/ without touching upstream.","notes":["Create shim with same export signature as upstream","Add filter rule in build-cli.mjs","Rebuild with --no-minify for debugging","Key dirs: rica/cli/auth/, rica/cli/shim/, rica/scripts/"]}
+    </script>
+  </div>
+
+  <!-- === SLIDE 11: Release & Distribution === -->
+  <div class="slide" data-slide="11">
+    <div class="slide-tag anim-1">Release</div>
+    <h2 class="anim-2">Build, Link & <span class="highlight-orange">Release</span></h2>
+    <div class="code-window anim-3">
+      <div class="code-titlebar">
+        <div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div>
+        <span class="code-filename">release workflow</span>
+      </div>
+      <div class="code-body"><span class="comment"># 1. Generate RICA-branded package.json</span>
+<span class="fn">node</span> rica/scripts/generate-cli-manifest.js
+
+<span class="comment"># 2. Build production bundle</span>
+<span class="fn">node</span> rica/scripts/build-cli.mjs
+
+<span class="comment"># 3a. npm link (dev — creates global `rica` command)</span>
+<span class="kw">cd</span> extensions/cli && <span class="fn">npm</span> link
+
+<span class="comment"># 3b. Publish to internal registry</span>
+<span class="fn">npm</span> publish --registry https://registry.renesas.com/
+
+<span class="comment"># 3c. Standalone binary (no Node.js required)</span>
+<span class="fn">npx</span> pkg dist/index.js --target node20-win-x64 -o rica.exe</div>
+    </div>
+    <div class="stats-row anim-4" style="max-width:800px;margin-top:20px;">
+      <div class="stat-card" style="padding:20px 18px;">
+        <div class="stat-label" style="font-size:clamp(14px,1.3vw,17px);"><span class="highlight-blue">npm link</span></div>
+        <div class="stat-desc">Dev local. Symlink global <code style="font-family:var(--font-mono);">rica</code> command.</div>
+      </div>
+      <div class="stat-card" style="padding:20px 18px;">
+        <div class="stat-label" style="font-size:clamp(14px,1.3vw,17px);"><span class="highlight-green">npm publish</span></div>
+        <div class="stat-desc">Internal registry. Users: <code style="font-family:var(--font-mono);font-size:12px;">npm i -g @renesas/rica-cli</code></div>
+      </div>
+      <div class="stat-card" style="padding:20px 18px;">
+        <div class="stat-label" style="font-size:clamp(14px,1.3vw,17px);"><span class="highlight-orange">Standalone</span></div>
+        <div class="stat-desc">pkg/SEA binary. No Node.js needed on target.</div>
+      </div>
+    </div>
+    <script type="application/json" class="slide-notes">
+    {"title":"Build, Link & Release","script":"Three distribution options. npm link for developers, npm publish to internal registry for team-wide install, or standalone binary via pkg for users without Node.js. The generate-cli-manifest script brands the package.json before publishing.","notes":["npm link: creates global `rica` command for dev testing","npm publish: @renesas/rica-cli on internal registry","pkg/SEA: standalone .exe, no Node.js dependency","generate-cli-manifest.js: brands package.json from brand.json"]}
+    </script>
+  </div>
+
+  <!-- === SLIDE 12: Known Issues === -->
+  <div class="slide" data-slide="12">
+    <div class="slide-tag anim-1">Issues</div>
+    <h2 class="anim-2">Known <span class="highlight-red">Issues</span></h2>
+    <div class="status-timeline">
+      <div class="status-item stag-1">
+        <div class="status-dot red"></div>
+        <div class="status-text"><strong>Login 401 on production</strong> &mdash; /api/extension/token may not accept X-API-Key header in prod. Works on staging.</div>
+      </div>
+      <div class="status-item stag-2">
+        <div class="status-dot orange"></div>
+        <div class="status-text"><strong>No config.yaml template</strong> &mdash; First-time users have no model config. Need template generation on login.</div>
+      </div>
+      <div class="status-item stag-3">
+        <div class="status-dot yellow"></div>
+        <div class="status-text"><strong>Bundle size 14 MB</strong> &mdash; Includes stubbed core/ modules (embeddings, indexing). Could tree-shake further.</div>
+      </div>
+      <div class="status-item stag-4">
+        <div class="status-dot yellow"></div>
+        <div class="status-text"><strong>Dynamic config disabled</strong> &mdash; RICA API not ready for CLI. Fallback to hardcoded default model.</div>
+      </div>
+    </div>
+    <script type="application/json" class="slide-notes">
+    {"title":"Known Issues","script":"Four known issues. The 401 on production is the most critical — backend needs to confirm the API contract for CLI API key authentication. The rest are quality-of-life improvements.","notes":["Backend team needs to confirm X-API-Key support on /api/extension/token","Config template should auto-generate on first login","Tree-shaking could reduce bundle by 30-40%","Dynamic config needs RICA API endpoint for CLI"]}
+    </script>
+  </div>
+
+  <!-- === SLIDE 13: Summary === -->
+  <div class="slide" data-slide="13">
+    <div class="glow-blob glow-green" style="top:-20%;right:-15%;"></div>
+    <div class="glow-blob glow-blue" style="bottom:-25%;left:-10%;"></div>
+    <div class="slide-tag anim-1">Summary</div>
+    <h2 class="anim-2">Ready for <span class="gradient-text">Next Steps</span></h2>
+    <div class="rainbow-line anim-3"></div>
+    <div class="status-timeline anim-4" style="max-width:700px;">
+      <div class="status-item stag-1">
+        <div class="status-dot green"></div>
+        <div class="status-text">TUI functional &mdash; typing, submit, Ctrl+C all work</div>
+      </div>
+      <div class="status-item stag-2">
+        <div class="status-dot green"></div>
+        <div class="status-text">Auth flow complete &mdash; login/logout/token refresh</div>
+      </div>
+      <div class="status-item stag-3">
+        <div class="status-dot green"></div>
+        <div class="status-text">Build system stable &mdash; shim pattern, single command</div>
+      </div>
+      <div class="status-item stag-4">
+        <div class="status-dot yellow"></div>
+        <div class="status-text">Next: Resolve prod 401, enable dynamic config, package for distribution</div>
+      </div>
+    </div>
+    <p class="subtitle anim-5" style="font-size:clamp(13px,1.2vw,16px);margin-top:20px;color:var(--text-dim);">Docs: <code style="font-family:var(--font-mono);color:var(--accent-blue);font-size:13px;">rica/docs/CLI_HANDOVER.md</code> &bull; Plan: <code style="font-family:var(--font-mono);color:var(--accent-purple);font-size:13px;">rica/docs/REFORK_PLAN.md</code></p>
+    <script type="application/json" class="slide-notes">
+    {"title":"Summary","script":"The RICA CLI is functional. TUI works, auth works on staging, build system is stable. The immediate next step is resolving the production 401, then enabling dynamic config when the API is ready, and finally packaging for distribution.","notes":["TUI: 4 fixes applied, fully functional","Auth: works on staging, prod needs backend confirmation","Build: single-command, minimal upstream surface","Next: prod auth fix, dynamic config, npm package"]}
+    </script>
+  </div>
+
+</div>
+
+<script>
+// === SLIDES RUNTIME === //
+const pc = document.getElementById('particles');
+for (let i = 0; i < 35; i++) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  p.style.left = Math.random()*100+'%';
+  p.style.animationDuration = (8+Math.random()*14)+'s';
+  p.style.animationDelay = Math.random()*10+'s';
+  p.style.width = p.style.height = (1+Math.random()*2)+'px';
+  pc.appendChild(p);
+}
+
+const slides = document.querySelectorAll('.slide');
+const progress = document.getElementById('progress');
+const counter = document.getElementById('counter');
+const slideNav = document.getElementById('slideNav');
+let current = 0;
+const total = slides.length;
+
+slides.forEach((_, i) => {
+  const dot = document.createElement('div');
+  dot.className = 'slide-nav-dot' + (i===0?' active':'');
+  dot.addEventListener('click', () => goTo(i));
+  slideNav.appendChild(dot);
+});
+
+function updateUI() {
+  progress.style.width = ((current+1)/total*100)+'%';
+  counter.textContent = `${current+1} / ${total}`;
+  document.querySelectorAll('.slide-nav-dot').forEach((d,i) => d.classList.toggle('active', i===current));
+}
+
+function goTo(index) {
+  if (index<0 || index>=total || index===current) return;
+  current = index;
+  slides.forEach((s,i) => s.classList.toggle('active', i===current));
+  updateUI();
+  showSpeakerNotes(current);
+}
+
+function next() { goTo(current+1); }
+function prev() { goTo(current-1); }
+
+document.addEventListener('keydown', (e) => {
+  if (e.key==='ArrowRight'||e.key===' '||e.key==='PageDown') { e.preventDefault(); next(); }
+  if (e.key==='ArrowLeft'||e.key==='PageUp') { e.preventDefault(); prev(); }
+  if (e.key==='Home') { e.preventDefault(); goTo(0); }
+  if (e.key==='End') { e.preventDefault(); goTo(total-1); }
+});
+
+let touchStart = 0;
+document.addEventListener('touchstart', (e) => { touchStart=e.touches[0].clientX; });
+document.addEventListener('touchend', (e) => {
+  const diff = touchStart - e.changedTouches[0].clientX;
+  if (Math.abs(diff)>50) { diff>0 ? next() : prev(); }
+});
+
+let wheelCD = false;
+document.addEventListener('wheel', (e) => {
+  if (wheelCD) return; wheelCD = true;
+  setTimeout(() => wheelCD=false, 600);
+  if (e.deltaY>0||e.deltaX>0) next(); else prev();
+}, {passive:true});
+
+updateUI();
+
+// === Speaker Notes === //
+function showSpeakerNotes(index) {
+  const slide = slides[index];
+  const notesEl = slide.querySelector('script.slide-notes');
+  console.clear();
+  if (notesEl) {
+    try {
+      const n = JSON.parse(notesEl.textContent);
+      const title = n.title || 'Slide ' + (index + 1);
+      const script = n.script || '';
+      const notes = n.notes || [];
+      var parts = ['\n%c📋 Slide ' + (index+1) + '/' + total + ': ' + title + '\n'];
+      var styles = ['font-size:16px;font-weight:bold;color:#2563eb;'];
+      if (script) { parts.push('\n%c' + script + '\n'); styles.push('font-size:14px;color:#d97706;line-height:1.6;'); }
+      if (notes.length) {
+        notes.forEach(function(note) { parts.push('\n  %c•%c ' + note); styles.push('color:#16a34a;font-size:14px;'); styles.push('color:#16a34a;font-size:14px;'); });
+        parts.push('\n');
+      }
+      console.log.apply(console, [parts.join('')].concat(styles));
+    } catch(e) {}
+  }
+}
+setTimeout(function() { showSpeakerNotes(0); }, 500);
+</script>
+</body>
+</html>

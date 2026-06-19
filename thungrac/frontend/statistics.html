@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thống Kê & Xếp Hạng - Thùng Rác Thông Minh</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <header class="header">
+        <h1>📊 Thống Kê & Xếp Hạng</h1>
+        <p>Theo dõi thành tích và xếp hạng của học sinh & lớp học</p>
+    </header>
+
+    <nav class="nav">
+        <ul>
+            <li><a href="/">Check-in</a></li>
+            <li><a href="register.html">Đăng Ký</a></li>
+            <li><a href="statistics.html">Thống Kê</a></li>
+            <li><a href="guide.html">Hướng Dẫn</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <!-- Dashboard Summary -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Tổng Học Sinh</h3>
+                <div class="value" id="dash-total-students">--</div>
+            </div>
+            <div class="stat-card">
+                <h3>Check-in Hôm Nay</h3>
+                <div class="value" id="dash-checkins-today">--</div>
+            </div>
+            <div class="stat-card">
+                <h3>Học Sinh Xuất Sắc</h3>
+                <div class="value" id="dash-top-student" style="font-size: 1.2rem;">--</div>
+            </div>
+            <div class="stat-card">
+                <h3>Lớp Xuất Sắc</h3>
+                <div class="value" id="dash-top-class" style="font-size: 1.2rem;">--</div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="card">
+            <div class="tabs">
+                <button class="tab active" data-tab="student-rankings">
+                    🏆 Xếp Hạng Học Sinh
+                </button>
+                <button class="tab" data-tab="class-rankings">
+                    🎓 Xếp Hạng Lớp
+                </button>
+                <button class="tab" data-tab="trash-stats">
+                    📈 Thống Kê Rác
+                </button>
+            </div>
+
+            <!-- Student Rankings Tab -->
+            <div class="tab-content active" id="student-rankings">
+                <div class="form-group" style="max-width: 300px; margin-bottom: 2rem;">
+                    <label for="class-filter">Lọc theo lớp:</label>
+                    <select id="class-filter">
+                        <option value="">Tất cả</option>
+                        <option value="10A">10A</option>
+                        <option value="10B">10B</option>
+                        <option value="10C">10C</option>
+                        <option value="11A">11A</option>
+                        <option value="11B">11B</option>
+                        <option value="11C">11C</option>
+                        <option value="12A">12A</option>
+                        <option value="12B">12B</option>
+                        <option value="12C">12C</option>
+                    </select>
+                </div>
+
+                <div class="table-container">
+                    <table id="student-rankings-table">
+                        <thead>
+                            <tr>
+                                <th>Hạng</th>
+                                <th>Mã HS</th>
+                                <th>Tên</th>
+                                <th>Lớp</th>
+                                <th>Tổng Điểm</th>
+                            </tr>
+                        </thead>
+                        <tbody id="student-rankings-body">
+                            <tr>
+                                <td colspan="5" style="text-align: center;">
+                                    <div class="loading"></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Class Rankings Tab -->
+            <div class="tab-content" id="class-rankings">
+                <div class="table-container">
+                    <table id="class-rankings-table">
+                        <thead>
+                            <tr>
+                                <th>Hạng</th>
+                                <th>Lớp</th>
+                                <th>Tổng Điểm</th>
+                                <th>Số Học Sinh</th>
+                                <th>TB Điểm/HS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="class-rankings-body">
+                            <tr>
+                                <td colspan="5" style="text-align: center;">
+                                    <div class="loading"></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Trash Statistics Tab -->
+            <div class="tab-content" id="trash-stats">
+                <div style="max-width: 800px; margin: 0 auto;">
+                    <div id="trash-summary" style="margin-bottom: 2rem;">
+                        <h3>Tổng Quan</h3>
+                        <div class="stats-grid" style="grid-template-columns: repeat(2, 1fr);">
+                            <div style="background: #f5f5f5; padding: 1rem; border-radius: 4px;">
+                                <p style="color: var(--text-light);">Tổng rác đã phân loại</p>
+                                <p id="total-trash" style="font-size: 1.5rem; font-weight: bold; color: var(--primary-color);">--</p>
+                            </div>
+                            <div style="background: #f5f5f5; padding: 1rem; border-radius: 4px;">
+                                <p style="color: var(--text-light);">Tỷ lệ chấp nhận</p>
+                                <p id="acceptance-rate" style="font-size: 1.5rem; font-weight: bold; color: var(--success-color);">--</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>Phân Loại Rác</h3>
+                    <div class="chart-container">
+                        <canvas id="trash-chart"></canvas>
+                    </div>
+
+                    <div id="trash-breakdown" style="margin-top: 2rem;">
+                        <!-- Breakdown will be inserted here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/common.js"></script>
+    <script src="/js/statistics.js"></script>
+</body>
+</html>

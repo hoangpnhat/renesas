@@ -1,0 +1,16 @@
+# Block commit if extensions/vscode/package.json has been branded (should stay upstream)
+MANIFEST="extensions/vscode/package.json"
+if git diff --cached --name-only | grep -q "^${MANIFEST}$"; then
+  if git show ":${MANIFEST}" | grep -q '"name": "rica"'; then
+    echo ""
+    echo "❌ BLOCKED: ${MANIFEST} contains branded name \"rica\"."
+    echo "   This file must remain in upstream (Continue) state in git."
+    echo "   Branding is applied at build time by rica/scripts/generate-manifest.js"
+    echo ""
+    echo "   To restore: git checkout -- ${MANIFEST}"
+    echo ""
+    exit 1
+  fi
+fi
+
+npx lint-staged

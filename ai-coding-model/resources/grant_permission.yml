@@ -1,0 +1,97 @@
+common_permissions: &permissions
+  permissions:
+    - level: CAN_MANAGE
+      group_name: 04_AI_Admin
+    - level: CAN_MANAGE
+      user_name: kiet.tran.xm@renesas.com
+
+job_cluster: &job_cluster
+  job_cluster_key: ${bundle.target}-deployment-cluster
+
+common_parameters: &env
+  dbx_token: ${var.dbx_token}
+  version: v1
+  environment: ${bundle.target}
+
+# The main job for coding_assistant.
+resources:
+  jobs:
+    grant_permission:
+      name: ai-${bundle.target}-coding-permission-granting-job
+
+
+      # email_notifications:
+      #   on_failure:
+      #     - kiet.tran.xm@renesas.com
+
+      tasks:
+        - task_key: grant_permission
+          # existing_cluster_id: 1010-094850-nt82dgwh
+          notebook_task:
+            notebook_path: ../src/grant_permission.py
+            base_parameters:
+              <<: *env
+
+      <<: *permissions
+        
+
+targets:
+  dev:
+    resources:
+      jobs:
+        grant_permission:
+          name: ai-${bundle.target}-coding-permission-granting-job
+          tasks:
+            - task_key: grant_permission
+              existing_cluster_id: 0520-164545-76obefdn
+
+  uat:
+    resources:
+      jobs:
+        grant_permission:
+          job_clusters:
+            - new_cluster:
+                spark_version: 15.4.x-scala2.12
+                azure_attributes:
+                  first_on_demand: 1
+                  availability: SPOT_WITH_FALLBACK_AZURE
+                  spot_bid_max_price: 100
+                node_type_id: Standard_DS3_v2
+                driver_node_type_id: Standard_DS3_v2
+                enable_elastic_disk: true
+                policy_id: 0016EA231ECF063D
+                data_security_mode: SINGLE_USER
+                runtime_engine: STANDARD
+                autoscale:
+                  min_workers: 1
+                  max_workers: 2
+              <<: *job_cluster
+          name: ai-${bundle.target}-coding-permission-granting-job
+          tasks:
+            - task_key: grant_permission
+              <<: *job_cluster
+  prod:
+    resources:
+      jobs:
+        grant_permission:
+          job_clusters:
+            - new_cluster:
+                spark_version: 15.4.x-scala2.12
+                azure_attributes:
+                  first_on_demand: 1
+                  availability: SPOT_WITH_FALLBACK_AZURE
+                  spot_bid_max_price: 100
+                node_type_id: Standard_DS3_v2
+                driver_node_type_id: Standard_DS3_v2
+                enable_elastic_disk: true
+                policy_id: 001EAFCC64FFBCEA
+                data_security_mode: SINGLE_USER
+                runtime_engine: STANDARD
+                autoscale:
+                  min_workers: 1
+                  max_workers: 2
+              <<: *job_cluster
+          name: ai-${bundle.target}-coding-permission-granting-job
+          tasks:
+            - task_key: grant_permission
+              <<: *job_cluster

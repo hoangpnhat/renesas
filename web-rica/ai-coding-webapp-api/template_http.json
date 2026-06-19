@@ -1,0 +1,33 @@
+{
+    "request" : [
+        {
+            "role": "user",
+            "content": "Sample queries",
+            "categories": ["Product", "Project"]
+        },
+        {
+            "role": "bot",
+            "content": "Sample response",
+            "categories": ["Product", "Project"]
+        }
+    ],
+
+    "response": {
+        "result": [
+            {
+                "content": "Sample response from databricks endpoint",
+                "role": "bot",
+                "references": [
+                    {
+                        "title": "Ringi Rule.pdf",
+                        "url": "https://sampledoc.ref"
+                    },
+                    {
+                        "title": "Global Rule.pdf",
+                        "url": "https://sampledoc.ref"
+                    }
+                ]
+            }
+        ]
+    }
+}

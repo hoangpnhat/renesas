@@ -1,0 +1,31 @@
+common_permissions: &permissions
+  permissions:
+    - level: CAN_MANAGE
+      group_name: 04_AI_Admin
+    - level: CAN_MANAGE
+      user_name: kiet.tran.xm@renesas.com
+    - level: CAN_MANAGE
+      user_name: hoang.pham.uh@renesas.com
+
+job_cluster: &job_cluster
+  job_cluster_key: ${bundle.target}-code-pipeline-cluster
+
+common_parameters: &env
+  dbx_token: ${var.dbx_token}
+  version: v1
+  environment: ${bundle.target}
+
+# The main job for coding_assistant.
+resources:
+  jobs:
+    selfhost_model:
+      name: ai-${bundle.target}-deploy-selfhost-model-job
+      tasks:
+        - task_key: deploy-selfhost-model
+          # existing_cluster_id: 1010-094850-nt82dgwh
+          notebook_task:
+            notebook_path: ../deploy_serving_endpoint/T4_gpu/script-vllm-full-T4.py
+            base_parameters:
+              <<: *env
+      <<: *permissions
+        

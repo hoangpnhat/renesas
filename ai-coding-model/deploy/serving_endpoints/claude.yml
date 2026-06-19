@@ -1,0 +1,38 @@
+#common: &common_external_configs
+#  permissions: ${var.permissions}
+#  budget_policy_id: ${var.budget_policy_id}
+#  ai_gateway:
+#    usage_tracking_config:
+#      enabled: true
+#    inference_table_config: ${var.inference_table_configurations}
+#  tags:
+#    - key: ai_project_id
+#      value: ${bundle.name}
+#
+#resources:
+#  model_serving_endpoints:
+#    claude_sonnet_4_chat:
+#      name: ${var.prefix}-${var.env}-${bundle.name}-claude-sonnet-4-chat
+#      <<: *common_external_configs
+#      config:
+#        served_entities:
+#          - external_model:
+#              databricks_model_serving_config:
+#                databricks_api_token_plaintext: ${var.databricks_api_token}  # TODO: Replace this to token
+#                databricks_workspace_url: ${workspace.host}
+#              name: databricks-claude-sonnet-4
+#              provider: databricks-model-serving
+#              task: llm/v1/chat
+#
+#    claude_sonnet_3_7_chat:
+#      name: ${var.prefix}-${var.env}-${bundle.name}-claude-sonnet-4-chat
+#      <<: *common_external_configs
+#      config:
+#        served_entities:
+#          - external_model:
+#              databricks_model_serving_config:
+#                databricks_api_token_plaintext: ${var.databricks_api_token}  # TODO: Replace this to token
+#                databricks_workspace_url: ${workspace.host}
+#              name: databricks-claude-3-7-sonnet
+#              provider: databricks-model-serving
+#              task: llm/v1/chat

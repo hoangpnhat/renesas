@@ -1,0 +1,30 @@
+n_subthread_mesages: 10
+n_direct_messages: 10
+min_minutes_to_sent_survey: 5
+min_minutes_to_sent_reminder: 5
+reminder_message: "Anh/chị có cần em hỗ trợ gì nữa không ạ?"
+survey_question: "Anh/chị vui lòng đánh giá chất lượng hỗ trợ với ạ."
+answer_options:
+  - "Hài lòng"
+  - "Điều hướng sai"
+  - "Trả lời sai"
+
+answer_option_ids:
+  - "1"
+  - "2"
+  - "3"
+
+# IMAGE PROCESSING for GPT-4o
+image_with: 512
+image_height: 512
+image_quality: 80
+
+image_extensions:
+  - ".jpg"
+  - ".jpeg"
+  - ".png"
+
+# SENMANTIC ROUTING
+top_k: 3
+using_hybrid: True
+sparse_encoder_name: "TFIDF" # or BM25

@@ -1,0 +1,19 @@
+variables:
+  permissions:
+    description: Permission configurations
+    type: complex
+    default:
+      - level: CAN_MANAGE
+        group_name: 04_AI_CODING_PROJECT
+  
+  dbx_token:
+    description: API Token use to configure access to Pay-per-token serving endpoints
+    default: empty
+
+  budget_policy_id:
+    description: Budget policy ID
+    default: d01697ef-9452-4a51-987e-9faa7a28b382
+
+  job_policy_id:
+    description: The ID of the job cluster policy for this environmen
+    default: 000D721D351E658D # Default for 'dev' target

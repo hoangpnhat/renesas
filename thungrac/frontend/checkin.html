@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check-in Realtime - Thùng Rác Thông Minh</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <header class="header">
+        <h1>✅ Check-in Realtime</h1>
+        <p>Theo dõi hoạt động sử dụng thùng rác trực tiếp</p>
+    </header>
+
+    <nav class="nav">
+        <ul>
+            <li><a href="/">Trang Chủ</a></li>
+            <li><a href="register.html">Đăng Ký</a></li>
+            <li><a href="checkin.html">Check-in</a></li>
+            <li><a href="statistics.html">Thống Kê</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h2>Hoạt Động Gần Đây</h2>
+                <span id="update-indicator" style="color: var(--text-light); font-size: 0.9rem;">
+                    Đang tải...
+                </span>
+            </div>
+
+            <div id="checkin-list-container">
+                <div id="loading" style="text-align: center; padding: 2rem;">
+                    <div class="loading"></div>
+                </div>
+                <div id="checkin-list" class="checkin-list"></div>
+            </div>
+
+            <div id="empty-state" style="display: none; text-align: center; padding: 3rem; color: var(--text-light);">
+                <p style="font-size: 1.2rem;">📭</p>
+                <p>Chưa có hoạt động check-in nào</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/common.js"></script>
+    <script src="/js/checkin.js"></script>
+</body>
+</html>
