@@ -9,6 +9,20 @@ import pandas as pd
 from app.config import settings
 
 
+def _sanitize_value(value):
+    """Convert pandas NaN/None to JSON-safe values."""
+    if value is None or (isinstance(value, float) and pd.isna(value)):
+        return ""
+    if isinstance(value, (pd.Timestamp, datetime)):
+        return value.isoformat()
+    return value
+
+
+def _sanitize_record(record: Dict) -> Dict:
+    """Sanitize a single CSV row dict for API/JSON use."""
+    return {key: _sanitize_value(val) for key, val in record.items()}
+
+
 class CSVService:
     """Service for managing CSV database operations."""
 
@@ -54,7 +68,7 @@ class CSVService:
             if student.empty:
                 return None
 
-            return student.iloc[0].to_dict()
+            return _sanitize_record(student.iloc[0].to_dict())
 
     async def get_all_students(self, class_filter: Optional[str] = None) -> List[Dict]:
         """Get all students, optionally filtered by class."""
@@ -64,7 +78,7 @@ class CSVService:
             if class_filter:
                 df = df[df['class'] == class_filter]
 
-            return df.to_dict('records')
+            return [_sanitize_record(r) for r in df.to_dict('records')]
 
     async def update_student_points(self, student_id: str, points_to_add: int) -> bool:
         """Add points to a student's total."""
@@ -88,7 +102,7 @@ class CSVService:
             if student.empty:
                 return None
 
-            return student.iloc[0].to_dict()
+            return _sanitize_record(student.iloc[0].to_dict())
 
     # Check-in Operations
     async def create_checkin(self, checkin_data: Dict) -> str:
@@ -100,7 +114,7 @@ class CSVService:
             new_row = {
                 'checkin_id': checkin_id,
                 'student_id': checkin_data['student_id'],
-                'student_name': checkin_data['student_name'],
+                'student_name': str(checkin_data.get('student_name') or '').strip(),
                 'class': checkin_data['class'],
                 'timestamp': checkin_data['timestamp'],
                 'points_awarded': checkin_data['points_awarded'],
@@ -123,7 +137,7 @@ class CSVService:
             # Sort by timestamp descending and get last N
             df = df.sort_values('timestamp', ascending=False).head(limit)
 
-            return df.to_dict('records')
+            return [_sanitize_record(r) for r in df.to_dict('records')]
 
     async def get_checkins_by_student(self, student_id: str) -> List[Dict]:
         """Get all check-ins for a specific student."""
@@ -132,7 +146,7 @@ class CSVService:
 
             student_checkins = df[df['student_id'] == student_id]
 
-            return student_checkins.to_dict('records')
+            return [_sanitize_record(r) for r in student_checkins.to_dict('records')]
 
     async def get_checkin(self, checkin_id: str) -> Optional[Dict]:
         """Get a specific check-in by ID."""
@@ -144,7 +158,7 @@ class CSVService:
             if checkin.empty:
                 return None
 
-            return checkin.iloc[0].to_dict()
+            return _sanitize_record(checkin.iloc[0].to_dict())
 
     async def update_checkin_points(self, checkin_id: str, points: int) -> bool:
         """Update points awarded in a check-in record."""
@@ -164,12 +178,15 @@ class CSVService:
         """Create a new trash log entry."""
         async with self._trash_logs_lock:
             df = pd.read_csv(self.trash_logs_file)
+            if 'student_name' not in df.columns:
+                df['student_name'] = ''
             log_id = f"TRH{len(df) + 1:04d}"
 
             new_row = {
                 'log_id': log_id,
                 'checkin_id': log_data.get('checkin_id', ''),
                 'student_id': log_data.get('student_id', ''),
+                'student_name': str(log_data.get('student_name') or '').strip(),
                 'timestamp': log_data['timestamp'],
                 'trash_type': log_data['trash_type'],
                 'confidence_score': log_data['confidence_score'],
@@ -238,7 +255,7 @@ class CSVService:
             for i, student in enumerate(rankings, 1):
                 student['rank'] = i
 
-            return rankings
+            return [_sanitize_record(r) for r in rankings]
 
     async def get_class_rankings(self) -> List[Dict]:
         """Get class rankings by total points."""
@@ -267,7 +284,7 @@ class CSVService:
             for i, cls in enumerate(rankings, 1):
                 cls['rank'] = i
 
-            return rankings
+            return [_sanitize_record(r) for r in rankings]
 
     async def get_dashboard_summary(self) -> Dict:
         """Get dashboard summary statistics."""

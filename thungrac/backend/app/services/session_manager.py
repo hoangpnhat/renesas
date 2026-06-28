@@ -125,9 +125,13 @@ class SessionManager:
 
             # Check for active session
             if self.active_session:
+                seconds_remaining = max(
+                    0,
+                    int((self.active_session.expires_at - datetime.now()).total_seconds())
+                )
                 raise ValueError(
-                    f"Session already active for {self.active_session.student_name}. "
-                    f"Please wait {self.active_session.to_dict()['seconds_remaining']} seconds."
+                    f"Phiên đang hoạt động cho {self.active_session.student_name}. "
+                    f"Vui lòng đợi thêm {seconds_remaining} giây."
                 )
 
             # Create new session
@@ -138,6 +142,20 @@ class SessionManager:
             print(f"[Session] Expires at {session.expires_at.strftime('%H:%M:%S')}")
 
             return session
+
+    async def get_active_session(self) -> Optional[Session]:
+        """Return the current active session, clearing it if expired."""
+        async with self._lock:
+            if not self.active_session:
+                return None
+
+            if self.active_session.is_expired():
+                self.active_session.mark_expired()
+                print(f"[Session] Auto-expired session {self.active_session.checkin_id}")
+                self.active_session = None
+                return None
+
+            return self.active_session
 
     async def get_session(self, checkin_id: str) -> Optional[Session]:
         """
@@ -206,21 +224,6 @@ class SessionManager:
             # Clear active session
             self.active_session = None
             return True
-
-    def get_active_session(self) -> Optional[Session]:
-        """
-        Get current active session (non-async, for read-only access).
-
-        Returns:
-            Active session if exists and not expired, None otherwise
-        """
-        if not self.active_session:
-            return None
-
-        if self.active_session.is_expired():
-            return None
-
-        return self.active_session
 
     async def cleanup_expired_sessions(self):
         """Background task to clean up expired sessions."""

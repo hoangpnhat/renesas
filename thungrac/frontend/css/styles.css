@@ -104,6 +104,10 @@ body {
     font-size: 1.5rem;
 }
 
+#trash-camera-card {
+    scroll-margin-top: 1rem;
+}
+
 /* Form */
 .form-group {
     margin-bottom: 1.5rem;

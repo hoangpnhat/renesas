@@ -91,8 +91,8 @@ async function loadStudentRankings(classFilter = '') {
             <tr>
                 <td>${getRankBadge(student.rank)}</td>
                 <td>${student.student_id}</td>
-                <td><strong>${student.name}</strong></td>
-                <td>${student.class}</td>
+                <td><strong>${student.name || student.student_id}</strong></td>
+                <td>${student['class'] || student.class_name || 'N/A'}</td>
                 <td><strong>${student.total_points}</strong> điểm</td>
             </tr>
         `).join('');
@@ -120,7 +120,7 @@ async function loadClassRankings() {
         tbody.innerHTML = data.map(cls => `
             <tr>
                 <td>${getRankBadge(cls.rank)}</td>
-                <td><strong>${cls.class}</strong></td>
+                <td><strong>${cls['class'] || cls.class_name || 'N/A'}</strong></td>
                 <td><strong>${cls.total_points}</strong> điểm</td>
                 <td>${cls.student_count} học sinh</td>
                 <td>${cls.avg_points_per_student.toFixed(1)} điểm</td>

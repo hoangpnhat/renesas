@@ -1,2 +1,3 @@
 student_id,name,class,registration_date,total_points,face_encoding_path,status
 STU0001,Phạm Nhật Hoàng,10A,2026-04-16,10,face_encodings/STU0001.npy,active
+STU0002,test,10A,2026-06-28,50,face_encodings/STU0002.npy,active

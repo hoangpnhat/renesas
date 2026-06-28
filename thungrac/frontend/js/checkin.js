@@ -81,9 +81,11 @@ function updateCheckinDisplay(checkins) {
 function createCheckinElement(checkin) {
     const div = document.createElement('div');
     div.className = 'checkin-item';
+    const studentName = checkin.student_name || checkin.student_id || 'Không rõ';
+    const className = checkin['class'] || checkin.class_name || 'N/A';
     div.innerHTML = `
-        <h3>${checkin.student_name}</h3>
-        <p><strong>Lớp:</strong> ${checkin.class}</p>
+        <h3>${studentName}</h3>
+        <p><strong>Lớp:</strong> ${className}</p>
         <p><strong>Thời gian:</strong> ${formatDateTime(checkin.timestamp)}</p>
         <p class="points">+${checkin.points_awarded} điểm</p>
         <p style="font-size: 0.85rem; color: var(--text-light);">

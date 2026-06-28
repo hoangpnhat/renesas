@@ -38,12 +38,12 @@ app.include_router(esp32.router, prefix="/api")
 app.include_router(students.router, prefix="/api")
 app.include_router(statistics.router, prefix="/api")
 
-# Mount frontend static files
+# Mount frontend static files (only directories that exist)
 frontend_path = Path(__file__).parent.parent.parent / "frontend"
-if frontend_path.exists():
-    app.mount("/assets", StaticFiles(directory=str(frontend_path / "assets")), name="assets")
-    app.mount("/css", StaticFiles(directory=str(frontend_path / "css")), name="css")
-    app.mount("/js", StaticFiles(directory=str(frontend_path / "js")), name="js")
+for mount_path, subdir in (("/assets", "assets"), ("/css", "css"), ("/js", "js")):
+    static_dir = frontend_path / subdir
+    if static_dir.is_dir():
+        app.mount(mount_path, StaticFiles(directory=str(static_dir)), name=subdir)
 
 # Mount data directory for trash images
 data_path = Path(__file__).parent / "data"

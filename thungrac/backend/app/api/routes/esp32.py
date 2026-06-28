@@ -86,6 +86,40 @@ async def face_checkin(request: FaceCheckinRequest):
         # Get current total points (NO points awarded at check-in)
         total_points = await points_service.get_student_total_points(student_id)
 
+        # If a session is already active, resume or wait — don't create duplicate check-ins
+        active_session = await session_manager.get_active_session()
+        if active_session:
+            seconds_remaining = max(
+                0,
+                int((active_session.expires_at - datetime.now()).total_seconds())
+            )
+            if active_session.student_id == student_id:
+                return CheckinResponse(
+                    status="success",
+                    student_id=student_id,
+                    student_name=student['name'],
+                    class_name=student['class'],
+                    points_awarded=0,
+                    total_points=total_points,
+                    message=(
+                        f"Tiếp tục phiên check-in của bạn. "
+                        f"Còn {seconds_remaining}s để bỏ rác và nhận điểm."
+                    ),
+                    checkin_id=active_session.checkin_id,
+                    confidence_score=confidence_score
+                )
+
+            return CheckinResponse(
+                status="session_busy",
+                student_id=student_id,
+                student_name=student['name'],
+                class_name=student['class'],
+                message=(
+                    f"Thùng rác đang được {active_session.student_name} sử dụng. "
+                    f"Vui lòng đợi thêm {seconds_remaining} giây."
+                ),
+            )
+
         # Create check-in record with 0 points awarded
         checkin_data = {
             'student_id': student_id,
@@ -109,10 +143,13 @@ async def face_checkin(request: FaceCheckinRequest):
             session_info = session.to_dict()
             message = f"Chào mừng, {student['name']}! Bạn có {session_info['seconds_remaining']}s để bỏ rác và nhận điểm."
         except ValueError as e:
-            # Another session is active
             return CheckinResponse(
                 status="session_busy",
-                message=f"Vui lòng đợi! {str(e)}"
+                student_id=student_id,
+                student_name=student['name'],
+                class_name=student['class'],
+                checkin_id=checkin_id,
+                message=f"Không thể bắt đầu phiên mới. {str(e)}"
             )
 
         return CheckinResponse(
@@ -183,6 +220,7 @@ async def classify_trash(request: TrashClassifyRequest):
 
         # Validate session and award points
         student_id = None
+        student_name = None
         points_awarded = 0
         total_points = None
         session_valid = False
@@ -207,6 +245,7 @@ async def classify_trash(request: TrashClassifyRequest):
 
             session_valid = True
             student_id = session.student_id
+            student_name = session.student_name
 
             # Award points if trash is accepted
             if accepted:
@@ -231,6 +270,7 @@ async def classify_trash(request: TrashClassifyRequest):
         log_data = {
             'checkin_id': request.checkin_id if request.checkin_id else '',
             'student_id': student_id if student_id else '',
+            'student_name': student_name if student_name else '',
             'timestamp': request.timestamp,
             'trash_type': trash_type,
             'confidence_score': confidence,

@@ -13,7 +13,38 @@ let trashVideo = null;
 let trashCanvas = null;
 let trashStream = null;
 let currentCheckinId = null;
-const TRASH_CAPTURE_DELAY = 3000; // Wait 3 seconds before capturing trash
+
+/** Display duration (ms) and countdown (seconds) for each check-in stage */
+const STAGE_TIMING = {
+    WELCOME_MS: 5000,              // Show student name after successful check-in
+    TRASH_PLACE_COUNTDOWN_SEC: 6,  // Countdown before auto-capturing trash
+    RESULT_MS: 6000,               // Show classification result before reset
+    ERROR_MS: 4000,                // Show error before reset
+    NOT_REGISTERED_MS: 3000,         // Redirect delay for unregistered faces
+};
+
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/** Smooth scroll to the trash camera section */
+function scrollToTrashCamera() {
+    const trashCard = document.getElementById('trash-camera-card');
+    if (!trashCard) return;
+
+    // Wait one frame so the card is laid out after display:block
+    requestAnimationFrame(() => {
+        trashCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+}
+
+/** Show a countdown in the status bar (updates every second) */
+async function showCountdown(title, message, seconds) {
+    for (let remaining = seconds; remaining > 0; remaining--) {
+        updateStatus(title, `${message} — còn ${remaining}s`);
+        await delay(1000);
+    }
+}
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', async () => {
@@ -85,31 +116,25 @@ async function handleCheckinClick() {
     if (isProcessing) return;
 
     isProcessing = true;
-
-    // Disable button during processing
-    const checkinButton = document.getElementById('checkin-button');
-    checkinButton.disabled = true;
-    checkinButton.textContent = '⏳ Đang xử lý...';
-
+    setCheckinButtonProcessing(true);
     showProcessing(true);
+
+    let inMultiStageFlow = false;
 
     try {
         // Capture frame from video (flip horizontally to match mirrored video)
         const context = canvas.getContext('2d');
         context.save();
-        context.scale(-1, 1); // Flip horizontally
+        context.scale(-1, 1);
         context.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
         context.restore();
 
-        // Convert to blob
         const blob = await new Promise(resolve => {
             canvas.toBlob(resolve, 'image/jpeg', 0.85);
         });
 
-        // Convert to base64
         const base64 = await blobToBase64(blob);
 
-        // Send to API
         const response = await fetch(`${API_BASE_URL}/esp32/face-checkin`, {
             method: 'POST',
             headers: {
@@ -124,63 +149,105 @@ async function handleCheckinClick() {
 
         const result = await response.json();
 
+        // Face recognition done — hide spinner immediately
+        endFaceRecognitionUI();
+
         if (result.status === 'success') {
-            // Successful check-in
-            handleSuccessfulCheckIn(result);
+            inMultiStageFlow = true;
+            await handleSuccessfulCheckIn(result);
         } else if (result.status === 'not_registered') {
-            // Face not registered - redirect to registration
             handleNotRegistered();
+        } else if (result.status === 'session_busy') {
+            handleSessionBusy(result);
         } else if (result.status === 'error') {
-            // Show error message
             updateStatus('❌ Lỗi nhận diện', result.message || 'Không phát hiện khuôn mặt. Vui lòng thử lại.');
         } else {
-            // Unknown status
             updateStatus('❌ Lỗi', 'Có lỗi xảy ra. Vui lòng thử lại.');
         }
 
     } catch (error) {
         console.error('Check-in error:', error);
-        updateStatus('❌ Lỗi kết nối', 'Không thể kết nối đến server. Vui lòng kiểm tra kết nối.');
+        endFaceRecognitionUI();
+        updateStatus('❌ Lỗi kết nối', 'Không thể kết nối đến server. Vui lòng kiểm tra quyền truy cập.');
     } finally {
-        isProcessing = false;
-        showProcessing(false);
-
-        // Re-enable button
-        const checkinButton = document.getElementById('checkin-button');
-        checkinButton.disabled = false;
-        checkinButton.textContent = '📸 Check-in';
+        if (!inMultiStageFlow) {
+            isProcessing = false;
+            resetCheckinButton();
+        }
     }
 }
 
-/**
- * Handle successful check-in
- */
-function handleSuccessfulCheckIn(result) {
-    // Store checkin_id for trash classification
-    currentCheckinId = result.checkin_id;
+/** Show face-recognition loading state on the check-in button */
+function setCheckinButtonProcessing(processing) {
+    const checkinButton = document.getElementById('checkin-button');
+    checkinButton.disabled = processing;
+    checkinButton.textContent = processing ? '⏳ Đang xử lý...' : '📸 Check-in';
+}
 
-    // Update status display with clear points info
+/** Hide face-recognition spinner and update button after API responds */
+function endFaceRecognitionUI() {
+    showProcessing(false);
+    const checkinButton = document.getElementById('checkin-button');
+    checkinButton.disabled = true;
+    checkinButton.textContent = '✅ Đã check-in';
+}
+
+function resetCheckinButton() {
+    const checkinButton = document.getElementById('checkin-button');
+    checkinButton.disabled = false;
+    checkinButton.textContent = '📸 Check-in';
+}
+
+/** Another student is using the bin — show wait message with auto-reset */
+function handleSessionBusy(result) {
     updateStatus(
-        `🎉 Chào mừng ${result.student_name}!`,
-        `Lớp ${result.class || result.class_name || 'N/A'} | 💯 Điểm hiện tại: ${result.total_points} điểm\n🗑️ Chuẩn bị chụp ảnh rác...`
+        '⏳ Vui lòng đợi',
+        result.message || 'Có học sinh khác đang sử dụng thùng rác.'
     );
 
-    // Show success color
+    const statusDisplay = document.getElementById('status-display');
+    statusDisplay.style.background = 'linear-gradient(135deg, #FFC107, #FF9800)';
+
+    setTimeout(() => {
+        updateStatus('👋 Xin chào!', 'Nhấn nút Check-in để bắt đầu');
+        statusDisplay.style.background =
+            'linear-gradient(135deg, var(--primary-color), var(--secondary-color))';
+    }, STAGE_TIMING.ERROR_MS);
+}
+
+/**
+ * Handle successful check-in — runs through timed stages
+ */
+async function handleSuccessfulCheckIn(result) {
+    currentCheckinId = result.checkin_id;
+    const className = result.class || result.class_name || 'N/A';
+
+    // Stage 1: Welcome — show student name
+    updateStatus(
+        `🎉 Chào mừng ${result.student_name}!`,
+        `Lớp ${className} | 💯 Điểm hiện tại: ${result.total_points} điểm`
+    );
+
     const statusDisplay = document.getElementById('status-display');
     statusDisplay.style.background = 'linear-gradient(135deg, #4CAF50, #8BC34A)';
 
-    // Play success sound (optional)
     playSuccessSound();
-
-    // Start trash camera and capture after delay
-    startTrashCamera().then(() => {
-        setTimeout(() => {
-            captureAndClassifyTrash();
-        }, TRASH_CAPTURE_DELAY);
-    });
-
-    // Refresh stats
     loadDashboardStats();
+
+    await delay(STAGE_TIMING.WELCOME_MS);
+
+    // Stage 2: Start trash camera
+    await startTrashCamera();
+
+    // Stage 3: Wait for user to place trash (countdown)
+    await showCountdown(
+        '🗑️ Hãy bỏ rác vào thùng',
+        'Hệ thống sẽ tự động chụp ảnh và phân loại',
+        STAGE_TIMING.TRASH_PLACE_COUNTDOWN_SEC
+    );
+
+    // Stage 4: Capture and classify
+    await captureAndClassifyTrash();
 }
 
 /**
@@ -195,10 +262,10 @@ function handleNotRegistered() {
     const statusDisplay = document.getElementById('status-display');
     statusDisplay.style.background = 'linear-gradient(135deg, #FFC107, #FF9800)';
 
-    // Redirect to registration after 2 seconds
+    // Redirect to registration after delay
     setTimeout(() => {
         window.location.href = '/register.html';
-    }, 2000);
+    }, STAGE_TIMING.NOT_REGISTERED_MS);
 }
 
 /**
@@ -244,10 +311,9 @@ async function startTrashCamera() {
             };
         });
 
-        // Show trash camera card
+        // Show trash camera card (status updated by caller after countdown)
         document.getElementById('trash-camera-card').style.display = 'block';
-
-        updateStatus('🗑️ Hãy bỏ rác vào thùng', 'Hệ thống sẽ tự động chụp ảnh và phân loại');
+        scrollToTrashCamera();
 
     } catch (error) {
         console.error('Error starting trash camera:', error);
@@ -258,6 +324,8 @@ async function startTrashCamera() {
         trashCanvas.width = video.videoWidth;
         trashCanvas.height = video.videoHeight;
         document.getElementById('trash-camera-card').style.display = 'block';
+        scrollToTrashCamera();
+        await delay(1500);
     }
 }
 
@@ -313,11 +381,11 @@ async function captureAndClassifyTrash() {
         // Send signal to ESP32 to open/close bin
         await sendSignalToESP32(result);
 
-        // Reset after 5 seconds
+        // Reset after showing result
         setTimeout(() => {
             stopTrashCamera();
             resetToCheckInMode();
-        }, 5000);
+        }, STAGE_TIMING.RESULT_MS);
 
     } catch (error) {
         console.error('Error classifying trash:', error);
@@ -327,7 +395,7 @@ async function captureAndClassifyTrash() {
         setTimeout(() => {
             stopTrashCamera();
             resetToCheckInMode();
-        }, 3000);
+        }, STAGE_TIMING.ERROR_MS);
     }
 }
 
@@ -411,8 +479,10 @@ function stopTrashCamera() {
  */
 function resetToCheckInMode() {
     currentCheckinId = null;
+    isProcessing = false;
+    resetCheckinButton();
 
-    updateStatus('👋 Xin chào!', 'Đứng trước camera để check-in');
+    updateStatus('👋 Xin chào!', 'Nhấn nút Check-in để bắt đầu');
 
     const statusDisplay = document.getElementById('status-display');
     statusDisplay.style.background = 'linear-gradient(135deg, var(--primary-color), var(--secondary-color))';
